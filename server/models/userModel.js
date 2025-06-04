@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true
   },
   password: {
     type: String,
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema({
   avoid: [String],
   group: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Group',
+    ref: 'group',
   },
   history: [
     {
