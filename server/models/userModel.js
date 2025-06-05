@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
       points: Number,
     },
   ],
-  avoid: [String],
+  restrictions: [String],
   group: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'group',
