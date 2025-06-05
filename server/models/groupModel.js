@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const groupSchema = new mongoose.Schema({
   name: {
@@ -21,5 +21,4 @@ const groupSchema = new mongoose.Schema({
     default: Date.now,
   }
 });
-
-module.exports = mongoose.model('Group', groupSchema);
+export default mongoose.model('Group', groupSchema);
