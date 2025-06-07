@@ -1,5 +1,6 @@
 import express from 'express';
 import * as userController from './../controllers/userController.js';
+import validateUserId from './../middlewares/validateUserId.js'
 
 const router = express.Router();
 
@@ -9,8 +10,8 @@ router
 
 router
   .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+  .get(validateUserId, userController.getUser)
+  .patch(validateUserId, userController.updateUser)
+  .delete(validateUserId, userController.deleteUser);
 
 export default router;

@@ -12,8 +12,14 @@ const userSchema = new mongoose.Schema({
   },
   preferences: [
     {
-      cuisine: String,
-      points: Number,
+      cuisine: {
+        type: String,
+        required: true,
+      },
+      points: {
+        type: Number,
+        required: true,
+      }
     },
   ],
   restrictions: [String],
