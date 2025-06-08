@@ -1,5 +1,5 @@
-import { Avatar, Button, Container, Group, Paper, Stack, Text, Title, Divider, Modal, TextInput, MultiSelect } from '@mantine/core';
-import { IconUser, IconPencil, IconPlus } from '@tabler/icons-react';
+import { Avatar, Button, Container, Group, Paper, Stack, Text, Title, Divider, Modal, TextInput, MultiSelect} from '@mantine/core';
+import { IconUser } from '@tabler/icons-react';
 import { useState } from 'react';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
@@ -7,13 +7,20 @@ import Footer from '../components/footer';
 function ViewGroupsPage() {
   const [createGroupOpened, setCreateGroupOpened] = useState(false);
   const [groupName, setGroupName] = useState('');
-  const [memberEmails, setMemberEmails] = useState([]);
+  const [memberUsernames, setMemberUsernames] = useState([]);
+
+  const [joinCode, setJoinCode] = useState('');
 
   const handleCreateGroup = () => {
-    alert(`Group Name: ${groupName}\nMembers: ${memberEmails.join(', ')}`);
+    alert(`Group Name: ${groupName}\nMembers: ${memberUsernames.join(', ')}`);
     setGroupName('');
-    setMemberEmails([]);
+    setMemberUsernames([]);
     setCreateGroupOpened(false);
+  };
+
+  const handleJoinGroup = () => {
+    alert(`Joining group with code: ${joinCode}`);
+    setJoinCode('');
   };
 
   const groups = [
@@ -45,13 +52,31 @@ function ViewGroupsPage() {
       <Container size="md" my="xl">
         <Group position="apart" style={{ marginBottom: '1rem' }}>
           <Title order={2}>My Groups</Title>
-          <Button
-            leftIcon={<IconPlus size={18} />}
-            style={{ backgroundColor: 'black', color: 'white' }}
-            onClick={() => setCreateGroupOpened(true)}
-          >
-            Create Group
-          </Button>
+
+          <Group>
+            <TextInput
+              placeholder="Enter group code"
+              size="sm"
+              style={{ width: 200 }}
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.currentTarget.value)}
+            />
+            <Button
+              variant="outline"
+              color="black"
+              size="sm"
+              onClick={handleJoinGroup}
+            >
+              Join
+            </Button>
+
+            <Button
+              style={{ backgroundColor: 'black', color: 'white' }}
+              onClick={() => setCreateGroupOpened(true)}
+            >
+              Create Group
+            </Button>
+          </Group>
         </Group>
 
         <Stack spacing="xl">
@@ -61,15 +86,40 @@ function ViewGroupsPage() {
                 <Text size="lg" weight={600}>
                   {group.name}
                 </Text>
-                {group.isOwner && (
+                {group.isOwner ? (
+                  <Group>
                   <Button
-                    variant="light"
-                    style={{ color: 'black' }}
+                    variant="white"
+                    style={{ color: 'black', textDecoration: 'underline' }}
                     size="xs"
-                    leftIcon={<IconPencil size={16} />}
                   >
-                    Edit
+                    View/Edit
                   </Button>
+                  <Button
+                    variant="white"
+                    style={{ color: 'red', textDecoration: 'underline' }}
+                    size="xs"
+                  >
+                    Delete
+                  </Button>
+                  </Group>
+                ) : (
+                  <Group>
+                  <Button
+                    variant="white"
+                    style={{ color: 'black', textDecoration: 'underline' }}
+                    size="xs"
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="white"
+                    style={{ color: 'red', textDecoration: 'underline'}}
+                    size="xs"
+                  >
+                    Leave
+                  </Button>
+                  </Group>
                 )}
               </Group>
 
@@ -105,27 +155,30 @@ function ViewGroupsPage() {
             required
           />
           <MultiSelect
-            label="Member Emails"
-            placeholder="Enter emails"
+            label="Member Usernames"
+            placeholder="Enter Usernames"
             data={[]}
             searchable
             creatable
             getCreateLabel={(query) => `+ Add "${query}"`}
             onCreate={(query) => {
-              setMemberEmails((current) => [...current, query]);
+              setMemberUsernames((current) => [...current, query]);
               return query;
             }}
-            value={memberEmails}
-            onChange={setMemberEmails}
+            value={memberUsernames}
+            onChange={setMemberUsernames}
           />
           <Group position="right" style={{ marginTop: '1rem' }}>
-            <Button onClick={handleCreateGroup} style={{ backgroundColor: 'black', color: 'white' }}>
+            <Button
+              onClick={handleCreateGroup}
+              style={{ backgroundColor: 'black', color: 'white' }}
+            >
               Create Group
             </Button>
           </Group>
         </Stack>
       </Modal>
-
+            
       <Footer />
     </>
   );

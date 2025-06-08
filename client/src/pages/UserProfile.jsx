@@ -41,7 +41,6 @@ function ProfilePage() {
                   <Tabs.Tab value="profile">Profile Details</Tabs.Tab>
                   <Tabs.Tab value="password">Change Password</Tabs.Tab>
                   <Tabs.Tab value="preferences">Update Preferences</Tabs.Tab>
-                  <Tabs.Tab value="groups">View Groups</Tabs.Tab>
                 </Tabs.List>
 
                 <Tabs.Panel value="profile" style={{ paddingTop: '1rem' }}>
@@ -70,10 +69,10 @@ function ProfilePage() {
                     </Group>
                   </Stack>
                 </Tabs.Panel>
-
-                <Tabs.Panel value="preferences" style={{ paddingTop: '1rem' }}>
+                // Change entire section here to slider
+                <Tabs.Panel value="preferences" style={{ paddingTop: '1rem' }}> 
                   <Stack spacing="md">
-                    <TextInput label="Cuisine Preferences" placeholder="e.g., Japanese, Italian" />
+                    <TextInput label="Cuisine Preferences" placeholder="Change To Slider" />
                     <Group position="right" style={{ marginTop: '1rem' }}>
                       <Button type="submit" style={{ backgroundColor: 'black', color: 'white' }}>
                         Save Preferences
@@ -82,13 +81,6 @@ function ProfilePage() {
                   </Stack>
                 </Tabs.Panel>
 
-                <Tabs.Panel value="groups" style={{ paddingTop: '1rem' }}>
-                  <Text>You are currently part of these groups:</Text>
-                  <Stack spacing="sm" style={{ marginTop: '0.75rem' }}>
-                    <Paper withBorder p="md" radius="md">435</Paper>
-                    <Paper withBorder p="md" radius="md">KIll MYSELF</Paper>
-                  </Stack>
-                </Tabs.Panel>
               </Tabs>
             </Paper>
           </Grid.Col>

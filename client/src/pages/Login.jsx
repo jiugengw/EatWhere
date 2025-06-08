@@ -1,4 +1,4 @@
-import { TextInput, PasswordInput, Paper, Title, Text, Container, Button, Stack, Anchor } from '@mantine/core';
+import { TextInput, PasswordInput, Paper, Title, Text, Container, Button, Stack, Anchor, Checkbox } from '@mantine/core';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
@@ -23,7 +23,7 @@ function Login() {
             <Stack>
               <TextInput label="Username" placeholder="Your username" required />
               <PasswordInput label="Password" placeholder="Your password" required />
-
+              <Checkbox label="Remember me" required />
               <Button fullWidth mt="md" style={{ backgroundColor: 'black', color: 'white' }}>
                 Log in
               </Button>
