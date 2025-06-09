@@ -1,8 +1,8 @@
 import User from './../models/userModel.js';
 
-import modifyPreferences from './../services/userService.js';
+import updatePreferences from './../services/userService.js';
 import getHistory from './../services/historyService.js';
-import { getGroupsByUser } from './../services/groupService.js';
+import getGroups from './../services/groupService.js';
 
 import generateDefaultPreferences from './../constants/defaultCuisines.js';
 import catchAsync from './../utils/catchAsync.js';
@@ -11,61 +11,39 @@ export const createUser = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
   newUser.preferences = generateDefaultPreferences();
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        user: newUser,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(201).json({
+    status: 'success',
+    data: {
+      user: newUser,
+    },
+  });
+});
 
-export const getCurrentUser = catchAsync(async (req, res, next) => {
+export const getUser = catchAsync(async (req, res, next) => {
   const user = req.user;
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
-export const updateUser = async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+export const updateUser = catchAsync(async (req, res, next) => {
+  Object.assign(req.user, req.body);
+  const user = await req.user.save();
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
-export const deleteUser = async (req, res) => {
-  try {
-    await User.findByIdAndDelete(req.params.id);
+export const deleteUser = catchAsync(async (req, res, next) => {
+  await req.user.deleteOne();
 
   res.status(204).json({
     status: 'success',
@@ -89,7 +67,7 @@ export const updateUserPreferences = catchAsync(async (req, res, next) => {
   const user = req.user;
   const { preferences } = req.body;
 
-  const updatedPrefs = modifyPreferences(user, preferences);
+  const updatedPrefs = updatePreferences(user, preferences);
   res.status(200).json({
     status: 'success',
     data: {
@@ -110,7 +88,7 @@ export const getUserHistory = catchAsync(async (req, res, next) => {
 });
 
 export const getUserGroups = catchAsync(async (req, res, next) => {
-  const userGroups = getGroupsByUser(req.user._id, req.query);
+  const userGroups = getGroups(req.user._id, req.query);
 
   res.status(200).json({
     status: 'success',
@@ -119,7 +97,3 @@ export const getUserGroups = catchAsync(async (req, res, next) => {
     },
   });
 });
-
-export const getUserByUsername = catchAsync(async (req, res, next) => {
-    const user = req.user
-})
