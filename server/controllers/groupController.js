@@ -17,34 +17,4 @@ export const createGroup = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getGroup = catchAsync(async (req, res, next) => {
-  const user = req.user;
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user,
-    },
-  });
-});
-
-export const updateUser = catchAsync(async (req, res, next) => {
-  Object.assign(req.user, req.body);
-  const user = await req.user.save();
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user,
-    },
-  });
-});
-
-export const deleteUser = catchAsync(async (req, res, next) => {
-  await req.user.deleteOne();
-
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-});

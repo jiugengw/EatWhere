@@ -1,8 +1,8 @@
 import User from './../models/userModel.js';
 
-import updatePreferences from './../services/userService.js';
-import getHistory from './../services/historyService.js';
-import getGroups from './../services/groupService.js';
+import modifyPreferences from './../services/userService.js';
+import fetchHistory from './../services/historyService.js';
+import fetchGroups from './../services/groupService.js';
 
 import generateDefaultPreferences from './../constants/defaultCuisines.js';
 import catchAsync from './../utils/catchAsync.js';
@@ -67,7 +67,7 @@ export const updateUserPreferences = catchAsync(async (req, res, next) => {
   const user = req.user;
   const { preferences } = req.body;
 
-  const updatedPrefs = updatePreferences(user, preferences);
+  const updatedPrefs = modifyPreferences(user, preferences);
   res.status(200).json({
     status: 'success',
     data: {
@@ -77,7 +77,7 @@ export const updateUserPreferences = catchAsync(async (req, res, next) => {
 });
 
 export const getUserHistory = catchAsync(async (req, res, next) => {
-  const userHistory = getHistory('user', req.user._id, req.query);
+  const userHistory = fetchHistory('user', req.user._id, req.query);
 
   res.status(200).json({
     status: 'success',
@@ -88,7 +88,7 @@ export const getUserHistory = catchAsync(async (req, res, next) => {
 });
 
 export const getUserGroups = catchAsync(async (req, res, next) => {
-  const userGroups = getGroups(req.user._id, req.query);
+  const userGroups = fetchGroups(req.user._id, req.query);
 
   res.status(200).json({
     status: 'success',
