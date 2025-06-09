@@ -1,8 +1,15 @@
 import User from './../models/userModel.js';
+
+import updatePreferences from './../services/userService.js';
+import getHistory from './../services/historyService.js';
+import getGroups from './../services/groupService.js';
+
+import generateDefaultPreferences from './../constants/defaultCuisines.js';
 import catchAsync from './../utils/catchAsync.js';
 
 export const createUser = catchAsync(async (req, res, next) => {
   const newUser = await User.create(req.body);
+  newUser.preferences = generateDefaultPreferences();
 
   res.status(201).json({
     status: 'success',
@@ -44,49 +51,49 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-// export const updateUserPassword = async (req, res) => {
-//   try {
-//     const { oldPassword, newPassword } = req.body;
+export const getUserPreferences = catchAsync(async (req, res, next) => {
+  const preferences = req.user.preferences;
 
-//     if (!oldPassword) {
-//       return res.status(400).json({
-//         status: 'fail',
-//         message: 'Old password is required.',
-//       });
-//     } else if (!newPassword) {
-//       return res.status(400).json({
-//         status: 'fail',
-//         message: 'New password is required.',
-//       });
-//     }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      preferences,
+    },
+  });
+});
 
-//     const user = await User.findById(req.params.id);
+// for both creating and updating
+export const updateUserPreferences = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const { preferences } = req.body;
 
-//     if (user.password !== oldPassword) {
-//       return res.status(401).json({
-//         status: 'fail',
-//         message: 'Old password is incorrect',
-//       });
-//     }
+  const updatedPrefs = updatePreferences(user, preferences);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      preferences: updatedPrefs,
+    },
+  });
+});
 
-//     user.password = newPassword;
-//     await user.save();
+export const getUserHistory = catchAsync(async (req, res, next) => {
+  const userHistory = getHistory('user', req.user._id, req.query);
 
-//     res.status(200).json({
-//       status: 'success',
-//       message: 'Password updated successfully',
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       status: 'fail',
-//       message: err,
-//     });
-//   }
-// };
+  res.status(200).json({
+    status: 'success',
+    data: {
+      history: userHistory,
+    },
+  });
+});
 
-// export const updateUserPreferences = async (req, res) {
-//     try {
-//         const user = await User.findById(req.params.id);
+export const getUserGroups = catchAsync(async (req, res, next) => {
+  const userGroups = getGroups(req.user._id, req.query);
 
-//     }
-// }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      groups: userGroups,
+    },
+  });
+});

@@ -1,48 +1,75 @@
 import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  preferences: [
-    {
-      cuisine: {
-        type: String,
-        required: true,
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: [true, 'Userame is required'],
+      unique: true,
+      trim: true,
+      validate: {
+        validator: (val) => val.trim().length > 0,
+        message: 'Username cannot be empty or just spaces',
       },
-      points: {
-        type: Number,
-        required: true,
-      }
     },
-  ],
-  restrictions: [String],
-  group: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'group',
-  },
-  history: [
-    {
-      restaurantName: String, 
-      cuisine: String, 
-      date: {
-        type: Date,
-        default: Date.now,
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+    },
+    firstName: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: (val) => val.trim().length > 0,
+        message: 'First name cannot be empty or just spaces',
       },
-      group: {
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: (val) => val.trim().length > 0,
+        message: 'Last name cannot be empty or just spaces',
+      },
+    },
+    preferences: {
+      type: [
+        {
+          cuisine: {
+            type: String,
+            required: true,
+          },
+          points: {
+            type: Number,
+            required: true,
+          },
+        },
+      ],
+      default: [],
+    },
+    groups: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group',
       },
-      liked: Boolean, 
-      notes: String,   
-    }
-  ]
+    ],
+    //   history: {
+    //     type: [
+    //       {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: 'History',
+    //       },
+    //     ],
+    //     default: [],
+    //   },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+userSchema.virtual('fullName').get(function () {
+  return `${this.firstName} ${this.lastName}`;
 });
 
 export default mongoose.model('User', userSchema);
