@@ -2,9 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import app from './app.js';
 
-import userRoutes from './routes/userRoutes.js';
-import groupRoutes from './routes/groupRoutes.js';
+process.on('uncaughtException', (err) => {
+    console.log('UNCAUGHT EXCEPTION!');
+    console.log(err.name, err.message);
+    process.exit(1);
+  });
 
 dotenv.config({ path: './.env' });
 

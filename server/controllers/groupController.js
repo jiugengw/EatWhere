@@ -1,74 +1,50 @@
+import User from './../models/userModel.js';
+import History from './../models/historyModel.js';
 import Group from './../models/groupModel.js';
 
-export const createGroup = async (req, res) => {
-  try {
-    const newGroup = await Group.create(req.body);
+import { getGroupByCode } from './../services/groupService.js';
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        group: newGroup,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+import catchAsync from './../utils/catchAsync.js';
 
-export const getGroup = async (req, res) => {
-  try {
-    const group = await Group.findById(req.params.id);
+export const createGroup = catchAsync(async (req, res, next) => {
+  const newGroup = await Group.create(req.body);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        group,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(201).json({
+    status: 'success',
+    data: {
+      group: newGroup,
+    },
+  });
+});
 
-export const updateGroup = async (req, res) => {
-  try {
-    const group = await Group.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+export const getGroup = catchAsync(async (req, res, next) => {
+  const user = req.user;
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        group,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
-export const deleteGroup = async (req, res) => {
-  try {
-    await Group.findByIdAndDelete(req.params.id);
+export const updateUser = catchAsync(async (req, res, next) => {
+  Object.assign(req.user, req.body);
+  const user = await req.user.save();
 
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
+
+export const deleteUser = catchAsync(async (req, res, next) => {
+  await req.user.deleteOne();
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
