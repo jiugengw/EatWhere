@@ -19,4 +19,4 @@ export const modifyPreferences = async (user, newPrefs) => {
   return user.preferences;
 };
 
-export const fetchUserByUsername = async (user, )
+// export const fetchUserByUsername = async (user, )

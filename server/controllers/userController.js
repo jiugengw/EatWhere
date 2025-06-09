@@ -1,17 +1,40 @@
 import User from './../models/userModel.js';
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
-import modifyPreferences from './../services/userService.js';
+
+import {modifyPreferences} from './../services/userService.js';
 import fetchHistory from './../services/historyService.js';
-import fetchGroups from './../services/groupService.js';
+import {fetchGroupByCode,fetchGroupsByUser} from './../services/groupService.js';
 
 import generateDefaultPreferences from './../constants/defaultCuisines.js';
 import catchAsync from './../utils/catchAsync.js';
 
 export const createUser = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body);
-  newUser.preferences = generateDefaultPreferences();
+  const { name, password, preferences, avoid, group, history } = req.body;
+
+  const hashpassword = await bcrypt.hash(password, 10);
+
+  const newUser = await User.create({
+    name,
+    password: hashpassword,
+    preferences: preferences || generateDefaultPreferences(),
+    avoid,
+    group,
+    history,
+  });
+
+  const token = jwt.sign(
+      {name:newUser.name,
+        userId:newUser._id,
+        preferences: newUser.preferences
+      },
+      process.env.JWT_TOKEN,
+      {expiresIn:'1h'}
+    )
 
   res.status(201).json({
+    token,
     status: 'success',
     data: {
       user: newUser,
@@ -19,11 +42,21 @@ export const createUser = catchAsync(async (req, res, next) => {
   });
 });
 
+
 export const getUser = catchAsync(async (req, res, next) => {
   const user = req.user;
+  const token = jwt.sign(
+      {name:user.name,
+        userid:user._id,
+        preferences:user.preferences
+      },
+      process.env.JWT_TOKEN,
+      {expiresIn:'1h'}
+    )
 
   res.status(200).json({
     status: 'success',
+    token,
     data: {
       user,
     },
@@ -88,7 +121,7 @@ export const getUserHistory = catchAsync(async (req, res, next) => {
 });
 
 export const getUserGroups = catchAsync(async (req, res, next) => {
-  const userGroups = fetchGroups(req.user._id, req.query);
+  const userGroups = fetchGroupsByUser(req.user._id, req.query);
 
   res.status(200).json({
     status: 'success',
@@ -97,3 +130,32 @@ export const getUserGroups = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+
+//controllers below for testing (temporarily here)
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    
+    res.status(200).json({ status: 'success', data: users });
+
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err.message });
+  }
+};
+
+export const generateToken = async(req,res)=>{
+  try{
+    const token = jwt.sign({
+      name:'test'
+    },process.env.JWT_TOKEN,
+  {expiresIn:'1h'})
+  res.status(201).json({
+    status:'success',
+    message:'add the following below as key:value for header on postman',
+    Authorization:`Bearer: ${token}`})
+  }catch(err){
+    res.status(400).json({status:'fail',message:err})
+  }
+}
