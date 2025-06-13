@@ -1,5 +1,5 @@
 import APIFeatures from './../utils/APIFeatures.js';
-import History from './../models/historyModel.js';
+import History from './historyModel.js';
 
 const getHistory = async (key, id, query) => {
   const filter = { [key]: id };

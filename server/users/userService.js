@@ -1,4 +1,5 @@
-import preferenceMap from './../constants/preferenceScale.js';
+import User from './userModel.js';
+import preferenceMap from '../utils/constants/preferenceScale.js';
 
 export const modifyPreferences = async (user, newPrefs) => {
   newPrefs.forEach((newPref) => {
@@ -19,4 +20,6 @@ export const modifyPreferences = async (user, newPrefs) => {
   return user.preferences;
 };
 
-export const fetchUserByUsername = async (user, )
+export const fetchUserByUsername = async (username) => {
+  return await User.findOne({ username }).select('fullName');
+};

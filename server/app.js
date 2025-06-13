@@ -1,8 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-
-import userRoutes from './routes/userRoutes.js';
+import router from './routes/index.js';
 import errorController from './controllers/errorController.js';
 
 const app = express();
@@ -14,7 +13,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.use('/api/users', userRoutes);
+app.use('/api', router);
 // app.use('/api/groups', groupRoutes);
 
 app.use(errorController);
