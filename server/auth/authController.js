@@ -14,27 +14,6 @@ const signToken = (id) => {
   });
 };
 
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(Date.now() + Number(process.env.JWT_COOKIE_EXPIRES_IN)),
-    httpOnly: true,
-  };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-
-  res.cookie('jwt', token, cookieOptions);
-
-  user.password = undefined;
-
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    data: {
-      user,
-    },
-  });
-};
-
 export const signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     username: req.body.username,
@@ -77,7 +56,7 @@ export const protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   }
-
+ 
   if (!token) {
     return next(
       new AppError(
@@ -86,13 +65,13 @@ export const protect = catchAsync(async (req, res, next) => {
       )
     );
   }
-
+  
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
+  console.log(2);
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
-      AppError(
+      new AppError(
         'The user belonging to this token no longer exists.',
         StatusCodes.UNAUTHORIZED
       )
@@ -101,8 +80,8 @@ export const protect = catchAsync(async (req, res, next) => {
 
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
-      AppError('User recently changed password!'),
-      statuscodes.UNAUTHORIZED
+      new AppError('User recently changed password!'),
+      StatusCodes.UNAUTHORIZED
     );
   }
 
@@ -214,7 +193,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     );
   }
 
-  user.password = req.body.password;
+  user.password = req.body.passwordNew;
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
 

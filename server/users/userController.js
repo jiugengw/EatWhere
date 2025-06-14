@@ -3,6 +3,7 @@ import * as factory from './../utils/handlerFactory.js';
 import catchAsync from '../utils/catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../utils/AppError.js';
+import filterObj from '../utils/filterObj.js';
 
 export const createUser = factory.createOne(User);
 export const getUser = factory.getOne(User);
@@ -43,7 +44,7 @@ export const updateMe = catchAsync(async (req, res, next) => {
     'firstName',
     'lastName'
   );
-
+  
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
