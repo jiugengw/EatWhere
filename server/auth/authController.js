@@ -59,12 +59,8 @@ export const login = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const isEmail = validator.isEmail(usernameOrEmail);
-  if (isEmail) {
-    const user = await User.findOne({ email }).select('+password');
-  } else {
-    const user = await User.findOne({ username }).select('+password');
-  }
+  const queryField = validator.isEmail(usernameOrEmail) ? 'email' : 'username';
+  const user = await User.findOne({ [queryField]: usernameOrEmail }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect username/email or password!'));
@@ -143,7 +139,7 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   }
 
   const resetToken = user.createPasswordResetToken();
-  await user.save({ validatebeforeSave: false });
+  await user.save({ validateBeforeSave: false });
 
   const resetURL = `${req.protocol}://${req.get(
     'host'
