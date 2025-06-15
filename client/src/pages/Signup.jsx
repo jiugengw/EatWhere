@@ -1,6 +1,6 @@
 import { TextInput, PasswordInput, Paper, Title, Text, Container, Button, Stack, Checkbox, Anchor } from '@mantine/core';
-import Navbar from '../components/navbar';
-import Footer from '../components/footer';
+import Navbar from '../components/navbar.jsx';
+import Footer from '../components/footer.jsx';
 
 function SignupPage() {
   return (
