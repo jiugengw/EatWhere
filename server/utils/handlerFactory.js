@@ -16,7 +16,13 @@ export const createOne = (Model) => {
   });
 };
 
-export const getOne = (Model, populateOptions, selectFields, findByFn) => {
+export const getOne = ({
+  Model,
+  populateOptions = null,
+  selectFields = null,
+  findByFn = null,
+  disableVirtuals = true,
+}) => {
   return catchAsync(async (req, res, next) => {
     let query;
     if (findByFn) {
@@ -35,10 +41,12 @@ export const getOne = (Model, populateOptions, selectFields, findByFn) => {
       );
     }
 
+    const output = doc.toJSON({ virtuals: !disableVirtuals });
+
     res.status(StatusCodes.OK).json({
       status: 'success',
       data: {
-        data: doc,
+        data: output,
       },
     });
   });

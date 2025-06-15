@@ -23,8 +23,10 @@ const historySchema = new mongoose.Schema(
           min: 1,
           max: 5,
         },
-        notes: String,
-        trim: true,
+        notes: {
+          type: String,
+          trim: true,
+        },
       },
     ],
   },

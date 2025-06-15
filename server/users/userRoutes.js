@@ -16,21 +16,10 @@ router.patch('/updateMyPassword', authController.updatePassword);
 router.patch('/updateMe', userController.updateMe);
 router.patch('/deleteMe', userController.deleteMe);
 
-router.use(authController.restrictTo('admin'));
+router.route('/me/history').get(userController.getMe, userController.getUserHistory);
+router.route('/me/groups').get(userController.getMe, userController.getUserGroups);
+router.route('/me/preferences').get(userController.getMe, userController.getUserPreferences);
 
-router
-  .route('/')
-  .post(userController.createUser)
-  .get(userController.getAllUsers);
-
-router.route('/:id/preferences').get(userController.getUserPreferences);
-router.route('/:id/history').get(userController.getUserHistory);
-router.route('/:id/groups').get(userController.getUserGroups);
-
-router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+router.route('/username/:username').get(userController.getUserByUsername);
 
 export default router;

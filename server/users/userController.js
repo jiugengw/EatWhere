@@ -1,20 +1,35 @@
 import User from './userModel.js';
+import History from './../history/historyModel.js';
 import * as factory from './../utils/handlerFactory.js';
 import catchAsync from '../utils/catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../utils/AppError.js';
 import filterObj from '../utils/filterObj.js';
 
-export const createUser = factory.createOne(User);
-export const getUser = factory.getOne(User);
+export const getUser = factory.getOne({ Model: User });
 export const getAllUsers = factory.getAll(User);
-// not for updating passwords
-export const updateUser = factory.updateOne(User);
-export const deleteUser = factory.deleteOne(User);
 
-export const getUserHistory = factory.getOne(User, 'history', 'history');
-export const getUserGroups = factory.getOne(User, 'groups', 'groups');
-export const getUserPreferences = factory.getOne(User, null, 'preferences');
+export const getUserHistory = factory.getOne({
+  Model: User,
+  populateOptions: 'history',
+  selectFields: 'history',
+});
+export const getUserGroups = factory.getOne({
+  Model: User,
+  populateOptions: 'groups',
+  selectFields: 'groups',
+});
+export const getUserPreferences = factory.getOne({
+  Model: User,
+  selectFields: 'preferences',
+});
+
+export const getUserByUsername = factory.getOne({
+  Model: User,
+  selectFields: 'username firstName lastName',
+  findByFn: (req) => ({ username: req.params.username }),
+  disableVirtuals: false,
+});
 
 export const getMe = (req, res, next) => {
   req.params.id = req.user.id;
@@ -44,7 +59,7 @@ export const updateMe = catchAsync(async (req, res, next) => {
     'firstName',
     'lastName'
   );
-  
+
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,

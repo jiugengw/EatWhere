@@ -14,6 +14,27 @@ const signToken = (id) => {
   });
 };
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(Date.now() + Number(process.env.JWT_COOKIE_EXPIRES_IN)),
+    httpOnly: true,
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 export const signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     username: req.body.username,
@@ -67,7 +88,7 @@ export const protect = catchAsync(async (req, res, next) => {
   }
   
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  console.log(2);
+
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
@@ -88,21 +109,6 @@ export const protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
-
-export const restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new AppError(
-          'You do not have permission to perform this action',
-          StatusCodes.FORBIDDEN
-        )
-      );
-    }
-
-    next();
-  };
-};
 
 export const forgetPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;

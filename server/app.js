@@ -14,7 +14,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.use('/api', router);
-// app.use('/api/groups', groupRoutes);
 
 app.use(errorController);
 
