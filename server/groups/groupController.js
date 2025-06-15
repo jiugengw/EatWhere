@@ -1,14 +1,6 @@
 import Group from './groupModel.js';
 
 import catchAsync from '../utils/catchAsync.js';
+import * as factory from '../utils/handlerFactory.js';
 
-export const createGroup = catchAsync(async (req, res, next) => {
-  const newGroup = await Group.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      group: newGroup,
-    },
-  });
-});
+export const createGroup = factory.createOne()

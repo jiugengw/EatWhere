@@ -13,15 +13,18 @@ export const getUserHistory = factory.getOne({
   Model: User,
   populateOptions: 'history',
   selectFields: 'history',
+  dataKey: 'user',
 });
 export const getUserGroups = factory.getOne({
   Model: User,
   populateOptions: 'groups',
   selectFields: 'groups',
+  dataKey: 'user',
 });
 export const getUserPreferences = factory.getOne({
   Model: User,
   selectFields: 'preferences',
+  dataKey: 'user',
 });
 
 export const getUserByUsername = factory.getOne({
@@ -29,6 +32,7 @@ export const getUserByUsername = factory.getOne({
   selectFields: 'username firstName lastName',
   findByFn: (req) => ({ username: req.params.username }),
   disableVirtuals: false,
+  dataKey: 'user',
 });
 
 export const getMe = (req, res, next) => {

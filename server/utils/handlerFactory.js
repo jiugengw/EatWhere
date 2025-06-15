@@ -3,14 +3,14 @@ import AppError from './AppError.js';
 import APIFeatures from './APIFeatures.js';
 import { StatusCodes } from 'http-status-codes';
 
-export const createOne = (Model) => {
+export const createOne = (Model, dataKey = 'data') => {
   return catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
 
     res.status(StatusCodes.CREATED).json({
       status: 'success',
       data: {
-        data: doc,
+        [dataKey]: doc,
       },
     });
   });
@@ -22,6 +22,7 @@ export const getOne = ({
   selectFields = null,
   findByFn = null,
   disableVirtuals = true,
+  dataKey = 'data',
 }) => {
   return catchAsync(async (req, res, next) => {
     let query;
@@ -46,7 +47,7 @@ export const getOne = ({
     res.status(StatusCodes.OK).json({
       status: 'success',
       data: {
-        data: output,
+        [dataKey]: output,
       },
     });
   });
@@ -71,7 +72,7 @@ export const getAll = (Model) => {
       status: 'success',
       results: doc.length,
       data: {
-        data: doc,
+        [dataKey]: doc,
       },
     });
   });
@@ -93,7 +94,7 @@ export const updateOne = (Model) => {
     res.status(StatusCodes.OK).json({
       status: 'success',
       data: {
-        data: doc,
+        [dataKey]: doc,
       },
     });
   });
