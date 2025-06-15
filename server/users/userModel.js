@@ -1,8 +1,6 @@
-import crypto from 'crypto';
 import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import generateDefaultPreferences from './../utils/constants/generateDefaultPreferences.js';
 
 const userSchema = new mongoose.Schema(
   {
@@ -60,19 +58,23 @@ const userSchema = new mongoose.Schema(
       },
     },
     preferences: {
-      type: [
-        {
-          cuisine: {
-            type: String,
-            required: true,
-          },
-          points: {
-            type: Number,
-            required: true,
-          },
-        },
-      ],
-      default: generateDefaultPreferences,
+      type: Map,
+      of: Number,
+      default: () =>
+        new Map([
+          ['Chinese', 0],
+          ['Korean', 0],
+          ['Japanese', 0],
+          ['Italian', 0],
+          ['Mexican', 0],
+          ['Indian', 0],
+          ['Thai', 0],
+          ['French', 0],
+          ['Muslim', 0],
+          ['Vietnamese', 0],
+          ['Western', 0],
+          ['Fast Food', 0],
+        ]),
     },
     groups: [
       {
@@ -148,19 +150,6 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
 
   return false;
-};
-
-userSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex');
-
-  this.passwordResetToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
-
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
-  return resetToken;
 };
 
 export default mongoose.model('User', userSchema);

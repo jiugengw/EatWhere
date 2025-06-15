@@ -7,7 +7,6 @@ import AppError from '../utils/AppError.js';
 import filterObj from '../utils/filterObj.js';
 
 export const getUser = factory.getOne({ Model: User });
-export const getAllUsers = factory.getAll(User);
 
 export const getUserHistory = factory.getOne({
   Model: User,
@@ -15,12 +14,14 @@ export const getUserHistory = factory.getOne({
   selectFields: 'history',
   dataKey: 'user',
 });
+
 export const getUserGroups = factory.getOne({
   Model: User,
   populateOptions: 'groups',
   selectFields: 'groups',
   dataKey: 'user',
 });
+
 export const getUserPreferences = factory.getOne({
   Model: User,
   selectFields: 'preferences',
@@ -73,6 +74,29 @@ export const updateMe = catchAsync(async (req, res, next) => {
     status: 'success',
     data: {
       user: updatedUser,
+    },
+  });
+});
+
+export const updateMyPreferences = catchAsync(async (req, res, next) => {
+  const newPreferences = req.body.preferences;
+  const updateOptions = {};
+
+  newPreferences.forEach((pref) => {
+    const { cuisine, points } = pref;
+    updateOptions[`preferences.${cuisine}`] = Number(points);
+  });
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    { $set: updateOptions },
+    { new: true, runValidators: true }
+  );
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    data: {
+      preferences: updatedUser.preferences,
     },
   });
 });
