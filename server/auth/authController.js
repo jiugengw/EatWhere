@@ -5,8 +5,6 @@ import { StatusCodes } from 'http-status-codes';
 import validator from 'validator';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
-import sendEmail from './../utils/email.js';
-import crypto from 'crypto';
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -108,86 +106,6 @@ export const protect = catchAsync(async (req, res, next) => {
 
   req.user = currentUser;
   next();
-});
-
-export const forgetPassword = catchAsync(async (req, res, next) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return next(
-      new AppError(
-        'There is no user with this email address',
-        StatusCodes.NOT_FOUND
-      )
-    );
-  }
-
-  const resetToken = user.createPasswordResetToken();
-  await user.save({ validateBeforeSave: false });
-
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/users/resetPassword/${resetToken}`;
-
-  const message = `Hi ${user.name},
-
-    You requested a password reset. Click the link below to set a new password:
-    ${resetURL}
-
-    This link will expire in 10 minutes.
-
-    If you did not request this, please ignore this email.`;
-
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token for Where2Eat',
-      message,
-    });
-
-    res.status(StatusCodes.OK).json({
-      status: 'success',
-      message: 'Password reset token sent to email.',
-    });
-  } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    return next(
-      new AppError(
-        'There was an error sending the email!',
-        StatusCodes.INTERNAL_SERVER_ERROR
-      )
-    );
-  }
-});
-
-export const resetPassword = catchAsync(async (req, res, next) => {
-  const hashedToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
-
-  const user = await User.findOne({
-    passwordResetToken: hashedToken,
-    passwordResetExpires: { gt: Date.now() },
-  });
-
-  if (!user) {
-    return next(
-      new AppError('Token is invalid or has expired.', StatusCodes.UNAUTHORIZED)
-    );
-  }
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
-
-  await user.save();
-
-  createSendToken(user, StatusCodes.OK, res);
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
