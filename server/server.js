@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import config from './utils/config.js';
 import app from './app.js';
 
 process.on('uncaughtException', (err) => {
@@ -10,13 +11,11 @@ process.on('uncaughtException', (err) => {
   
 dotenv.config({ path: './.env' });
 
-const db = process.env.DATABASE.replace(
+const db = config.DATABASE.replace(
   '<db_password>',
-  process.env.DATABASE_PASSWORD
+  config.DATABASE_PASSWORD
 );
-// console.log(1)
-// console.log(mongoose.modelNames());
-// console.log(1);
+
 mongoose
   .connect(db)
   .then(() => console.log('MongoDB connected'))

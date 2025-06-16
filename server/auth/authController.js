@@ -5,20 +5,21 @@ import { StatusCodes } from 'http-status-codes';
 import validator from 'validator';
 import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
+import config from './../utils/config.js';
 
 const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+  return jwt.sign({ id }, config.JWT_SECRET, {
+    expiresIn: config.JWT_EXPIRES_IN,
   });
 };
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
-    expires: new Date(Date.now() + Number(process.env.JWT_COOKIE_EXPIRES_IN)),
+    expires: new Date(Date.now() + Number(config.JWT_COOKIE_EXPIRES_IN)),
     httpOnly: true,
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  if (config.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -85,7 +86,7 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
   
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const decoded = await promisify(jwt.verify)(token, config.JWT_SECRET);
 
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
