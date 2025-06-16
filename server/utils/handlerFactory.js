@@ -25,7 +25,7 @@ export const getOne = ({
 
     if (!doc) {
       return next(
-        new AppError('No document found with that ID', StatusCodes.NOT_FOUND)
+        new AppError(`No ${dataKey} found`, StatusCodes.NOT_FOUND)
       );
     }
 

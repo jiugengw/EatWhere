@@ -8,7 +8,7 @@ export const createGroup = catchAsync(async (req, res, next) => {
   const user = req.user;
 
   const newGroup = await Group.create({ name, users: [user._id] });
-  
+
   res.status(StatusCodes.CREATED).json({
     status: 'success',
     data: {
@@ -20,5 +20,7 @@ export const createGroup = catchAsync(async (req, res, next) => {
 export const getGroupByCode = factory.getOne({
   Model: Group,
   populateOptions: { path: 'users', select: 'username firstName lastName' },
+  findByFn: (req) => ({ code: req.params.code }),
   dataKey: 'group',
 });
+
