@@ -24,9 +24,7 @@ export const getOne = ({
     const doc = await query;
 
     if (!doc) {
-      return next(
-        new AppError(`No ${dataKey} found`, StatusCodes.NOT_FOUND)
-      );
+      return next(new AppError(`No ${Model.modelName} found`, StatusCodes.NOT_FOUND));
     }
 
     const output = doc.toJSON({ virtuals: !disableVirtuals });
@@ -40,4 +38,18 @@ export const getOne = ({
   });
 };
 
+export const deleteOne = (Model) => {
+  return catchAsync(async (req, res, next) => {
+    const doc = await Model.findByIdAndUpdate(
+      req.params.id,
+      { active: false },
+      { new: true, runValidators: true }
+    );
 
+    if (!doc) {
+      return next(new AppError(`No ${Model.modelName} found`, StatusCodes.NOT_FOUND));
+    }
+
+    res.status(StatusCodes.NO_CONTENT).end();
+  });
+};

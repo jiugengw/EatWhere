@@ -1,10 +1,12 @@
 import User from './userModel.js';
 import History from './../history/historyModel.js';
 import * as factory from './../utils/handlerFactory.js';
+import * as userService from './userService.js';
 import catchAsync from '../utils/catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
 import AppError from '../utils/AppError.js';
 import filterObj from '../utils/filterObj.js';
+
 
 export const getUser = factory.getOne({ Model: User });
 
@@ -41,11 +43,8 @@ export const getMe = (req, res, next) => {
   next();
 };
 
-export const deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, { active: false });
+export const deleteMe = factory.deleteOne(User);
 
-  res.status(StatusCodes.NO_CONTENT).end();
-});
 
 export const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
