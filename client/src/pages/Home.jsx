@@ -1,5 +1,8 @@
-import Navbar from "../components/navbar";
 import { useState, useEffect } from "react";
+import {jwtDecode} from 'jwt-decode';
+
+import Navbar from "../components/navbar";
+import diningImg1 from "../images/dining_img1.jpg";
 import {
   Container,
   Text,
@@ -16,25 +19,22 @@ import { IconUser } from "@tabler/icons-react";
 import Footer from "../components/footer";
 
 function Home() {
-  const [name, setName] = useState("blank");
+  const [name, setName] = useState("nothing");
 
   useEffect(() => {
-    const storedName = localStorage.getItem("name");
-    if (storedName) {
-      setName(storedName);
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setName(decoded.id);
+      console.log(decoded.id);
     }
   }, []);
 
   return (
     <>
-      <h1>
-        Your name better be {name} you dumb bitch that took me forever to
-        understand what the fuck is going on with this stupid shit that makes me
-        wanna kms right now cuz of how cancerous this heap is for my brain and
-        my wellbeing
-      </h1>
+    <h1>{name}</h1>
       <Navbar />
-      <Container>
+      <Container >
         <br />
         <Card
           shadow="sm"
@@ -61,8 +61,8 @@ function Home() {
                 Explore
               </Button>
               <Image
-                src="https://www.shutterstock.com/image-vector/set-menu-catering-restaurant-spoon-600nw-2436966699.jpg"
-                alt="Example image"
+                src={diningImg1}
+                alt="diningImg"
                 radius="md"
                 style={{ width: 950, height: 400, objectFit: "cover" }}
               />
@@ -113,8 +113,8 @@ function Home() {
             </Stack>
 
             <Image
-              src="https://www.shutterstock.com/image-vector/set-menu-catering-restaurant-spoon-600nw-2436966699.jpg"
-              alt="Example image"
+              src={diningImg1}
+              alt="diningImg"
               radius="md"
               style={{ width: 475, height: "auto", objectFit: "cover" }}
             />
@@ -128,8 +128,8 @@ function Home() {
         <Group position="apart" align="flex-start" spacing="xl" grow>
           <Stack align="left" spacing="xs">
             <Image
-              src="https://www.shutterstock.com/image-vector/set-menu-catering-restaurant-spoon-600nw-2436966699.jpg"
-              alt="Image 1"
+              src={diningImg1}
+              alt="diningimg"
               radius="md"
               fit="cover"
               height={200}
@@ -140,8 +140,8 @@ function Home() {
           </Stack>
           <Stack align="left" spacing="xs">
             <Image
-              src="https://www.shutterstock.com/image-vector/set-menu-catering-restaurant-spoon-600nw-2436966699.jpg"
-              alt="Image 2"
+              src={diningImg1}
+              alt="diningimg"
               radius="md"
               fit="cover"
               height={200}

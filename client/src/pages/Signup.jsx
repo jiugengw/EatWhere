@@ -7,6 +7,7 @@ function SignupPage() {
     <>
       <Navbar />
       <Container size={420} my={40}>
+       
         <Title style={{ textAlign: 'center', marginBottom: '1rem' }}>
           Create an account
         </Title>

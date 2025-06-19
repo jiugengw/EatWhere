@@ -10,9 +10,10 @@ import {
   Anchor,
   Checkbox,
 } from "@mantine/core";
+import axios from "axios";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -24,23 +25,13 @@ function Login() {
   const handlelogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usernameOrEmail, password }),
+      const response = await axios.post("http://Localhost:8080/api/users/login", {
+        usernameOrEmail,
+        password,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        console.log(data);
-        const firstname = data.data.user.firstName;
-        localStorage.setItem("name", firstname);
-
-        navigate("/home");
-      } else {
-        setErrorMsg(data.message || "Invalid login");
-      }
+      localStorage.setItem('token',response.data.token);
+      navigate("/home");
     } catch (err) {
       console.log(err);
       setErrorMsg("Something went wrong. Please try again.");
