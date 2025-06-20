@@ -3,6 +3,7 @@ import catchAsync from '../utils/catchAsync.js';
 import * as factory from '../utils/handlerFactory.js';
 import filterObj from '../utils/filterObj.js';
 import { StatusCodes } from 'http-status-codes';
+import * as groupService from './groupService.js';
 
 export const createGroup = factory.createOne(Group);
 
@@ -45,6 +46,19 @@ export const getGroupByCode = factory.getOne(Group, {
   findByFn: (req) => ({ code: req.params.code }),
 });
 
-export const joinGroup = {};
+export const joinGroup = catchAsync(async (req, res, next) => {
+  const result = await groupService.joinGroupById(req.params.id, req.user.id);
 
-export const leaveGroup = {};
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    message: result.message,
+    data: {
+      groupId: result.groupId,
+      userId: result.userId,
+    },
+  });
+});
+
+export const leaveGroup = catchAsync(async(req, res, next) => {
+  
+});

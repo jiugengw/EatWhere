@@ -14,7 +14,7 @@ router
   .patch(groupController.updateGroup)
   .delete(groupController.deleteGroup);
 
-// router.patch('/:id/join', groupController.joinGroup);
+router.patch('/:id/join', groupController.joinGroup);
 // router.patch('/:id/leave', groupController.leaveGroup);
 
 router.get('/:id/history', groupController.getGroupHistory);
