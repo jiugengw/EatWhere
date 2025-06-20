@@ -1,28 +1,45 @@
 import mongoose from 'mongoose';
-import { nanoid } from 'nanoid';
 import User from './../users/userModel.js';
+import * as groupService from './groupService.js';
 
 const groupSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, 'Name is required'],
     },
     code: {
       type: String,
-      unique: true,
+      unique: [true, 'Code must be unique'],
     },
-    users: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
+    users: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          default: [],
+        },
+      ],
+      default: [],
+    },
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
   },
   {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
     timestamps: true,
   }
 );
+
+groupSchema.virtual('history', {
+  ref: 'History',
+  foreignField: 'group',
+  localField: '_id',
+});
 
 groupSchema.pre('save', async function (next) {
   try {
@@ -30,7 +47,7 @@ groupSchema.pre('save', async function (next) {
       let codeAvail;
       let code;
       while (!codeAvail) {
-        code = nanoid(6);
+        code = groupService.generateCode(8);
         const group = await mongoose.models.Group.findOne({ code });
         if (!group) codeAvail = true;
       }
@@ -48,10 +65,16 @@ groupSchema.post('save', async function () {
   const group = this;
 
   if (!userAdded) return;
-  
+
   await User.findByIdAndUpdate(userAdded, {
     $addToSet: { groups: group.id },
   });
 });
+
+groupSchema.pre(/^find/, function (next) {
+  this.find({ active: true });
+  next();
+});
+
 
 export default mongoose.model('Group', groupSchema);

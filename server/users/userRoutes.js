@@ -9,23 +9,28 @@ router.post('/login', authController.login);
 
 router.use(authController.protect);
 
-router.use('/me', userController.getMe);
+router
+  .route('/me')
+  .get(userController.getMe, userController.getUser)
+  .patch(userController.getMe, userController.updateUser)
+  .delete(userController.getMe, userController.deleteUser);
 
-router.get('/me',userController.getMe, userController.getUser);
-router.patch('/me/updateMyPassword', authController.updatePassword);
-router.patch('/me/updateMe', userController.updateMe);
-router.patch('/me/deleteMe', userController.deleteMe);
+router.patch(
+  '/me/password',
+  userController.getMe,
+  authController.updatePassword
+);
 
 router
   .route('/me/history')
-  .get(userController.getUserHistory);
+  .get(userController.getMe, userController.getUserHistory);
 router
   .route('/me/groups')
-  .get(userController.getUserGroups);
+  .get(userController.getMe, userController.getUserGroups);
 router
   .route('/me/preferences')
-  .get(userController.getUserPreferences)
-  .patch(userController.updateMyPreferences);
+  .get(userController.getMe, userController.getUserPreferences)
+  .patch(userController.getMe, userController.updateMyPreferences);
 
 router.route('/username/:username').get(userController.getUserByUsername);
 

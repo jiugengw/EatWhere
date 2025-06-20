@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: [true, 'Userame is required.'],
-      unique: true,
+      unique: [true, 'Username already exists'],
       trim: true,
       validate: {
         validator: (value) => !validator.isEmpty(value.trim()),
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Email is required.'],
-      unique: true,
+      unique: [true, 'Email is already used'],
       lowercase: true,
       validate: [validator.isEmail, 'Email is invalid.'],
     },
@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: Date,
     firstName: {
       type: String,
+      required: [true, 'First name is required.'],
       trim: true,
       validate: {
         validator: (value) => !validator.isEmpty(value.trim()),
@@ -51,6 +52,7 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
+      required: [true, 'Last name is required.'],
       trim: true,
       validate: {
         validator: (value) => !validator.isEmpty(value.trim()),
@@ -76,16 +78,14 @@ const userSchema = new mongoose.Schema(
           ['Fast Food', 0],
         ]),
     },
-    groups: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Group',
-      },
-    ],
-    role: {
-      type: String,
-      enum: ['user', 'admin'],
-      default: 'user',
+    groups: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Group',
+        },
+      ],
+      default: [],
     },
     active: {
       type: Boolean,
@@ -94,6 +94,8 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
     timestamps: true,
   }
 );
@@ -107,9 +109,6 @@ userSchema.virtual('history', {
   foreignField: 'user',
   localField: '_id',
 });
-
-userSchema.set('toObject', { virtuals: true });
-userSchema.set('toJSON', { virtuals: true });
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

@@ -1,26 +1,50 @@
 import Group from './groupModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from '../utils/handlerFactory.js';
+import filterObj from '../utils/filterObj.js';
 import { StatusCodes } from 'http-status-codes';
 
-export const createGroup = catchAsync(async (req, res, next) => {
-  const { name } = req.body;
-  const user = req.user;
+export const createGroup = factory.createOne(Group);
 
-  const newGroup = await Group.create({ name, users: [user._id] });
-
-  res.status(StatusCodes.CREATED).json({
-    status: 'success',
-    data: {
-      group: newGroup,
-    },
-  });
+export const getGroup = factory.getOne(Group, {
+  populateOptions: {
+    path: 'users',
+    select: 'username firstName lastName email preferences',
+  },
 });
 
-export const getGroupByCode = factory.getOne({
-  Model: Group,
+export const updateGroup = factory.updateOne(Group, {
+  filteredBodyFn: (req) => filterObj(req.body, 'name'),
+});
+
+export const deleteGroup = factory.deleteOne(Group, {
+  postDeleteFn: async (group) => {
+    await User.updateMany(
+      { groups: group._id },
+      { $pull: { groups: group._id } }
+    );
+  },
+});
+
+export const getGroupHistory = factory.getOne(Group, {
+  populateOptions: 'history',
+  selectFields: 'history',
+});
+
+export const getGroupUsers = factory.getOne(Group, {
+  populateOptions: 'users',
+  selectFields: 'users',
+});
+
+export const getGroupPreferences = factory.getOne(Group, {
+  selectFields: 'preferences',
+});
+
+export const getGroupByCode = factory.getOne(Group, {
   populateOptions: { path: 'users', select: 'username firstName lastName' },
   findByFn: (req) => ({ code: req.params.code }),
-  dataKey: 'group',
 });
 
+export const joinGroup = {};
+
+export const leaveGroup = {};
