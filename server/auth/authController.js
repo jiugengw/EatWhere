@@ -2,10 +2,9 @@ import catchAsync from './../utils/catchAsync.js';
 import AppError from './../utils/AppError.js';
 import User from './../users/userModel.js';
 import { StatusCodes } from 'http-status-codes';
-import validator from 'validator';
-import { promisify } from 'util';
 import jwt from 'jsonwebtoken';
 import config from './../utils/config.js';
+import * as authService from './authService.js';
 
 const signToken = (id) => {
   return jwt.sign({ id }, config.JWT_SECRET, {
@@ -29,27 +28,18 @@ const createSendToken = (user, statusCode, res) => {
     status: 'success',
     token,
     data: {
-      user,
+      User: user,
     },
   });
 };
 
 export const signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    username: req.body.username,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  });
-
+  const newUser = await authService.signupUser(req.body);
   createSendToken(newUser, StatusCodes.CREATED, res);
 });
 
 export const login = catchAsync(async (req, res, next) => {
   const { usernameOrEmail, password } = req.body;
-
   if (!usernameOrEmail || !password) {
     return next(
       new AppError(
@@ -58,69 +48,32 @@ export const login = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const queryField = validator.isEmail(usernameOrEmail) ? 'email' : 'username';
-  const user = await User.findOne({ [queryField]: usernameOrEmail }).select('+password');
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect username/email or password!'));
-  }
-
+  const user = await authService.loginUser(usernameOrEmail, password);
   createSendToken(user, StatusCodes.OK, res);
 });
 
 export const protect = catchAsync(async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-  }
- 
-  if (!token) {
-    return next(
-      new AppError(
-        'You are not logged in! Please log in to get access.',
-        StatusCodes.UNAUTHORIZED
-      )
-    );
-  }
-  
-  const decoded = await promisify(jwt.verify)(token, config.JWT_SECRET);
+  const token = req.headers.authorization?.startsWith('Bearer')
+    ? req.headers.authorization.split(' ')[1]
+    : null;
 
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
+  if (!token)
     return next(
-      new AppError(
-        'The user belonging to this token no longer exists.',
-        StatusCodes.UNAUTHORIZED
-      )
+      new AppError('You are not logged in!', StatusCodes.UNAUTHORIZED)
     );
-  }
 
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password!'),
-      StatusCodes.UNAUTHORIZED
-    );
-  }
-
-  req.user = currentUser;
+  const user = await authService.verifyAndGetUser(token);
+  req.user = user;
   next();
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id).select('+password');
-
-  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(
-      new AppError('Your current password is wrong!', StatusCodes.UNAUTHORIZED)
-    );
-  }
-
-  user.password = req.body.passwordNew;
-  user.passwordConfirm = req.body.passwordConfirm;
-  await user.save();
-
+  const user = await authService.changeUserPassword(
+    req.user.id,
+    req.body.passwordCurrent,
+    req.body.passwordNew,
+    req.body.passwordConfirm
+  );
   createSendToken(user, StatusCodes.OK, res);
 });
