@@ -1,8 +1,8 @@
 import { Container, Title, Text, Stack, Group, Button, TextInput, Paper, Avatar, Divider, Pagination, Table } from '@mantine/core';
 import { IconUser, IconX } from '@tabler/icons-react';
 import { useState } from 'react';
-import Navbar from '../components/navbar';
-import Footer from '../components/footer';
+import Navbar from '../shared/components/navbar';
+import Footer from '../shared/components/footer';
 
 function EditGroup() {
   const [members, setMembers] = useState([

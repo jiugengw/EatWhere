@@ -4,8 +4,10 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
 import History from "./pages/History";
+import BurgerPage from "./pages/burger";
+import Loading from "./shared/UIelements/loading";
+
 import ViewGroupsPage from "./pages/ViewGroups";
-import TestPage from "./pages/test";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -18,7 +20,8 @@ function App() {
         <Route path="/explore" element={<Explore />} />
         <Route path="/history" element={<History />} />
         <Route path="/groups" element={<ViewGroupsPage />} />
-        <Route path="/test" element={<TestPage />} />
+        <Route path="/burger" element={<BurgerPage />} />
+        <Route path="/load" element={<Loading/>} />
       </Routes>
     </Router>
   );

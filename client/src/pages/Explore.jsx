@@ -1,7 +1,7 @@
 import { Button, Container, Stack, Title, Text, Card, Group } from '@mantine/core';
 import { useState } from 'react';
-import Navbar from '../components/navbar';
-import Footer from '../components/footer';
+import Navbar from '../shared/components/navbar';
+import Footer from '../shared/components/footer';
 
 // Example cuisines and locations
 const cuisines = ['Japanese', 'Italian', 'Mexican', 'Thai', 'Indian'];

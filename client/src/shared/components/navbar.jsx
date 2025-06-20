@@ -12,7 +12,7 @@ export default function Navbar() {
             <Title order={3}>Where2Eat</Title>
             <Button onClick={() => navigate("/home")} variant="subtle" color="black">Home</Button>
             <Button onClick={() => navigate("/explore")} variant="subtle" color="black">Explore</Button>
-            <Button onClick={() => navigate("/login")} variant="subtle" color="black">Contact</Button>
+            <Button onClick={() => navigate("/login")} variant="subtle" color="black">Log In</Button>
             <Button onClick={() => navigate("/groups")} variant="subtle" color="black">Group</Button>
             <Button onClick={() => navigate("/history")} variant="subtle" color="black">History</Button>
           

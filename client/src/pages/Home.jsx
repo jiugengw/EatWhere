@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import {jwtDecode} from 'jwt-decode';
 
-import Navbar from "../components/navbar";
-import diningImg1 from "../images/dining_img1.jpg";
+import Navbar from '../shared/components/navbar';
+import Footer from '../shared/components/footer';
+import diningImg1 from "../../assets/images/dining_img1.jpg";
 import {
   Container,
   Text,
@@ -16,7 +17,6 @@ import {
   SimpleGrid,
 } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
-import Footer from "../components/footer";
 
 function Home() {
   const [name, setName] = useState("nothing");

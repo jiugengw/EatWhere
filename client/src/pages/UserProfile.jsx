@@ -1,6 +1,6 @@
 import { Avatar, Button, Container, Grid, Paper, Stack, Text, Textarea, TextInput, Title, Group, PasswordInput, Tabs } from '@mantine/core';
-import Navbar from '../components/navbar';
-import Footer from '../components/footer';
+import Navbar from '../shared/components/navbar';
+import Footer from '../shared/components/footer';
 
 function ProfilePage() {
   return (

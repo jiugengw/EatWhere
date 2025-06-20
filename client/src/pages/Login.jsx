@@ -11,8 +11,9 @@ import {
   Checkbox,
 } from "@mantine/core";
 import axios from "axios";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
+import Navbar from "../shared/components/navbar";
+import Footer from "../shared/components/footer";
+import Loading from "../shared/UIelements/loading";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -20,12 +21,15 @@ function Login() {
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setpassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading,setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handlelogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      const response = await axios.post("http://Localhost:8080/api/users/login", {
+
+      const response = await axios.post("http://localhost:8080/api/users/login", {
         usernameOrEmail,
         password,
       });
@@ -35,12 +39,15 @@ function Login() {
     } catch (err) {
       console.log(err);
       setErrorMsg("Something went wrong. Please try again.");
+    }finally{
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <Navbar />
+      {isLoading && <Loading/>}
       <Container size={420} my={40}>
         <Title style={{ textAlign: "center", marginBottom: "1rem" }}>
           Welcome back
@@ -52,7 +59,7 @@ function Login() {
           style={{ textAlign: "center", marginBottom: "1.5rem" }}
         >
           Don't have an account?{" "}
-          <Anchor size="sm" href="#">
+          <Anchor size="sm" href="/">
             Sign up
           </Anchor>
         </Text>

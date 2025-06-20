@@ -1,8 +1,8 @@
 import { Avatar, Button, Container, Group, Paper, Stack, Text, Title, Divider, Modal, TextInput, MultiSelect} from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
 import { useState } from 'react';
-import Navbar from '../components/navbar';
-import Footer from '../components/footer';
+import Navbar from '../shared/components/navbar';
+import Footer from '../shared/components/footer';
 
 function ViewGroupsPage() {
   const [createGroupOpened, setCreateGroupOpened] = useState(false);
