@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import config from './utils/config.js';
 import app from './app.js';
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
+import config from './utils/config.js';
+
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION!');
@@ -9,37 +11,35 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-dotenv.config({ path: './.env' });
 
-const db = config.DATABASE.replace(
-  '<db_password>',
-  config.DATABASE_PASSWORD
-);
-console.log(1)
-console.log(mongoose.modelNames());
-console.log(1);
 
-const connectToDB = async () => {
+const db = config.DATABASE.replace('<db_password>', config.DATABASE_PASSWORD);
+// console.log(1);
+// console.log(mongoose.modelNames());
+// console.log(1);
+
+const startServer = async () => {
   try {
     await mongoose.connect(db);
 
     console.log('MongoDB connected');
+
+    const port = config.PORT || 8080;
+    const server = app.listen(port, () => {
+      console.log(`Server started on port ${port}`);
+    });
+
+    process.on('unhandledRejection', (err) => {
+      console.log('UNHANDLED REJECTION!');
+      console.log(err.name, err.message);
+      server.close(() => {
+        process.exit(1);
+      });
+    });
   } catch (err) {
     console.error('MongoDB not connected', err);
+    process.exit(1);
   }
 };
 
-connectToDB();
-
-const port = process.env.PORT || 8080;
-const server = app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.log('UNHANDLED REJECTION!');
-  console.log(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
-});
+startServer();
