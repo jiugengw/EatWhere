@@ -60,17 +60,6 @@ groupSchema.pre('save', async function (next) {
   }
 });
 
-groupSchema.post('save', async function () {
-  const userAdded = this.users.at(-1);
-  const group = this;
-
-  if (!userAdded) return;
-
-  await User.findByIdAndUpdate(userAdded, {
-    $addToSet: { groups: group.id },
-  });
-});
-
 groupSchema.pre(/^find/, function (next) {
   this.find({ active: true });
   next();

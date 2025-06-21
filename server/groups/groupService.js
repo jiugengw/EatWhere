@@ -18,32 +18,62 @@ export const generateCode = (length = 8) => {
   return code;
 };
 
-export const joinGroupById = async (groupId, userId) => {
-  console.log(groupId, userId);
+export const isUserInGroup = async (groupId, userId) => {
   const group = await Group.findById(groupId);
   if (!group) {
     throw new AppError('Group not found or inactive.', StatusCodes.NOT_FOUND);
   }
 
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new AppError('User not found or inactive', StatusCodes.NOT_FOUND);
+  return group.users.some((id) => id.equals(userId));
+};
+
+export const joinGroupById = async (groupId, userId) => {
+  const alreadyInGroup = await isUserInGroup(groupId, userId);
+
+  if (!alreadyInGroup) {
+    const group = await Group.findById(groupId);
+    const user = await User.findById(userId);
+
+    if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+    if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
+
+    group.users.push(userId);
+    user.groups.push(groupId);
+
+    await group.save();
+    await user.save();
   }
 
-  const userAlreadyInGrp = group.users.some((id) => id.equals(userId));
-  const grpAlreadyInUser = user.groups.some((id) => id.equals(groupId));
+  return {
+    message: alreadyInGroup
+      ? 'User is already a member of this group'
+      : 'User successfully joined the group',
+    groupId,
+    userId,
+  };
+};
 
-  if (!userAlreadyInGrp) group.users.push(userId);
-  if (!grpAlreadyInUser) user.groups.push(groupId);
+export const leaveGroupById = async (groupId, userId) => {
+  const alreadyInGroup = await isUserInGroup(groupId, userId);
 
-  await group.save();
-  await user.save();
+  if (alreadyInGroup) {
+    const group = await Group.findById(groupId);
+    const user = await User.findById(userId);
+
+    if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+    if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
+
+    group.users.pull(userId);
+    user.groups.pull(groupId);
+
+    await group.save();
+    await user.save();
+  }
 
   return {
-    message:
-      userAlreadyInGrp && grpAlreadyInUser
-        ? 'User is already a member of this group'
-        : 'User successfully joined the group',
+    message: alreadyInGroup
+      ? 'You have left the group'
+      : 'You are not a member of this group',
     groupId,
     userId,
   };

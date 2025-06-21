@@ -15,10 +15,10 @@ router
   .delete(groupController.deleteGroup);
 
 router.patch('/:id/join', groupController.joinGroup);
-// router.patch('/:id/leave', groupController.leaveGroup);
+router.patch('/:id/leave', groupController.leaveGroup);
 
 router.get('/:id/history', groupController.getGroupHistory);
-router.get('/:id/preferences', groupController.getGroupPreferences);
+router.get('/:id/isMember', groupController.checkUserInGroup);
 router.get('/:id/users', groupController.getGroupUsers);
 
 router.route('/code/:code').get(groupController.getGroupByCode);

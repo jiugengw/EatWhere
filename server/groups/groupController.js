@@ -37,28 +37,44 @@ export const getGroupUsers = factory.getOne(Group, {
   selectFields: 'users',
 });
 
-export const getGroupPreferences = factory.getOne(Group, {
-  selectFields: 'preferences',
-});
-
 export const getGroupByCode = factory.getOne(Group, {
   populateOptions: { path: 'users', select: 'username firstName lastName' },
   findByFn: (req) => ({ code: req.params.code }),
 });
 
-export const joinGroup = catchAsync(async (req, res, next) => {
-  const result = await groupService.joinGroupById(req.params.id, req.user.id);
+export const checkUserInGroup = catchAsync(async (req, res, next) => {
+  const isMember = await groupService.isUserInGroup(req.params.id, req.user.id);
 
   res.status(StatusCodes.OK).json({
     status: 'success',
-    message: result.message,
     data: {
-      groupId: result.groupId,
-      userId: result.userId,
+      isMember,
     },
   });
 });
 
-export const leaveGroup = catchAsync(async(req, res, next) => {
-  
+export const joinGroup = catchAsync(async (req, res, next) => {
+  const { message, groupId, userId } = await groupService.joinGroupById(
+    req.params.id,
+    req.user.id
+  );
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    message,
+    data: { groupId, userId },
+  });
+});
+
+export const leaveGroup = catchAsync(async (req, res, next) => {
+  const { message, groupId, userId } = await groupService.leaveGroupById(
+    req.params.id,
+    req.user.id
+  );
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    message,
+    data: { groupId, userId },
+  });
 });
