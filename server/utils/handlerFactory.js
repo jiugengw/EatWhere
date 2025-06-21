@@ -9,7 +9,8 @@ export const getOne = (Model, options) => {
     populateOptions,
     selectFields,
     findByFn,
-    enableVirtuals = false,
+    transformFn,
+    enableVirtuals = true,
   } = options || {};
   return catchAsync(async (req, res, next) => {
     let query;
@@ -19,6 +20,7 @@ export const getOne = (Model, options) => {
     } else {
       query = Model.findById(req.params.id);
     }
+   
     if (populateOptions) query = query.populate(populateOptions);
     if (selectFields) query = query.select(selectFields);
     const doc = await query;
@@ -28,8 +30,10 @@ export const getOne = (Model, options) => {
         new AppError(`No ${Model.modelName} found`, StatusCodes.NOT_FOUND)
       );
     }
+   
+    let output = doc.toJSON({ virtuals: enableVirtuals });
 
-    const output = doc.toJSON({ virtuals: enableVirtuals });
+    if (transformFn) output = transformFn(output);
 
     res.status(StatusCodes.OK).json({
       status: 'success',

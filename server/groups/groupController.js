@@ -10,7 +10,7 @@ export const createGroup = factory.createOne(Group);
 export const getGroup = factory.getOne(Group, {
   populateOptions: {
     path: 'users',
-    select: 'username firstName lastName email preferences',
+    select: 'username firstName lastName',
   },
 });
 
@@ -38,8 +38,16 @@ export const getGroupUsers = factory.getOne(Group, {
 });
 
 export const getGroupByCode = factory.getOne(Group, {
-  populateOptions: { path: 'users', select: 'username firstName lastName' },
+  populateOptions: {
+    path: 'users',
+    select: '_id',
+  },
   findByFn: (req) => ({ code: req.params.code }),
+  transformFn: (group) => ({
+    ...group,
+    userCount: group.users?.length || 0,
+    users: undefined,
+  }),
 });
 
 export const checkUserInGroup = catchAsync(async (req, res, next) => {

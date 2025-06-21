@@ -69,7 +69,7 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
-  const user = await authService.changeUserPassword(
+  const user = await authService.updateUserPassword(
     req.user.id,
     req.body.passwordCurrent,
     req.body.passwordNew,

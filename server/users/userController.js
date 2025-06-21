@@ -16,15 +16,18 @@ export const getUser = factory.getOne(User);
 export const getUserHistory = factory.getOne(User, {
   populateOptions: 'history',
   selectFields: 'history',
+  enableVirtuals: false,
 });
 
 export const getUserGroups = factory.getOne(User, {
   populateOptions: 'groups',
   selectFields: 'groups',
+  enableVirtuals: false,
 });
 
 export const getUserPreferences = factory.getOne(User, {
   selectFields: 'preferences',
+  enableVirtuals: false,
 });
 
 export const getUserByUsername = factory.getOne(User, {
@@ -35,10 +38,7 @@ export const getUserByUsername = factory.getOne(User, {
 
 export const deleteUser = factory.deleteOne(User, {
   postDeleteFn: async (user) => {
-    await Group.updateMany(
-      { users: user._id },
-      { $pull: { users: user._id } }
-    );
+    await Group.updateMany({ users: user._id }, { $pull: { users: user._id } });
   },
 });
 
@@ -58,7 +58,10 @@ export const updateMyPreferences = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).json({
     status: 'success',
     data: {
-      Preferences: updatedUser.preferences,
+      User: {
+        _id: updatedUser._id,
+        preferences: updatedUser.preferences,
+      },
     },
   });
 });

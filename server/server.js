@@ -4,19 +4,13 @@ import dotenv from 'dotenv';
 dotenv.config({ path: './.env' });
 import config from './utils/config.js';
 
-
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION!');
   console.log(err.name, err.message);
   process.exit(1);
 });
 
-
-
 const db = config.DATABASE.replace('<db_password>', config.DATABASE_PASSWORD);
-// console.log(1);
-// console.log(mongoose.modelNames());
-// console.log(1);
 
 const startServer = async () => {
   try {
