@@ -1,7 +1,6 @@
 import { Avatar, Button, Container, Group, Paper, Stack, Text, Title, Divider, Modal, TextInput, MultiSelect} from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
 import { useState } from 'react';
-import Navbar from '../shared/components/navbar';
 import Footer from '../shared/components/footer';
 
 function ViewGroupsPage() {
@@ -48,7 +47,6 @@ function ViewGroupsPage() {
 
   return (
     <>
-      <Navbar />
       <Container size="md" my="xl">
         <Group position="apart" style={{ marginBottom: '1rem' }}>
           <Title order={2}>My Groups</Title>

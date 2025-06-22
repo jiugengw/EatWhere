@@ -10,7 +10,6 @@ import {
   Checkbox,
   Anchor,
 } from "@mantine/core";
-import Navbar from "../shared/components/navbar";
 import Footer from "../shared/components/footer";
 import Loading from "../shared/UIelements/loading";
 import axios from "axios";
@@ -54,7 +53,6 @@ function SignupPage() {
 
   return (
     <>
-      <Navbar />
       {isLoading && <Loading />}
       <Container size={420} my={40}>
         <Title style={{ textAlign: "center", marginBottom: "1rem" }}>

@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import {jwtDecode} from 'jwt-decode';
-
-import Navbar from '../shared/components/navbar';
 import Footer from '../shared/components/footer';
 import diningImg1 from "../../assets/images/dining_img1.jpg";
 import {
@@ -33,7 +31,6 @@ function Home() {
   return (
     <>
     <h1>{name}</h1>
-      <Navbar />
       <Container >
         <br />
         <Card

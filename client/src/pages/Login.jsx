@@ -11,7 +11,6 @@ import {
   Checkbox,
 } from "@mantine/core";
 import axios from "axios";
-import Navbar from "../shared/components/navbar";
 import Footer from "../shared/components/footer";
 import Loading from "../shared/UIelements/loading";
 import { useState } from "react";
@@ -46,7 +45,6 @@ function Login() {
 
   return (
     <>
-      <Navbar />
       {isLoading && <Loading/>}
       <Container size={420} my={40}>
         <Title style={{ textAlign: "center", marginBottom: "1rem" }}>

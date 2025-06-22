@@ -6,24 +6,26 @@ import Explore from "./pages/Explore";
 import History from "./pages/History";
 import BurgerPage from "./pages/burger";
 import Loading from "./shared/UIelements/loading";
+import Navbar from "./shared/components/navbar";
 
 import ViewGroupsPage from "./pages/ViewGroups";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<SignupPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/explore" element={<Explore />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/groups" element={<ViewGroupsPage />} />
-        <Route path="/burger" element={<BurgerPage />} />
-        <Route path="/load" element={<Loading/>} />
-      </Routes>
-    </Router>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<SignupPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/groups" element={<ViewGroupsPage />} />
+          <Route path="/burger" element={<BurgerPage />} />
+          <Route path="/load" element={<Loading />} />
+        </Routes>
+      </Router>
   );
 }
 

@@ -7,7 +7,6 @@ import {
   Button,
 } from '@mantine/core';
 import { useState } from 'react';
-import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
 const cuisines = [
@@ -40,7 +39,6 @@ export default function PreferencesPage() {
 
   return (
     <>
-      <Navbar />
       <Container size="md" my="xl">
         <Title align="center" mb="lg">
           Cuisine Preferences

@@ -52,7 +52,6 @@ function EditGroup() {
   
   return (
     <>
-      <Navbar />
       <Container size="md" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
         <Title order={2} style={{ marginBottom: '1rem', textAlign: 'center' }}>
           My Group

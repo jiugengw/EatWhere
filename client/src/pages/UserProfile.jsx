@@ -1,11 +1,9 @@
 import { Avatar, Button, Container, Grid, Paper, Stack, Text, Textarea, TextInput, Title, Group, PasswordInput, Tabs } from '@mantine/core';
-import Navbar from '../shared/components/navbar';
 import Footer from '../shared/components/footer';
 
 function ProfilePage() {
   return (
     <>
-      <Navbar />
       <Container size="lg" my="xl">
         <Title order={2} style={{ textAlign: 'center', marginBottom: '2rem' }}>
           User Profile

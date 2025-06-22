@@ -24,7 +24,6 @@ function Explore() {
 
   return (
     <>
-      <Navbar />
       <Container style={{ marginTop: '2rem', marginBottom: '2rem' }}>
         <Title order={2} style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           Explore Dining Options

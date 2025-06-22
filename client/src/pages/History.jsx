@@ -1,6 +1,5 @@
 import { Container, Title, Table, Pagination, Paper,} from '@mantine/core';
 import { useState } from 'react';
-import Navbar from '../shared/components/navbar';
 import Footer from '../shared/components/footer';
 
 function History() {
@@ -34,7 +33,6 @@ function History() {
 
   return (
     <>
-      <Navbar />
       <Container size="md" my="xl">
         <Title align="center" mb="lg">
           Dining History
