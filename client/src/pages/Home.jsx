@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {jwtDecode} from 'jwt-decode';
 import Footer from '../shared/components/footer';
 import diningImg1 from "../../assets/images/dining_img1.jpg";
+// import TokenChecker from "../users/components/tokencheck";
 import {
   Container,
   Text,
@@ -24,13 +25,12 @@ function Home() {
     if (token) {
       const decoded = jwtDecode(token);
       setName(decoded.id);
-      console.log(decoded.id);
     }
   }, []);
 
   return (
     <>
-    <h1>{name}</h1>
+    <h1>Hello ,{name}!</h1>
       <Container >
         <br />
         <Card

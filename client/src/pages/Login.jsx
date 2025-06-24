@@ -1,3 +1,4 @@
+import { useForm } from "react-hook-form";
 import {
   TextInput,
   PasswordInput,
@@ -11,41 +12,60 @@ import {
   Checkbox,
 } from "@mantine/core";
 import axios from "axios";
-import Footer from "../shared/components/footer";
-import Loading from "../shared/UIelements/loading";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
-  const [usernameOrEmail, setUsernameOrEmail] = useState("");
-  const [password, setpassword] = useState("");
+import { loginValidation } from "../shared/validationschemas";
+import { AuthContext } from "../shared/context/auth-context";
+import Footer from "../shared/components/footer";
+import Loading from "../shared/UIelements/loading";
+
+
+
+export default function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
+
   const [errorMsg, setErrorMsg] = useState("");
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
 
-  const handlelogin = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setIsLoading(true);
+    setErrorMsg("");
     try {
+      const response = await axios.post(
+        "http://localhost:8080/api/users/login",
+        {
+          usernameOrEmail: data.usernameOrEmail,
+          password: data.password,
+        }
+      );
 
-      const response = await axios.post("http://localhost:8080/api/users/login", {
-        usernameOrEmail,
-        password,
-      });
+      const userId = response.data.data.User._id;
+      const name = response.data.data.User.name;
+      console.log(name);
+      const token = response.data.token;
 
-      localStorage.setItem('token',response.data.token);
+      localStorage.setItem("token", token);
+      auth.login(userId,name);
+
       navigate("/home");
     } catch (err) {
-      console.log(err);
-      setErrorMsg("Something went wrong. Please try again.");
-    }finally{
+      console.error(err);
+      setErrorMsg("Invalid username or password.");
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <>
-      {isLoading && <Loading/>}
+      {isLoading && <Loading />}
       <Container size={420} my={40}>
         <Title style={{ textAlign: "center", marginBottom: "1rem" }}>
           Welcome back
@@ -63,40 +83,43 @@ function Login() {
         </Text>
 
         <Paper withBorder shadow="md" p="lg" radius="md">
-          <form onSubmit={handlelogin}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack>
               <TextInput
-                label="Username"
-                placeholder="Your username"
-                value={usernameOrEmail}
-                onChange={(e) => {
-                  setUsernameOrEmail(e.target.value);
-                }}
-                required
+                label="Username or Email"
+                placeholder="Your username or email"
+                {...register(
+                  "usernameOrEmail",
+                  loginValidation.usernameOrEmail
+                )}
+                error={errors.usernameOrEmail?.message}
               />
+
               <PasswordInput
                 label="Password"
                 placeholder="Your password"
-                value={password}
-                onChange={(e) => {
-                  setpassword(e.target.value);
-                }}
-                required
+                {...register("password", loginValidation.password)}
+                error={errors.password?.message}
               />
-              <Checkbox label="Remember me" />
+
+              <Checkbox label="Remember me" {...register("rememberMe")} />
+
               <Button
                 type="submit"
                 fullWidth
                 mt="md"
+                disabled={!isValid}
                 style={{ backgroundColor: "black", color: "white" }}
               >
                 Log in
               </Button>
+
               {errorMsg && (
                 <Text color="red" size="sm">
                   {errorMsg}
                 </Text>
               )}
+
               <Anchor size="sm" href="#">
                 Forget Password
               </Anchor>
@@ -108,5 +131,3 @@ function Login() {
     </>
   );
 }
-
-export default Login;

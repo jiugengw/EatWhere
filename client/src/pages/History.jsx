@@ -1,5 +1,6 @@
 import { Container, Title, Table, Pagination, Paper,} from '@mantine/core';
 import { useState } from 'react';
+// import TokenChecker from '../users/components/tokencheck';
 import Footer from '../shared/components/footer';
 
 function History() {
@@ -33,6 +34,7 @@ function History() {
 
   return (
     <>
+    <TokenChecker/>
       <Container size="md" my="xl">
         <Title align="center" mb="lg">
           Dining History

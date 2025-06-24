@@ -15,29 +15,33 @@ import Loading from "../shared/UIelements/loading";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { signupValidation } from "../shared/validationschemas";
 
 function SignupPage() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm({ mode: "onChange" });
+
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
-  const handlelogin = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setIsLoading(true);
+    setErrorMsg("");
     try {
-
       const response = await axios.post(
         "http://localhost:8080/api/users/signup",
         {
-          email,
-          password,
-          passwordConfirm: password,
-          username:firstName,
-          lastName,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          username: data.firstName,
+          email: data.email,
+          password: data.password,
+          passwordConfirm: data.password,
         }
       );
 
@@ -45,7 +49,7 @@ function SignupPage() {
       navigate("/home");
     } catch (err) {
       console.log(err);
-      setErrorMsg("Something went wrong. Please try again.");
+      setErrorMsg("Signup failed. Check your inputs.");
     } finally {
       setIsLoading(false);
     }
@@ -54,16 +58,13 @@ function SignupPage() {
   return (
     <>
       {isLoading && <Loading />}
+
       <Container size={420} my={40}>
-        <Title style={{ textAlign: "center", marginBottom: "1rem" }}>
+        <Title ta="center" mb="md">
           Create an account
         </Title>
 
-        <Text
-          color="dimmed"
-          size="sm"
-          style={{ textAlign: "center", marginBottom: "1.5rem" }}
-        >
+        <Text ta="center" size="sm" mb="lg">
           Already have an account?{" "}
           <Anchor size="sm" href="/login">
             Log in
@@ -71,54 +72,57 @@ function SignupPage() {
         </Text>
 
         <Paper withBorder shadow="md" p="lg" radius="md">
-          <form onSubmit={handlelogin}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack>
               <TextInput
-                label="First name"
-                placeholder="Your first name"
-                value={firstName}
-                onChange={(e) => {
-                  setFirstName(e.target.value);
-                }}
-                required
+                label="firstName"
+                placeholder="Enter your first name"
+                {...register(
+                  "firstName",
+                  signupValidation.firstName
+                )}
+                error={errors.firstName?.message}
               />
               <TextInput
-                label="Last name"
-                placeholder="Your last name"
-                value={lastName}
-                onChange={(e) => {
-                  setLastName(e.target.value);
-                }}
-                required
+                label="lastName"
+                placeholder="Enter your last name"
+                {...register(
+                  "lastName",
+                  signupValidation.lastName
+                )}
+                error={errors.lastName?.message}
               />
-              <TextInput 
-                label="Email" 
-                placeholder="you@example.com" 
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                required 
+              <TextInput
+                label="email"
+                placeholder="Enter your email"
+                {...register(
+                  "email",
+                  signupValidation.email
+                )}
+                error={errors.email?.message}
               />
               <PasswordInput
-                label="Password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                required
+                label="password"
+                placeholder="Enter your password"
+                {...register(
+                  "password",
+                  signupValidation.password
+                )}
+                error={errors.password?.message}
               />
+
               <Checkbox label="I agree to the terms and conditions" required />
 
               <Button
                 type="submit"
                 fullWidth
                 mt="md"
+                disabled={!isValid}
                 style={{ backgroundColor: "black", color: "white" }}
               >
                 Sign up
               </Button>
+
               {errorMsg && (
                 <Text color="red" size="sm">
                   {errorMsg}
@@ -128,6 +132,7 @@ function SignupPage() {
           </form>
         </Paper>
       </Container>
+
       <Footer />
     </>
   );

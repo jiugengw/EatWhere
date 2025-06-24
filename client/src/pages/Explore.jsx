@@ -1,6 +1,5 @@
 import { Button, Container, Stack, Title, Text, Card, Group } from '@mantine/core';
-import { useState } from 'react';
-import Navbar from '../shared/components/navbar';
+import { useContext, useState } from 'react';
 import Footer from '../shared/components/footer';
 
 // Example cuisines and locations
