@@ -1,10 +1,14 @@
-import React from "react";
-import { Popover, Text, Box } from "@mantine/core";
+import React, { useContext } from "react";
+import { Popover, Text, Box, Anchor, Container } from "@mantine/core";
 import { IconUserCircle } from "@tabler/icons-react";
+import { AuthContext } from "../context/auth-context";
+import LogoutButton from "./logoutButton";
 
-import ProfileCard from "../UIelements/profilecard";
 
 export default function Usericon() {
+  const auth = useContext(AuthContext);
+  const id = auth.userId || "log in to see your profile";
+
   return (
     <Popover
       width={200}
@@ -26,7 +30,12 @@ export default function Usericon() {
         </Box>
       </Popover.Target>
       <Popover.Dropdown>
-        <ProfileCard/>
+        <Container>
+          <Text size="xs" fw={400}>
+            {id}
+          </Text>
+          <LogoutButton/>
+        </Container>
       </Popover.Dropdown>
     </Popover>
   );

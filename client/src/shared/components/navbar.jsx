@@ -50,8 +50,8 @@ export default function Navbar() {
 
   return (
     <header style={{ borderBottom: "1px solid #eaeaea", padding: "1rem 0" }}>
-      <Flex justify="space-between" align="center" px="md">
-        <Title order={3}>Where2Eat</Title>
+      <Flex justify="center" align="center" gap="md">
+        <Title order={1}>Where2Eat</Title>
 
         {minimise ? (
           <>
