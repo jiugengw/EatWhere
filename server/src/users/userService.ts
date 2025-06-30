@@ -1,8 +1,8 @@
-import { AppError } from '@/common/utils/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { User, UserDoc } from './userModel';
-import { UpdateUserProfileInput } from 'shared/schemas/UpdateUserProfileSchema';
-import { UpdatePreferencesInput } from 'shared/schemas/UpdatePreferencesSchema';
+import { AppError } from '@/common/utils/AppError';
+import { UpdatePreferencesInput } from '@/shared/schemas/UpdatePreferencesSchema';
+import { UpdateUserProfileInput } from '@/shared/schemas/UpdateUserProfileSchema';
 
 export const updateUserPreferences = async (
   userId: string,

@@ -1,13 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
-import { deleteOne, getOne} from '@/common/utils/handlerFactory';
+import type { RequestHandler } from 'express';
+import { updateUserPreferences, updateUserProfile } from './userService';
 import { User } from './userModel';
 import { AppError } from '@/common/utils/AppError';
-import type { RequestHandler } from 'express';
-import { Group } from '@/groups/groupModel';
 import { catchAsync } from '@/common/utils/catchAsync';
-import { updateUserPreferences, updateUserProfile } from './userService';
-import { UpdateUserProfileSchema } from 'shared/schemas/UpdateUserProfileSchema';
-import { UpdatePreferencesSchema } from 'shared/schemas/UpdatePreferencesSchema';
+import { getOne, deleteOne } from '@/common/utils/handlerFactory';
+import { Group } from '@/groups/groupModel';
+import { UpdatePreferencesSchema } from '@/shared/schemas/UpdatePreferencesSchema';
+import { UpdateUserProfileSchema } from '@/shared/schemas/UpdateUserProfileSchema';
 
 export const getMe: RequestHandler = (req, res, next) => {
   if (!req.user) {

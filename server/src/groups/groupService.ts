@@ -1,14 +1,11 @@
-import { AppError } from '@/common/utils/AppError';
-import { User } from '@/users/userModel';
 import { StatusCodes } from 'http-status-codes';
 import { Group } from './groupModel';
 import { Types } from 'mongoose';
-import { UpdateGroupInput } from 'shared/schemas/UpdateGroupSchema';
+import { AppError } from '@/common/utils/AppError';
+import { UpdateGroupInput } from '@/shared/schemas/UpdateGroupSchema';
+import { User } from '@/users/userModel';
 
-export const updateGroupById = async (
-  groupId: string,
-  data: UpdateGroupInput
-) => {
+export const updateGroupById = async (groupId: string, data: UpdateGroupInput) => {
   const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {
     new: true,
     runValidators: true,

@@ -6,6 +6,7 @@ import type { MongoServerError } from 'mongodb';
 import type { NextFunction, Request, Response } from 'express';
 import { config } from '../utils/config';
 
+
 const handleCastErrorDB = (err: MongooseError.CastError): AppError => {
   const message = `Invalid ${err.path}: ${err.value}.`;
   return new AppError(message, StatusCodes.BAD_REQUEST);

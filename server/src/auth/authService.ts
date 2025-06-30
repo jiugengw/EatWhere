@@ -1,14 +1,15 @@
-import { AppError } from '@/common/utils/AppError.js';
-import type { UserDoc } from '@/users/userModel.js';
-import { User } from '@/users/userModel.js';
+import { AppError } from '@/common/utils/AppError';
+import { config } from '@/common/utils/config';
+import { isEmail } from '@/common/utils/isEmail';
+import { LoginInput } from '@/shared/schemas/LoginSchema';
+import { SignupInput } from '@/shared/schemas/SignupSchema';
+import { UpdatePasswordInput } from '@/shared/schemas/UpdatePasswordSchema';
+import { UserDoc, User } from '@/users/userModel';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import type { JwtPayload } from 'jsonwebtoken';
-import { config } from '@/common/utils/config';
-import type { SignupInput } from 'shared/schemas/SignupSchema';
-import { isEmail } from '@/common/utils/isEmail';
-import { LoginInput } from 'shared/schemas/LoginSchema';
-import { UpdatePasswordInput } from 'shared/schemas/UpdatePasswordSchema';
+
+
 
 export const signToken = (id: string): string => {
   return jwt.sign({ id }, config.JWT_SECRET, {

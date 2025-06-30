@@ -1,4 +1,3 @@
-import { protect } from '@/auth/authController';
 import express from 'express';
 import {
   createGroup,
@@ -12,6 +11,7 @@ import {
   getGroupUsers,
   getGroupByCode,
 } from './groupController';
+import { protect } from '@/auth/authController';
 
 const router = express.Router();
 

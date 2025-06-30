@@ -1,4 +1,3 @@
-import { signup, login, protect, updatePassword } from '@/auth/authController';
 import express from 'express';
 import {
   getMe,
@@ -11,6 +10,12 @@ import {
   updateMyPreferences,
   getUserByUsername,
 } from './userController';
+import {
+  signup,
+  login,
+  protect,
+  updatePassword,
+} from 'src/auth/authController';
 
 const router = express.Router();
 

@@ -1,20 +1,14 @@
-import { catchAsync } from '@/common/utils/catchAsync';
 import { AppError } from '@/common/utils/AppError';
-import { User, UserDoc } from '@/users/userModel';
-import { StatusCodes } from 'http-status-codes';
+import { catchAsync } from '@/common/utils/catchAsync';
+import { LoginSchema } from '@/shared/schemas/LoginSchema';
+import { SignupSchema } from '@/shared/schemas/SignupSchema';
+import { UpdatePasswordSchema } from '@/shared/schemas/UpdatePasswordSchema';
+import { UserDoc } from '@/users/userModel';
 import { config } from '@/common/utils/config';
-import { ZodError } from 'zod';
-import { SignupSchema } from 'shared/schemas/SignupSchema';
-import { LoginSchema } from 'shared/schemas/LoginSchema';
-import {
-  loginUser,
-  signToken,
-  signupUser,
-  updateUserPassword,
-  verifyAndGetUser,
-} from './authService';
 import type { CookieOptions, Response } from 'express';
-import { UpdatePasswordSchema } from 'shared/schemas/UpdatePasswordSchema';
+import { StatusCodes } from 'http-status-codes';
+import { signToken, signupUser, loginUser, verifyAndGetUser, updateUserPassword } from './authService';
+
 
 const createSendToken = (
   user: UserDoc,

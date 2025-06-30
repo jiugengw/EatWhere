@@ -2,12 +2,9 @@ import { catchAsync } from './catchAsync';
 import { StatusCodes } from 'http-status-codes';
 import type { HydratedDocument, Model } from 'mongoose';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
-import {
-  DeleteOneOptions,
-  GetOneOptions,
-} from '@/types/factory';
 import { AppError } from './AppError';
 import { getRequiredFields } from './getRequiredFields';
+import { DeleteOneOptions, GetOneOptions } from '@/types/factory';
 
 export const getOne = <T>(
   Model: Model<T>,

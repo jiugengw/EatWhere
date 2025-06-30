@@ -1,7 +1,3 @@
-import { catchAsync } from '@/common/utils/catchAsync';
-import { filterObj } from '@/common/utils/filterObj';
-import { createOne, getOne, deleteOne } from '@/common/utils/handlerFactory';
-import { User } from '@/users/userModel';
 import { StatusCodes } from 'http-status-codes';
 import { Group } from './groupModel';
 import {
@@ -10,9 +6,13 @@ import {
   leaveGroupById,
   updateGroupById,
 } from './groupService';
-import { AppError } from '@/common/utils/AppError';
 import { RequestHandler } from 'express';
-import { UpdateGroupSchema } from 'shared/schemas/UpdateGroupSchema';
+import { UpdateGroupSchema } from '@/shared/schemas/UpdateGroupSchema';
+import { AppError } from '@/common/utils/AppError';
+import { catchAsync } from '@/common/utils/catchAsync';
+import { createOne, getOne, deleteOne } from '@/common/utils/handlerFactory';
+import { User } from '@/users/userModel';
+
 
 export const createGroup: RequestHandler = createOne(Group);
 
