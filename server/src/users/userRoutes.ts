@@ -9,13 +9,8 @@ import {
   getUserPreferences,
   updateMyPreferences,
   getUserByUsername,
-} from './userController';
-import {
-  signup,
-  login,
-  protect,
-  updatePassword,
-} from 'src/auth/authController';
+} from './userController.js';
+import { signup, login, protect, updatePassword } from '../auth/authController.js';
 
 const router = express.Router();
 

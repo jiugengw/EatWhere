@@ -1,9 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
-import { Group } from './groupModel';
+import { Group } from './groupModel.js';
 import { Types } from 'mongoose';
-import { AppError } from '@/common/utils/AppError';
-import { UpdateGroupInput } from '@/shared/schemas/UpdateGroupSchema';
-import { User } from '@/users/userModel';
+import { AppError } from '../common/utils/AppError.js';
+import { UpdateGroupInput } from '../shared/schemas/UpdateGroupSchema.js';
+import { User } from '../users/userModel.js';
 
 export const updateGroupById = async (groupId: string, data: UpdateGroupInput) => {
   const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {

@@ -1,8 +1,8 @@
 import express from 'express';
 import { createGroup, getGroup, updateGroup, deleteGroup, joinGroup, leaveGroup, 
 // getGroupHistory,
-checkUserInGroup, getGroupUsers, getGroupByCode, } from './groupController';
-import { protect } from '@/auth/authController';
+checkUserInGroup, getGroupUsers, getGroupByCode, } from './groupController.js';
+import { protect } from '../auth/authController.js';
 const router = express.Router();
 router.use(protect);
 /**

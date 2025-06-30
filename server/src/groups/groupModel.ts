@@ -1,12 +1,9 @@
-import {
-  model,
-  models,
-  HydratedDocument,
-  Schema,
-  Types,
-  Query,
-  Model,
-} from 'mongoose';
+import mongoose from 'mongoose';
+import { Types } from 'mongoose';
+import type { Query } from 'mongoose';
+import type { HydratedDocument, Model } from 'mongoose';
+
+const { model, models, Schema } = mongoose;
 
 interface IGroup {
   name: string;

@@ -1,13 +1,13 @@
-import { AppError } from '@/common/utils/AppError';
-import { config } from '@/common/utils/config';
-import { isEmail } from '@/common/utils/isEmail';
-import { LoginInput } from '@/shared/schemas/LoginSchema';
-import { SignupInput } from '@/shared/schemas/SignupSchema';
-import { UpdatePasswordInput } from '@/shared/schemas/UpdatePasswordSchema';
-import { UserDoc, User } from '@/users/userModel';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import type { JwtPayload } from 'jsonwebtoken';
+import { config } from '../common/utils/config.js';
+import { AppError } from '../common/utils/AppError.js';
+import { isEmail } from '../common/utils/isEmail.js';
+import { LoginInput } from '../shared/schemas/LoginSchema.js';
+import { SignupInput } from '../shared/schemas/SignupSchema.js';
+import { UpdatePasswordInput } from '../shared/schemas/UpdatePasswordSchema.js';
+import { UserDoc, User } from '../users/userModel.js';
 
 
 

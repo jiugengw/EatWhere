@@ -1,10 +1,10 @@
-import { catchAsync } from './catchAsync';
+import { catchAsync } from './catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
 import type { HydratedDocument, Model } from 'mongoose';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
-import { AppError } from './AppError';
-import { getRequiredFields } from './getRequiredFields';
-import { DeleteOneOptions, GetOneOptions } from '@/types/factory';
+import { AppError } from './AppError.js';
+import { getRequiredFields } from './getRequiredFields.js';
+import { GetOneOptions, DeleteOneOptions } from '../../types/factory.js';
 
 export const getOne = <T>(
   Model: Model<T>,

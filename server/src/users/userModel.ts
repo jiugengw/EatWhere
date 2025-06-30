@@ -1,13 +1,10 @@
-import {
-  model,
-  models,
-  Schema,
-  Types,
-  HydratedDocument,
-  Query,
-  Model,
-} from 'mongoose';
+import mongoose from 'mongoose';
+import { Types } from 'mongoose';
+import type { Query } from 'mongoose';
+import type { HydratedDocument, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
+
+const { model, models, Schema } = mongoose;
 
 interface IUser {
   username: string;

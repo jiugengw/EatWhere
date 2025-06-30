@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import app from './app';
+import app from './app.js';
 import dotenv from 'dotenv';
-import 'module-alias/register';
 dotenv.config({ path: './.env' });
-import { config } from './common/utils/config';
-import { AppError } from './common/utils/AppError';
+import { config } from './common/utils/config.js';
+import { AppError } from './common/utils/AppError.js';
 process.on('uncaughtException', (err) => {
     console.log('UNCAUGHT EXCEPTION!');
     console.log(err.name, err.message);

@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import { swaggerUi, swaggerSpec } from './swagger';
-import router from './routes';
-import { errorHandler } from './common/middlewares/errorHandler';
+import { swaggerUi, swaggerSpec } from './swagger.js';
+import router from './routes.js';
+import { errorHandler } from './common/middlewares/errorHandler.js';
 
 const app = express();
 

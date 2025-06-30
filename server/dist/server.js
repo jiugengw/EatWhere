@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import app from './app';
+import app from './app.js';
 import dotenv from 'dotenv';
-import { config } from './common/utils/config';
+import { config } from './common/utils/config.js';
 dotenv.config({ path: './.env' });
 process.on('uncaughtException', (err) => {
     console.log('UNCAUGHT EXCEPTION!');

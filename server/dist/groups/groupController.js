@@ -1,11 +1,11 @@
 import { StatusCodes } from 'http-status-codes';
-import { Group } from './groupModel';
-import { isUserInGroup, joinGroupById, leaveGroupById, updateGroupById, } from './groupService';
-import { UpdateGroupSchema } from '@/shared/schemas/UpdateGroupSchema';
-import { AppError } from '@/common/utils/AppError';
-import { catchAsync } from '@/common/utils/catchAsync';
-import { createOne, getOne, deleteOne } from '@/common/utils/handlerFactory';
-import { User } from '@/users/userModel';
+import { Group } from './groupModel.js';
+import { isUserInGroup, joinGroupById, leaveGroupById, updateGroupById, } from './groupService.js';
+import { AppError } from '../common/utils/AppError.js';
+import { catchAsync } from '../common/utils/catchAsync.js';
+import { createOne, getOne, deleteOne } from '../common/utils/handlerFactory.js';
+import { UpdateGroupSchema } from '../shared/schemas/UpdateGroupSchema.js';
+import { User } from '../users/userModel.js';
 export const createGroup = createOne(Group);
 export const getGroup = getOne(Group, {
     populateOptions: {

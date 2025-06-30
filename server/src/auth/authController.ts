@@ -1,14 +1,19 @@
-import { AppError } from '@/common/utils/AppError';
-import { catchAsync } from '@/common/utils/catchAsync';
-import { LoginSchema } from '@/shared/schemas/LoginSchema';
-import { SignupSchema } from '@/shared/schemas/SignupSchema';
-import { UpdatePasswordSchema } from '@/shared/schemas/UpdatePasswordSchema';
-import { UserDoc } from '@/users/userModel';
-import { config } from '@/common/utils/config';
 import type { CookieOptions, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { signToken, signupUser, loginUser, verifyAndGetUser, updateUserPassword } from './authService';
-
+import {
+  signToken,
+  signupUser,
+  loginUser,
+  verifyAndGetUser,
+  updateUserPassword,
+} from './authService.js';
+import { AppError } from '../common/utils/AppError.js';
+import { catchAsync } from '../common/utils/catchAsync.js';
+import { LoginSchema } from '../shared/schemas/LoginSchema.js';
+import { SignupSchema } from '../shared/schemas/SignupSchema.js';
+import { UpdatePasswordSchema } from '../shared/schemas/UpdatePasswordSchema.js';
+import { UserDoc } from '../users/userModel.js';
+import { config } from '../common/utils/config.js';
 
 const createSendToken = (
   user: UserDoc,

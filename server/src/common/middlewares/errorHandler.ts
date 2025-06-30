@@ -1,10 +1,10 @@
-import { AppError } from '../utils/AppError';
+import { AppError } from '../utils/AppError.js';
 import { StatusCodes } from 'http-status-codes';
 import { ZodError } from 'zod';
 import { Error as MongooseError } from 'mongoose';
 import type { MongoServerError } from 'mongodb';
 import type { NextFunction, Request, Response } from 'express';
-import { config } from '../utils/config';
+import { config } from '../utils/config.js';
 
 
 const handleCastErrorDB = (err: MongooseError.CastError): AppError => {

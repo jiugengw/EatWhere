@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
-import { User } from './userModel';
-import { AppError } from '@/common/utils/AppError';
+import { User } from './userModel.js';
+import { AppError } from '../common/utils/AppError.js';
 export const updateUserPreferences = async (userId, newPreferences) => {
     const updateOptions = {};
     newPreferences.forEach(({ cuisine, points }) => {

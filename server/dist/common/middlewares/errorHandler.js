@@ -1,7 +1,7 @@
-import { AppError } from '../utils/AppError';
+import { AppError } from '../utils/AppError.js';
 import { StatusCodes } from 'http-status-codes';
 import { ZodError } from 'zod';
-import { config } from '../utils/config';
+import { config } from '../utils/config.js';
 const handleCastErrorDB = (err) => {
     const message = `Invalid ${err.path}: ${err.value}.`;
     return new AppError(message, StatusCodes.BAD_REQUEST);

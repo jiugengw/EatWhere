@@ -1,5 +1,5 @@
-import { GroupDoc } from "@/groups/groupModel";
-import { UserDoc } from "@/users/userModel";
+import { GroupDoc } from "../groups/groupModel";
+import { UserDoc } from "../users/userModel";
 
 declare global {
   namespace Express {

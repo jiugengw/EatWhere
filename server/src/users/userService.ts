@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
-import { User, UserDoc } from './userModel';
-import { AppError } from '@/common/utils/AppError';
-import { UpdatePreferencesInput } from '@/shared/schemas/UpdatePreferencesSchema';
-import { UpdateUserProfileInput } from '@/shared/schemas/UpdateUserProfileSchema';
+import { User, UserDoc } from './userModel.js';
+import { AppError } from '../common/utils/AppError.js';
+import { UpdatePreferencesInput } from '../shared/schemas/UpdatePreferencesSchema.js';
+import { UpdateUserProfileInput } from '../shared/schemas/UpdateUserProfileSchema.js';
 
 export const updateUserPreferences = async (
   userId: string,

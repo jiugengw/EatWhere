@@ -1,8 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
-import { Group } from './groupModel';
+import { Group } from './groupModel.js';
 import { Types } from 'mongoose';
-import { AppError } from '@/common/utils/AppError';
-import { User } from '@/users/userModel';
+import { AppError } from '../common/utils/AppError.js';
+import { User } from '../users/userModel.js';
 export const updateGroupById = async (groupId, data) => {
     const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {
         new: true,

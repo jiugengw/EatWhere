@@ -1,9 +1,9 @@
-import { AppError } from '@/common/utils/AppError';
-import { config } from '@/common/utils/config';
-import { isEmail } from '@/common/utils/isEmail';
-import { User } from '@/users/userModel';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
+import { config } from '../common/utils/config.js';
+import { AppError } from '../common/utils/AppError.js';
+import { isEmail } from '../common/utils/isEmail.js';
+import { User } from '../users/userModel.js';
 export const signToken = (id) => {
     return jwt.sign({ id }, config.JWT_SECRET, {
         expiresIn: config.JWT_EXPIRES_IN,

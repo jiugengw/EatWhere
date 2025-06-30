@@ -10,8 +10,8 @@ import {
   checkUserInGroup,
   getGroupUsers,
   getGroupByCode,
-} from './groupController';
-import { protect } from '@/auth/authController';
+} from './groupController.js';
+import { protect } from '../auth/authController.js';
 
 const router = express.Router();
 

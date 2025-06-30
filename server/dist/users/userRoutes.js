@@ -1,8 +1,8 @@
 import express from 'express';
 import { getMe, getUser, updateUser, deleteUser, 
 // getUserHistory,
-getUserGroups, getUserPreferences, updateMyPreferences, getUserByUsername, } from './userController';
-import { signup, login, protect, updatePassword, } from 'src/auth/authController';
+getUserGroups, getUserPreferences, updateMyPreferences, getUserByUsername, } from './userController.js';
+import { signup, login, protect, updatePassword } from '../auth/authController.js';
 const router = express.Router();
 /**
  * @swagger

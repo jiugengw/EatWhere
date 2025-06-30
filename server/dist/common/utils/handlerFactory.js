@@ -1,7 +1,7 @@
-import { catchAsync } from './catchAsync';
+import { catchAsync } from './catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
-import { AppError } from './AppError';
-import { getRequiredFields } from './getRequiredFields';
+import { AppError } from './AppError.js';
+import { getRequiredFields } from './getRequiredFields.js';
 export const getOne = (Model, options) => {
     const { populateOptions, selectFields, findByFn, enableVirtuals = true, } = options || {};
     return catchAsync(async (req, res, next) => {
