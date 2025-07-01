@@ -33,8 +33,7 @@ export const SignupPage = (): JSX.Element => {
   const signup = useSignup();
 
   const handleSubmit = (
-    values: SignupInput,
-    event?: React.FormEvent<HTMLFormElement>
+    values: SignupInput
   ): void => {
     signup.mutate(values);
   };
