@@ -14,8 +14,6 @@ import {
 } from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
 import { useState, type JSX } from 'react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
 
 type GroupType = {
   id: number;
@@ -70,8 +68,6 @@ export const ViewGroupsPage = (): JSX.Element => {
 
   return (
     <>
-      <Navbar />
-
       <Container size="lg" my="xl">
         <Title order={2} mb="lg" style={{ color: '#222222', fontWeight: 700 }}>
           My Groups
@@ -263,9 +259,6 @@ export const ViewGroupsPage = (): JSX.Element => {
           </Group>
         </Stack>
       </Modal>
-
-      <Footer />
     </>
   );
 };
-

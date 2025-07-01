@@ -15,8 +15,6 @@ import {
 } from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
 import { useState, type JSX } from 'react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
 
 // Types
 type Member = {
@@ -95,8 +93,6 @@ export const EditGroupPage = (): JSX.Element => {
 
   return (
     <>
-      <Navbar />
-
       <Container size="md" my="xl">
         <Title
           order={2}
@@ -308,9 +304,6 @@ export const EditGroupPage = (): JSX.Element => {
           </Tabs.Panel>
         </Tabs>
       </Container>
-
-      <Footer />
     </>
   );
 };
-

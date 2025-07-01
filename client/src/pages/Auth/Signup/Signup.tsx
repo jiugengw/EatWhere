@@ -10,15 +10,11 @@ import {
   Checkbox,
   Anchor,
 } from '@mantine/core';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
 import type { JSX } from 'react';
 
 export const SignupPage = (): JSX.Element => {
   return (
     <>
-      <Navbar />
-
       <Container size="xs" my="xl">
         <Title
           order={2}
@@ -137,8 +133,6 @@ export const SignupPage = (): JSX.Element => {
           </form>
         </Paper>
       </Container>
-
-      <Footer />
     </>
   );
 };

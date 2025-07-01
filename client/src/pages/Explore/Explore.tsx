@@ -12,9 +12,6 @@ import {
   SimpleGrid,
 } from '@mantine/core';
 import { useState, type JSX } from 'react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
-
 // Type for each cuisine
 type Cuisine = {
   name: string;
@@ -57,8 +54,6 @@ export const ExplorePage = (): JSX.Element => {
 
   return (
     <>
-      <Navbar />
-
       {/* Hero Section */}
       <Box
         style={{
@@ -211,10 +206,6 @@ export const ExplorePage = (): JSX.Element => {
           )}
         </Stack>
       </Container>
-
-      <Footer />
     </>
   );
 };
-
-

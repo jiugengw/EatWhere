@@ -13,8 +13,6 @@ import {
   Center,
 } from '@mantine/core';
 import { IconUser } from '@tabler/icons-react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
 import type { JSX } from 'react';
 
 interface RecommendedItem {
@@ -27,7 +25,7 @@ interface UserReview {
   review: string;
 }
 
-export const HomePage =(): JSX.Element => {
+export const HomePage = (): JSX.Element => {
   const recommendedPlaces: RecommendedItem[] = [
     {
       title: 'Sushi Place',
@@ -51,8 +49,6 @@ export const HomePage =(): JSX.Element => {
 
   return (
     <>
-      <Navbar />
-
       {/* Hero Section */}
       <Box
         style={{
@@ -217,9 +213,6 @@ export const HomePage =(): JSX.Element => {
           ))}
         </SimpleGrid>
       </Container>
-
-      <Footer />
     </>
   );
-}
-
+};

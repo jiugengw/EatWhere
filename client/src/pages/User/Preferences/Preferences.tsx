@@ -8,8 +8,6 @@ import {
   Divider,
 } from '@mantine/core';
 import { useState, type JSX } from 'react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
 
 const cuisines: string[] = [
   'Chinese',
@@ -46,8 +44,6 @@ export const PreferencesPage = (): JSX.Element => {
 
   return (
     <>
-      <Navbar />
-
       <Container size="sm" my="xl">
         <Title
           align="center"
@@ -134,8 +130,6 @@ export const PreferencesPage = (): JSX.Element => {
           Save Preferences
         </Button>
       </Container>
-
-      <Footer />
     </>
   );
 };

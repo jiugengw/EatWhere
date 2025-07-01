@@ -13,8 +13,6 @@ import {
   Box,
 } from '@mantine/core';
 import { useState, type JSX } from 'react';
-import Navbar from '@/components/Navbar/Navbar';
-import Footer from '@/components/Footer/Footer';
 
 export const ProfilePage = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<
@@ -150,8 +148,6 @@ export const ProfilePage = (): JSX.Element => {
 
   return (
     <>
-      <Navbar />
-
       <Container size="lg" my="xl">
         <Title order={2} mb="xl" style={{ color: '#222222', fontWeight: 700 }}>
           My Profile
@@ -237,8 +233,6 @@ export const ProfilePage = (): JSX.Element => {
           </Box>
         </Paper>
       </Container>
-
-      <Footer />
     </>
   );
 };
