@@ -2,7 +2,6 @@ import {
   Container,
   Flex,
   Group,
-  Anchor,
   ActionIcon,
   Box,
   Button,

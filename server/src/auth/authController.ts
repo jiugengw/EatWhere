@@ -54,7 +54,9 @@ export const signup = catchAsync(async (req, res, next) => {
     );
   }
 
-  const newUser = await signupUser(parsed.data);
+  const { passwordConfirm, ...userData } = parsed.data;
+
+  const newUser = await signupUser(userData);
   createSendToken(newUser, StatusCodes.CREATED, res);
 });
 

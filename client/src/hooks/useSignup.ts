@@ -2,6 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { useNavigate } from '@tanstack/react-router';
 import type { SignupInput } from '@/shared/schemas/SignupSchema';
+import { showNotification } from '@mantine/notifications';
+import { AxiosError } from 'axios';
 
 export const useSignup = () => {
   const navigate = useNavigate();
@@ -12,9 +14,19 @@ export const useSignup = () => {
       return res.data;
     },
     onSuccess: () => {
-      navigate({ to: '/login' });
+      navigate({ to: '/' });
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
+      const err = error as AxiosError<{ message: string }>;
+
+      showNotification({
+        title: 'Signup failed',
+        message:
+          err?.response?.data?.message ||
+          'Something went wrong. Please try again.',
+        color: 'red',
+      });
+
       console.error('Signup failed:', error);
     },
   });

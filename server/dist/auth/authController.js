@@ -29,7 +29,8 @@ export const signup = catchAsync(async (req, res, next) => {
     if (!parsed.success) {
         return next(new AppError('Signup validation failed', StatusCodes.BAD_REQUEST, parsed.error.flatten().fieldErrors));
     }
-    const newUser = await signupUser(parsed.data);
+    const { passwordConfirm, ...userData } = parsed.data;
+    const newUser = await signupUser(userData);
     createSendToken(newUser, StatusCodes.CREATED, res);
 });
 export const login = catchAsync(async (req, res, next) => {

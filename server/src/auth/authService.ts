@@ -9,8 +9,6 @@ import { SignupInput } from '../shared/schemas/SignupSchema.js';
 import { UpdatePasswordInput } from '../shared/schemas/UpdatePasswordSchema.js';
 import { UserDoc, User } from '../users/userModel.js';
 
-
-
 export const signToken = (id: string): string => {
   return jwt.sign({ id }, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRES_IN,
@@ -51,7 +49,9 @@ export const verifyAndGetUser = async (token: string): Promise<UserDoc> => {
   return user;
 };
 
-export const signupUser = async (data: SignupInput): Promise<UserDoc> => {
+type SignupData = Omit<SignupInput, 'passwordConfirm'>;
+
+export const signupUser = async (data: SignupData): Promise<UserDoc> => {
   const existingUser = await User.findOne({
     $or: [{ email: data.email }, { username: data.username }],
   });

@@ -7,47 +7,49 @@ import {
   Container,
   Button,
   Stack,
-  Checkbox,
-  Anchor,
 } from '@mantine/core';
 import type { JSX } from 'react';
+import classes from './Signup.module.css';
+import { Link } from '@tanstack/react-router';
+import { SignupSchema, type SignupInput } from '@/shared/schemas/SignupSchema';
+import { useForm } from '@mantine/form';
+import { zodResolver } from 'mantine-form-zod-resolver';
+import { useSignup } from '@/hooks/useSignup';
 
 export const SignupPage = (): JSX.Element => {
+  const form = useForm<SignupInput>({
+    validate: zodResolver(SignupSchema),
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
+      passwordConfirm: '',
+    },
+    validateInputOnBlur: true,
+  });
+
+  const signup = useSignup();
+
+  const handleSubmit = (
+    values: SignupInput,
+    event?: React.FormEvent<HTMLFormElement>
+  ): void => {
+    signup.mutate(values);
+  };
+
   return (
     <>
       <Container size="xs" my="xl">
-        <Title
-          order={2}
-          style={{
-            textAlign: 'center',
-            marginBottom: '1rem',
-            color: '#222222',
-            fontWeight: 700,
-            letterSpacing: '-0.5px',
-          }}
-        >
+        <Title order={2} className={classes.title}>
           Create an Account
         </Title>
-
-        <Text
-          size="sm"
-          style={{
-            textAlign: 'center',
-            marginBottom: '2rem',
-            color: '#555555',
-          }}
-        >
+        <Text className={classes.subtitle}>
           Already have an account?{' '}
-          <Anchor
-            href="#"
-            style={{
-              color: '#FF8C42',
-              textDecoration: 'none',
-              fontWeight: 500,
-            }}
-          >
+          <Link to="/login" className={classes.link}>
             Log in
-          </Anchor>
+          </Link>
         </Text>
 
         <Paper
@@ -55,77 +57,82 @@ export const SignupPage = (): JSX.Element => {
           shadow="md"
           radius="lg"
           p="xl"
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderColor: '#e0e0e0',
-          }}
+          className={classes.formWrapper}
         >
-          <form>
-            <Stack spacing="md">
+          <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
+            <Stack gap="md">
+              <TextInput
+                label="Username"
+                placeholder="Your username"
+                {...form.getInputProps('username')}
+                required
+                classNames={{
+                  label: classes.label,
+                  input: classes.input,
+                }}
+              />
+
               <TextInput
                 label="First Name"
                 placeholder="Your first name"
+                {...form.getInputProps('firstName')}
                 required
-                styles={{
-                  label: { color: '#222222', fontWeight: 500 },
-                  input: { backgroundColor: '#F9F9F9' },
+                classNames={{
+                  label: classes.label,
+                  input: classes.input,
                 }}
               />
 
               <TextInput
                 label="Last Name"
                 placeholder="Your last name"
+                {...form.getInputProps('lastName')}
                 required
-                styles={{
-                  label: { color: '#222222', fontWeight: 500 },
-                  input: { backgroundColor: '#F9F9F9' },
+                classNames={{
+                  label: classes.label,
+                  input: classes.input,
                 }}
               />
 
               <TextInput
                 label="Email"
                 placeholder="you@example.com"
+                {...form.getInputProps('email')}
                 required
-                styles={{
-                  label: { color: '#222222', fontWeight: 500 },
-                  input: { backgroundColor: '#F9F9F9' },
+                classNames={{
+                  label: classes.label,
+                  input: classes.input,
                 }}
               />
 
               <PasswordInput
                 label="Password"
                 placeholder="Your password"
+                {...form.getInputProps('password')}
                 required
-                styles={{
-                  label: { color: '#222222', fontWeight: 500 },
-                  input: { backgroundColor: '#F9F9F9' },
+                classNames={{
+                  label: classes.label,
+                  input: classes.input,
                 }}
               />
 
-              <Checkbox
-                label="I agree to the terms and conditions"
+              <PasswordInput
+                label="Confirm Password"
+                placeholder="Confirm your password"
+                {...form.getInputProps('passwordConfirm')}
                 required
-                styles={{
-                  label: { color: '#555555', fontSize: '0.9rem' },
+                classNames={{
+                  label: classes.label,
+                  input: classes.input,
                 }}
               />
 
               <Button
+                type="submit"
                 fullWidth
                 size="md"
                 radius="xl"
-                style={{
-                  backgroundColor: '#FF8C42',
-                  color: 'white',
-                  fontWeight: 600,
-                  transition: 'background-color 0.2s ease',
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = '#e07b30')
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = '#FF8C42')
-                }
+                className={classes.button}
               >
                 Sign Up
               </Button>
