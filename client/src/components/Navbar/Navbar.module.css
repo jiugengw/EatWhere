@@ -1,0 +1,71 @@
+.navbarWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #222222;
+  text-decoration: none;
+}
+
+.navLink {
+  color: #555555;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: #ff8c42;
+}
+
+.profileIcon {
+  color: #555555;
+  cursor: pointer;
+}
+
+.dropdownPanel {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100vw;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  z-index: 150;
+  padding: 1.5rem 2rem;
+}
+
+.dropdownInner {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loginButton {
+  background-color: #ff8c42;
+  color: white;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.loginButton:hover {
+  background-color: #e07b30;
+}
+
+.signupButton {
+  color: #333333;
+  border-color: #333333;
+  font-weight: 500;
+}
