@@ -3,6 +3,7 @@ import { getMe, getUser, updateUser, deleteUser,
 // getUserHistory,
 getUserGroups, getUserPreferences, updateMyPreferences, getUserByUsername, } from './userController.js';
 import { signup, login, protect, updatePassword } from '../auth/authController.js';
+import { logout } from '../auth/handleRefreshToken.js';
 const router = express.Router();
 /**
  * @swagger
@@ -46,6 +47,7 @@ router.post('/signup', signup);
  *               $ref: '#/components/schemas/UserWithTokenResponse'
  */
 router.post('/login', login);
+router.post('/logout', logout);
 router.use(protect);
 router
     .route('/me')

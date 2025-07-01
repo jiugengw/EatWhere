@@ -6,6 +6,7 @@ import {
   loginUser,
   verifyAndGetUser,
   updateUserPassword,
+  signAccessToken,
 } from './authService.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
@@ -21,11 +22,13 @@ const createSendToken = (
   res: Response
 ): void => {
   const token = signToken(user.id);
+  const accessToken = signAccessToken(user.id,user.username);
   const cookieOptions: CookieOptions = {
     expires: new Date(
       Date.now() + Number(config.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
+    secure:true,
   };
   if (config.NODE_ENV === 'production') cookieOptions.secure = true;
 
@@ -35,7 +38,7 @@ const createSendToken = (
 
   res.status(statusCode).json({
     status: 'success',
-    token,
+    token: accessToken,
     data: {
       User: user,
     },

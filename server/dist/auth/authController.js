@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { signToken, signupUser, loginUser, verifyAndGetUser, updateUserPassword, } from './authService.js';
+import { signToken, signupUser, loginUser, verifyAndGetUser, updateUserPassword, signAccessToken, } from './authService.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { LoginSchema } from '../shared/schemas/LoginSchema.js';
@@ -8,9 +8,11 @@ import { UpdatePasswordSchema } from '../shared/schemas/UpdatePasswordSchema.js'
 import { config } from '../common/utils/config.js';
 const createSendToken = (user, statusCode, res) => {
     const token = signToken(user.id);
+    const accessToken = signAccessToken(user.id, user.username);
     const cookieOptions = {
         expires: new Date(Date.now() + Number(config.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000),
         httpOnly: true,
+        secure: true,
     };
     if (config.NODE_ENV === 'production')
         cookieOptions.secure = true;
@@ -18,7 +20,7 @@ const createSendToken = (user, statusCode, res) => {
     // user.password = undefined;
     res.status(statusCode).json({
         status: 'success',
-        token,
+        token: accessToken,
         data: {
             User: user,
         },

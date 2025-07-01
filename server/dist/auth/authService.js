@@ -10,6 +10,11 @@ export const signToken = (id) => {
         algorithm: 'HS256',
     });
 };
+export const signAccessToken = (id, name) => {
+    return jwt.sign({ id, name }, config.JWT_SECRET, {
+        expiresIn: "10s",
+    });
+};
 const verifyToken = (token, secret) => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, secret, (err, decoded) => {
