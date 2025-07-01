@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import {jwtDecode} from 'jwt-decode';
-import Footer from '../shared/components/footer';
+import { jwtDecode } from "jwt-decode";
+import Footer from "../shared/components/footer";
 import diningImg1 from "../../assets/images/dining_img1.jpg";
-// import TokenChecker from "../users/components/tokencheck";
+// import diningImg1 from "../../assets/images/dining_img1.jpg";
 import {
   Container,
   Text,
@@ -19,11 +19,10 @@ import { IconUser } from "@tabler/icons-react";
 import useAuth from "../shared/hooks/auth";
 import { useNavigate } from "react-router-dom";
 
-
-function Home() {
+function TestHome() {
   const [name, setName] = useState("nothing");
   const navigate = useNavigate();
-  console.log(useAuth());
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -34,32 +33,36 @@ function Home() {
 
   return (
     <>
-    <h1>Hello ,{name}!</h1>
-    <button onClick={()=>{navigate('/test')}}>click</button>
+      <Container style={{ backgroundColor: "#FFF8ED", minHeight: "100vh", padding: "2rem 0" }}>
+        <h1 style={{ color: "#272727" }}>Hello, {name}!</h1>
+        <Button
+          onClick={() => {
+            navigate("/test");
+          }}
+          style={{ backgroundColor: "#D4AA7D", color: "#272727", marginBottom: "1rem" }}
+        >
+          click
+        </Button>
 
-      <Container >
-        <br />
+        {/* Hero Section */}
         <Card
           shadow="sm"
           padding="lg"
           radius="md"
-          style={{ maxWidth: 950, margin: "auto" }}
+          style={{ maxWidth: 950, margin: "auto", backgroundColor: "#EFD09E" }}
         >
           <Group align="stretch" spacing="xl">
             <Stack>
-              <Title order={1}>Where2Eat</Title>
-              <Text>
-                Smarter food choices, tailored for you. Don't know what to eat?
-                Try and see for yourself!
+              <Title order={1} style={{ color: "#D4AA7D" }}>
+                Where2Eat
+              </Title>
+              <Text style={{ color: "#272727" }}>
+                Smarter food choices, tailored for you. Don't know what to eat? Try and see for yourself!
               </Text>
               <Button
                 variant="filled"
                 size="md"
-                style={{
-                  backgroundColor: "black",
-                  color: "white",
-                  margin: "auto",
-                }}
+                style={{ backgroundColor: "#272727", color: "#EFD09E", margin: "auto" }}
               >
                 Explore
               </Button>
@@ -73,19 +76,22 @@ function Home() {
           </Group>
         </Card>
 
+        {/* How to Use Section */}
         <br />
         <Card
           shadow="sm"
           padding="lg"
           radius="md"
-          style={{ maxWidth: 950, margin: "auto" }}
+          style={{ maxWidth: 950, margin: "auto", backgroundColor: "#EFD09E" }}
         >
           <Group align="stretch" spacing="xl">
             <Stack justify="space-between" style={{ flex: 1, minWidth: 0 }}>
               <div>
-                <Title order={3}>How to use?</Title>
+                <Title order={3} style={{ color: "#D4AA7D" }}>
+                  How to use?
+                </Title>
                 <br />
-                <Text>
+                <Text style={{ color: "#272727" }}>
                   <b>Pick</b>
                   <br />
                   Pick occasion for your meal
@@ -105,11 +111,15 @@ function Home() {
                 <Button
                   variant="filled"
                   size="md"
-                  style={{ backgroundColor: "black", color: "white" }}
+                  style={{ backgroundColor: "#D4AA7D", color: "#272727" }}
                 >
                   Log In
                 </Button>
-                <Button variant="outline" size="md" style={{ color: "black" }}>
+                <Button
+                  variant="outline"
+                  size="md"
+                  style={{ color: "#D4AA7D", borderColor: "#D4AA7D" }}
+                >
                   Sign Up
                 </Button>
               </Group>
@@ -124,8 +134,9 @@ function Home() {
           </Group>
         </Card>
 
+        {/* Most Recommended */}
         <br />
-        <Title order={2} style={{ textAlign: "left", marginBottom: "1rem" }}>
+        <Title order={2} style={{ textAlign: "left", marginBottom: "1rem", color: "#D4AA7D" }}>
           Most Recommended
         </Title>
         <Group position="apart" align="flex-start" spacing="xl" grow>
@@ -137,7 +148,7 @@ function Home() {
               fit="cover"
               height={200}
             />
-            <Text style={{ fontWeight: 500 }}>
+            <Text style={{ fontWeight: 500, color: "#272727" }}>
               <b>#1</b>
             </Text>
           </Stack>
@@ -149,14 +160,15 @@ function Home() {
               fit="cover"
               height={200}
             />
-            <Text style={{ fontWeight: 500 }}>
+            <Text style={{ fontWeight: 500, color: "#272727" }}>
               <b>#2</b>
             </Text>
           </Stack>
         </Group>
 
+        {/* User Reviews */}
         <Container my="xl">
-          <Title order={2} style={{ textAlign: "left", marginBottom: "1rem" }}>
+          <Title order={2} style={{ textAlign: "left", marginBottom: "1rem", color: "#D4AA7D" }}>
             User Reviews
           </Title>
 
@@ -165,39 +177,28 @@ function Home() {
             spacing="lg"
             breakpoints={[{ maxWidth: "md", cols: 1 }]}
           >
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Text style={{ marginBottom: "1rem" }}>
-                “Nathaniel Teo Kukubird”
-              </Text>
-              <Group spacing="sm" style={{ marginTop: "1rem" }}>
-                <Avatar radius="xl">
-                  <IconUser size={20} />
-                </Avatar>
-                <Text style={{ fontWeight: 500 }}>Ernest Wong</Text>
-              </Group>
-            </Card>
-
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Text style={{ marginBottom: "1rem" }}>
-                “Nathaniel Teo Kukubird”
-              </Text>
-              <Group spacing="sm" style={{ marginTop: "1rem" }}>
-                <Avatar radius="xl">
-                  <IconUser size={20} />
-                </Avatar>
-                <Text style={{ fontWeight: 500 }}>Wong Jiu Geng</Text>
-              </Group>
-            </Card>
-
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Text style={{ marginBottom: "1rem" }}>“I like Kukubird”</Text>
-              <Group spacing="sm" style={{ marginTop: "1rem" }}>
-                <Avatar radius="xl">
-                  <IconUser size={20} />
-                </Avatar>
-                <Text style={{ fontWeight: 500 }}>Nathaniel Teo</Text>
-              </Group>
-            </Card>
+            {[
+              { text: "“Nathaniel Teo Kukubird”", name: "Ernest Wong" },
+              { text: "“Nathaniel Teo Kukubird”", name: "Wong Jiu Geng" },
+              { text: "“I like Kukubird”", name: "Nathaniel Teo" },
+            ].map((review, index) => (
+              <Card
+                key={index}
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+                style={{ backgroundColor: "#FFF8ED" }}
+              >
+                <Text style={{ marginBottom: "1rem", color: "#272727" }}>{review.text}</Text>
+                <Group spacing="sm" style={{ marginTop: "1rem" }}>
+                  <Avatar radius="xl">
+                    <IconUser size={20} />
+                  </Avatar>
+                  <Text style={{ fontWeight: 500, color: "#272727" }}>{review.name}</Text>
+                </Group>
+              </Card>
+            ))}
           </SimpleGrid>
         </Container>
       </Container>
@@ -206,4 +207,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default TestHome;

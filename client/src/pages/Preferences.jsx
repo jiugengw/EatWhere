@@ -7,7 +7,7 @@ import {
   Button,
 } from '@mantine/core';
 import { useState } from 'react';
-import Footer from '../components/footer';
+import Footer from '../shared/components/footer';
 
 const cuisines = [
   'Chinese',

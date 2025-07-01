@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+//mantine imports
 import {
   TextInput,
   PasswordInput,
@@ -11,53 +11,77 @@ import {
   Anchor,
   Checkbox,
 } from "@mantine/core";
-import axios from "axios";
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
+//react imports
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
+
+//own imports
 import { loginValidation } from "../shared/validationschemas";
-import { AuthContext } from "../shared/context/auth-context";
+import useAxios from "../api/useApi";
+import useAuth from "../shared/hooks/auth";
 import Footer from "../shared/components/footer";
 import Loading from "../shared/UIelements/loading";
 
-
+interface LoginFormInputs {
+  usernameOrEmail: string;
+  password: string;
+  rememberMe?: boolean;
+}
 
 export default function Login() {
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({ mode: "onChange" });
+  } = useForm<LoginFormInputs>({ mode: "onChange" });
 
-  const [errorMsg, setErrorMsg] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
+  const { setAuth } = useAuth();
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setIsLoading(true);
     setErrorMsg("");
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/users/login",
-        {
-          usernameOrEmail: data.usernameOrEmail,
-          password: data.password,
-        }
-      );
+      const response = await useAxios.post("/users/login", {
+        usernameOrEmail: data.usernameOrEmail,
+        password: data.password,
+      });
 
-      const userId = response.data.data.User._id;
-      const name = response.data.data.User.name;
-      console.log(name);
+      const user = response.data.data.User;
       const token = response.data.token;
+      const firstName = user.firstName;
+      const lastName = user.lastName;
+      const fullName = user.fullName;
+      const email = user.email;
+      const id = user.id;
+
+      setAuth({
+        id,
+        fullName,
+        firstName,
+        lastName,
+        token,
+        email,
+      });
 
       localStorage.setItem("token", token);
-      auth.login(userId,name);
-
       navigate("/home");
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("Invalid username or password.");
+    } catch (err: any) {
+      
+      console.error("Caught error:", err);
+      if (!err?.response) {
+        setErrorMsg("No Server Response");
+      } else if (err.response?.status === 400) {
+        setErrorMsg("Missing Username or Password");
+      } else if (err.response?.status === 401) {
+        setErrorMsg("Unauthorized");
+      } else {
+        setErrorMsg("Incorrect Username or password");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +101,7 @@ export default function Login() {
           style={{ textAlign: "center", marginBottom: "1.5rem" }}
         >
           Don't have an account?{" "}
-          <Anchor size="sm" href="/">
+          <Anchor component={Link} to="/">
             Sign up
           </Anchor>
         </Text>

@@ -10,6 +10,7 @@ import {
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import Usericon from "./usericon";
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "./logoutButton";
 
 export default function Navbar() {
   const [opened, { toggle, close }] = useDisclosure(false);
@@ -18,28 +19,28 @@ export default function Navbar() {
 
   const navButtons = (
     <>
-      <Button onClick={() => navigate("/home")} variant="subtle" color="black">
+      <Button onClick={() => {navigate("/home");close()}} variant="subtle" color="black">
         Home
       </Button>
       <Button
-        onClick={() => navigate("/explore")}
+        onClick={() => {navigate("/explore");close()}}
         variant="subtle"
         color="black"
       >
         Explore
       </Button>
-      <Button onClick={() => navigate("/login")} variant="subtle" color="black">
+      <Button onClick={() => {navigate("/login");close()}} variant="subtle" color="black">
         Log In
       </Button>
       <Button
-        onClick={() => navigate("/groups")}
+        onClick={() => {navigate("/groups");close()}}
         variant="subtle"
         color="black"
       >
         Group
       </Button>
       <Button
-        onClick={() => navigate("/history")}
+        onClick={() => {navigate("/history");close()}}
         variant="subtle"
         color="black"
       >
@@ -57,7 +58,7 @@ export default function Navbar() {
           <>
             <Burger opened={opened} onClick={toggle} aria-label="Toggle menu" />
             <Drawer opened={opened} onClose={close} padding="md" size="xs">
-              <Stack>{navButtons}</Stack>
+              <Stack>{navButtons}<LogoutButton/></Stack>
             </Drawer>
           </>
         ) : (

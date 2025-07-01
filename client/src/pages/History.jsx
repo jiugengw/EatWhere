@@ -34,7 +34,6 @@ function History() {
 
   return (
     <>
-    <TokenChecker/>
       <Container size="md" my="xl">
         <Title align="center" mb="lg">
           Dining History

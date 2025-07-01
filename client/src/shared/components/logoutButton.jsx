@@ -1,24 +1,25 @@
-import React, { useContext } from "react";
 import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/auth-context";
+import useAuth from "../hooks/auth";
+import useAxios from "../../api/useApi";
 
 export default function LogoutButton() {
-  const auth = useContext(AuthContext);
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    auth.logout();          
-    navigate("/login");     
+  const handleLogout = async () => {
+    try {
+      await useAxios.post("/users/logout");
+      setAuth({});
+      localStorage.removeItem("token");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <Button
-      color="red"
-      variant="light"
-      size="xs"
-      onClick={handleLogout}
-    >
+    <Button color="black" variant="light" size="xs" onClick={handleLogout}>
       Logout
     </Button>
   );

@@ -1,35 +1,18 @@
 import { Avatar, Button, Container, Grid, Paper, Stack, Text, Textarea, TextInput, Title, Group, PasswordInput, Tabs } from '@mantine/core';
 import Footer from '../shared/components/footer';
+import Profile from '../users/components/profile';
 
 function ProfilePage() {
   return (
     <>
-      <Container size="lg" my="xl">
+      <Container size={800} my="xl">
         <Title order={2} style={{ textAlign: 'center', marginBottom: '2rem' }}>
           User Profile
         </Title>
 
         <Grid gutter="xl">
           <Grid.Col span={12} md={4}>
-            <Paper withBorder shadow="sm" p="xl" radius="md" style={{ textAlign: 'center' }}>
-              <Avatar
-                size={120}
-                radius={120}
-                color="black"
-                style={{ marginLeft: 'auto', marginRight: 'auto', marginBottom: '1rem' }}
-              >
-                NT
-              </Avatar>
-              <Title order={4} style={{ marginBottom: '0.5rem' }}>
-                Nathaniel Teo Kukubird
-              </Title>
-              <Text color="dimmed" size="sm" style={{ marginBottom: '0.75rem' }}>
-                NathanielTeo@kukubird.com
-              </Text>
-              <Text size="sm" style={{ marginBottom: '0.5rem' }}>
-                I like guys
-              </Text>
-            </Paper>
+           <Profile/>
           </Grid.Col>
 
           <Grid.Col span={12} md={8}>
