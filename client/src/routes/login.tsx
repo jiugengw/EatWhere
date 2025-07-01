@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { LoginPage } from '../pages/auth/LoginPage/LoginPage';
+import { LoginPage } from '@/pages/Auth/Login/Login';
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,

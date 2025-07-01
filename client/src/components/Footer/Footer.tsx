@@ -1,33 +1,42 @@
-import { Anchor, Container, Group } from '@mantine/core';
-import { MantineLogo } from '@mantinex/mantine-logo';
-import classes from './Footer.module.css';
+import { Container, Flex, Text, Group, Anchor } from '@mantine/core';
 
-const links = [
-  { link: '#', label: 'Contact' },
-  { link: '#', label: 'Privacy' },
-  { link: '#', label: 'Blog' },
-  { link: '#', label: 'Careers' },
-];
-
-export function Footer() {
-  const items = links.map((link) => (
-    <Anchor<'a'>
-      c="dimmed"
-      key={link.label}
-      href={link.link}
-      onClick={(event) => event.preventDefault()}
-      size="sm"
-    >
-      {link.label}
-    </Anchor>
-  ));
-
+export default function Footer() {
   return (
-    <div className={classes.footer}>
-      <Container className={classes.inner}>
-        <MantineLogo size={28} />
-        <Group className={classes.links}>{items}</Group>
+    <footer
+      style={{
+        marginTop: '3rem',
+        backgroundColor: '#FFFFFF', // White background
+        borderTop: '1px solid #e0e0e0', // Light gray border
+        padding: '2rem 0',
+      }}
+    >
+      <Container size="lg">
+        <Flex justify="space-between" align="center">
+          {/* Left Side */}
+          <Text size="sm" style={{ color: '#555555' }}>
+            © 2025 Where2Eat
+          </Text>
+
+          {/* Right Side Links */}
+          <Group spacing="md">
+            {['Privacy', 'Terms', 'Contact'].map((link) => (
+              <Anchor
+                key={link}
+                href="#"
+                style={{
+                  color: '#555555',
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#FF8C42')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#555555')}
+              >
+                {link}
+              </Anchor>
+            ))}
+          </Group>
+        </Flex>
       </Container>
-    </div>
+    </footer>
   );
 }

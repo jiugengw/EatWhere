@@ -1,9 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
+import { PreferencesPage } from '@/pages/User/Preferences/Preferences';
 
 export const Route = createFileRoute('/preferences')({
-  component: RouteComponent,
-})
-
-function RouteComponent() {
-  return <div>Hello "/preferences"!</div>
-}
+  component: PreferencesPage,
+});

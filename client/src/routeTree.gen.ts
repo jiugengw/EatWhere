@@ -10,32 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as RecommendationsRouteImport } from './routes/recommendations'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as HistoryRouteImport } from './routes/history'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GroupsIndexRouteImport } from './routes/groups/index'
-import { Route as GroupsCreateRouteImport } from './routes/groups/create'
-import { Route as GroupsJoinIndexRouteImport } from './routes/groups/join/index'
-import { Route as GroupsGroupIdIndexRouteImport } from './routes/groups/$groupId/index'
-import { Route as GroupsJoinJoinCodeRouteImport } from './routes/groups/join/$joinCode'
-import { Route as GroupsGroupIdRecommendationsRouteImport } from './routes/groups/$groupId/recommendations'
-import { Route as GroupsGroupIdPreferencesRouteImport } from './routes/groups/$groupId/preferences'
-import { Route as GroupsGroupIdMembersRouteImport } from './routes/groups/$groupId/members'
-import { Route as GroupsGroupIdHistoryRouteImport } from './routes/groups/$groupId/history'
+import { Route as GroupIndexRouteImport } from './routes/group/index'
+import { Route as GroupEditIdRouteImport } from './routes/group/edit/$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RecommendationsRoute = RecommendationsRouteImport.update({
-  id: '/recommendations',
-  path: '/recommendations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -53,19 +39,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HistoryRoute = HistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -73,197 +54,97 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GroupsIndexRoute = GroupsIndexRouteImport.update({
-  id: '/groups/',
-  path: '/groups/',
+const GroupIndexRoute = GroupIndexRouteImport.update({
+  id: '/group/',
+  path: '/group/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GroupsCreateRoute = GroupsCreateRouteImport.update({
-  id: '/groups/create',
-  path: '/groups/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroupsJoinIndexRoute = GroupsJoinIndexRouteImport.update({
-  id: '/groups/join/',
-  path: '/groups/join/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroupsGroupIdIndexRoute = GroupsGroupIdIndexRouteImport.update({
-  id: '/groups/$groupId/',
-  path: '/groups/$groupId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroupsJoinJoinCodeRoute = GroupsJoinJoinCodeRouteImport.update({
-  id: '/groups/join/$joinCode',
-  path: '/groups/join/$joinCode',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroupsGroupIdRecommendationsRoute =
-  GroupsGroupIdRecommendationsRouteImport.update({
-    id: '/groups/$groupId/recommendations',
-    path: '/groups/$groupId/recommendations',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const GroupsGroupIdPreferencesRoute =
-  GroupsGroupIdPreferencesRouteImport.update({
-    id: '/groups/$groupId/preferences',
-    path: '/groups/$groupId/preferences',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const GroupsGroupIdMembersRoute = GroupsGroupIdMembersRouteImport.update({
-  id: '/groups/$groupId/members',
-  path: '/groups/$groupId/members',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroupsGroupIdHistoryRoute = GroupsGroupIdHistoryRouteImport.update({
-  id: '/groups/$groupId/history',
-  path: '/groups/$groupId/history',
+const GroupEditIdRoute = GroupEditIdRouteImport.update({
+  id: '/group/edit/$id',
+  path: '/group/edit/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/history': typeof HistoryRoute
+  '/explore': typeof ExploreRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/preferences': typeof PreferencesRoute
   '/profile': typeof ProfileRoute
-  '/recommendations': typeof RecommendationsRoute
   '/signup': typeof SignupRoute
-  '/groups/create': typeof GroupsCreateRoute
-  '/groups': typeof GroupsIndexRoute
-  '/groups/$groupId/history': typeof GroupsGroupIdHistoryRoute
-  '/groups/$groupId/members': typeof GroupsGroupIdMembersRoute
-  '/groups/$groupId/preferences': typeof GroupsGroupIdPreferencesRoute
-  '/groups/$groupId/recommendations': typeof GroupsGroupIdRecommendationsRoute
-  '/groups/join/$joinCode': typeof GroupsJoinJoinCodeRoute
-  '/groups/$groupId': typeof GroupsGroupIdIndexRoute
-  '/groups/join': typeof GroupsJoinIndexRoute
+  '/group': typeof GroupIndexRoute
+  '/group/edit/$id': typeof GroupEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/history': typeof HistoryRoute
+  '/explore': typeof ExploreRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/preferences': typeof PreferencesRoute
   '/profile': typeof ProfileRoute
-  '/recommendations': typeof RecommendationsRoute
   '/signup': typeof SignupRoute
-  '/groups/create': typeof GroupsCreateRoute
-  '/groups': typeof GroupsIndexRoute
-  '/groups/$groupId/history': typeof GroupsGroupIdHistoryRoute
-  '/groups/$groupId/members': typeof GroupsGroupIdMembersRoute
-  '/groups/$groupId/preferences': typeof GroupsGroupIdPreferencesRoute
-  '/groups/$groupId/recommendations': typeof GroupsGroupIdRecommendationsRoute
-  '/groups/join/$joinCode': typeof GroupsJoinJoinCodeRoute
-  '/groups/$groupId': typeof GroupsGroupIdIndexRoute
-  '/groups/join': typeof GroupsJoinIndexRoute
+  '/group': typeof GroupIndexRoute
+  '/group/edit/$id': typeof GroupEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/history': typeof HistoryRoute
+  '/explore': typeof ExploreRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/preferences': typeof PreferencesRoute
   '/profile': typeof ProfileRoute
-  '/recommendations': typeof RecommendationsRoute
   '/signup': typeof SignupRoute
-  '/groups/create': typeof GroupsCreateRoute
-  '/groups/': typeof GroupsIndexRoute
-  '/groups/$groupId/history': typeof GroupsGroupIdHistoryRoute
-  '/groups/$groupId/members': typeof GroupsGroupIdMembersRoute
-  '/groups/$groupId/preferences': typeof GroupsGroupIdPreferencesRoute
-  '/groups/$groupId/recommendations': typeof GroupsGroupIdRecommendationsRoute
-  '/groups/join/$joinCode': typeof GroupsJoinJoinCodeRoute
-  '/groups/$groupId/': typeof GroupsGroupIdIndexRoute
-  '/groups/join/': typeof GroupsJoinIndexRoute
+  '/group/': typeof GroupIndexRoute
+  '/group/edit/$id': typeof GroupEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
-    | '/dashboard'
-    | '/history'
+    | '/explore'
+    | '/home'
     | '/login'
     | '/preferences'
     | '/profile'
-    | '/recommendations'
     | '/signup'
-    | '/groups/create'
-    | '/groups'
-    | '/groups/$groupId/history'
-    | '/groups/$groupId/members'
-    | '/groups/$groupId/preferences'
-    | '/groups/$groupId/recommendations'
-    | '/groups/join/$joinCode'
-    | '/groups/$groupId'
-    | '/groups/join'
+    | '/group'
+    | '/group/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
-    | '/dashboard'
-    | '/history'
+    | '/explore'
+    | '/home'
     | '/login'
     | '/preferences'
     | '/profile'
-    | '/recommendations'
     | '/signup'
-    | '/groups/create'
-    | '/groups'
-    | '/groups/$groupId/history'
-    | '/groups/$groupId/members'
-    | '/groups/$groupId/preferences'
-    | '/groups/$groupId/recommendations'
-    | '/groups/join/$joinCode'
-    | '/groups/$groupId'
-    | '/groups/join'
+    | '/group'
+    | '/group/edit/$id'
   id:
     | '__root__'
     | '/'
-    | '/about'
-    | '/dashboard'
-    | '/history'
+    | '/explore'
+    | '/home'
     | '/login'
     | '/preferences'
     | '/profile'
-    | '/recommendations'
     | '/signup'
-    | '/groups/create'
-    | '/groups/'
-    | '/groups/$groupId/history'
-    | '/groups/$groupId/members'
-    | '/groups/$groupId/preferences'
-    | '/groups/$groupId/recommendations'
-    | '/groups/join/$joinCode'
-    | '/groups/$groupId/'
-    | '/groups/join/'
+    | '/group/'
+    | '/group/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  DashboardRoute: typeof DashboardRoute
-  HistoryRoute: typeof HistoryRoute
+  ExploreRoute: typeof ExploreRoute
+  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   PreferencesRoute: typeof PreferencesRoute
   ProfileRoute: typeof ProfileRoute
-  RecommendationsRoute: typeof RecommendationsRoute
   SignupRoute: typeof SignupRoute
-  GroupsCreateRoute: typeof GroupsCreateRoute
-  GroupsIndexRoute: typeof GroupsIndexRoute
-  GroupsGroupIdHistoryRoute: typeof GroupsGroupIdHistoryRoute
-  GroupsGroupIdMembersRoute: typeof GroupsGroupIdMembersRoute
-  GroupsGroupIdPreferencesRoute: typeof GroupsGroupIdPreferencesRoute
-  GroupsGroupIdRecommendationsRoute: typeof GroupsGroupIdRecommendationsRoute
-  GroupsJoinJoinCodeRoute: typeof GroupsJoinJoinCodeRoute
-  GroupsGroupIdIndexRoute: typeof GroupsGroupIdIndexRoute
-  GroupsJoinIndexRoute: typeof GroupsJoinIndexRoute
+  GroupIndexRoute: typeof GroupIndexRoute
+  GroupEditIdRoute: typeof GroupEditIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,13 +154,6 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recommendations': {
-      id: '/recommendations'
-      path: '/recommendations'
-      fullPath: '/recommendations'
-      preLoaderRoute: typeof RecommendationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -303,25 +177,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/history': {
-      id: '/history'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof HistoryRouteImport
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -331,67 +198,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/groups/': {
-      id: '/groups/'
-      path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof GroupsIndexRouteImport
+    '/group/': {
+      id: '/group/'
+      path: '/group'
+      fullPath: '/group'
+      preLoaderRoute: typeof GroupIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/groups/create': {
-      id: '/groups/create'
-      path: '/groups/create'
-      fullPath: '/groups/create'
-      preLoaderRoute: typeof GroupsCreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/join/': {
-      id: '/groups/join/'
-      path: '/groups/join'
-      fullPath: '/groups/join'
-      preLoaderRoute: typeof GroupsJoinIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/$groupId/': {
-      id: '/groups/$groupId/'
-      path: '/groups/$groupId'
-      fullPath: '/groups/$groupId'
-      preLoaderRoute: typeof GroupsGroupIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/join/$joinCode': {
-      id: '/groups/join/$joinCode'
-      path: '/groups/join/$joinCode'
-      fullPath: '/groups/join/$joinCode'
-      preLoaderRoute: typeof GroupsJoinJoinCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/$groupId/recommendations': {
-      id: '/groups/$groupId/recommendations'
-      path: '/groups/$groupId/recommendations'
-      fullPath: '/groups/$groupId/recommendations'
-      preLoaderRoute: typeof GroupsGroupIdRecommendationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/$groupId/preferences': {
-      id: '/groups/$groupId/preferences'
-      path: '/groups/$groupId/preferences'
-      fullPath: '/groups/$groupId/preferences'
-      preLoaderRoute: typeof GroupsGroupIdPreferencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/$groupId/members': {
-      id: '/groups/$groupId/members'
-      path: '/groups/$groupId/members'
-      fullPath: '/groups/$groupId/members'
-      preLoaderRoute: typeof GroupsGroupIdMembersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/groups/$groupId/history': {
-      id: '/groups/$groupId/history'
-      path: '/groups/$groupId/history'
-      fullPath: '/groups/$groupId/history'
-      preLoaderRoute: typeof GroupsGroupIdHistoryRouteImport
+    '/group/edit/$id': {
+      id: '/group/edit/$id'
+      path: '/group/edit/$id'
+      fullPath: '/group/edit/$id'
+      preLoaderRoute: typeof GroupEditIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -399,23 +217,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  DashboardRoute: DashboardRoute,
-  HistoryRoute: HistoryRoute,
+  ExploreRoute: ExploreRoute,
+  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   PreferencesRoute: PreferencesRoute,
   ProfileRoute: ProfileRoute,
-  RecommendationsRoute: RecommendationsRoute,
   SignupRoute: SignupRoute,
-  GroupsCreateRoute: GroupsCreateRoute,
-  GroupsIndexRoute: GroupsIndexRoute,
-  GroupsGroupIdHistoryRoute: GroupsGroupIdHistoryRoute,
-  GroupsGroupIdMembersRoute: GroupsGroupIdMembersRoute,
-  GroupsGroupIdPreferencesRoute: GroupsGroupIdPreferencesRoute,
-  GroupsGroupIdRecommendationsRoute: GroupsGroupIdRecommendationsRoute,
-  GroupsJoinJoinCodeRoute: GroupsJoinJoinCodeRoute,
-  GroupsGroupIdIndexRoute: GroupsGroupIdIndexRoute,
-  GroupsJoinIndexRoute: GroupsJoinIndexRoute,
+  GroupIndexRoute: GroupIndexRoute,
+  GroupEditIdRoute: GroupEditIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
