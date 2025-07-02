@@ -3,6 +3,7 @@ import { Group } from './groupModel.js';
 import { Types } from 'mongoose';
 import { AppError } from '../common/utils/AppError.js';
 import { User } from '../users/userModel.js';
+import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
 export const updateGroupById = async (groupId, data) => {
     const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {
         new: true,
@@ -63,4 +64,16 @@ export const leaveGroupById = async (groupId, userId) => {
         groupId,
         userId,
     };
+};
+export const createGroupForUser = async (userId, groupInput) => {
+    const data = {
+        ...groupInput,
+        code: await generateUniqueGroupCode(),
+        users: [userId],
+    };
+    const newGroup = await Group.create(data);
+    await User.findByIdAndUpdate(userId, {
+        $push: { groups: newGroup._id },
+    });
+    return newGroup;
 };

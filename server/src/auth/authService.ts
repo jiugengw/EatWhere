@@ -141,7 +141,7 @@ export const refreshAccessToken = async (
   const newAccessToken = jwt.sign(
     { id: user._id, name: user.firstName },
     config.JWT_SECRET,
-    { expiresIn: '10s' }
+    { expiresIn: '15m' }
   );
 
   return newAccessToken;

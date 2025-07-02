@@ -1,4 +1,4 @@
-import { Group } from "../groupModel";
+import { Group } from "../groupModel.js";
 export const generateUniqueGroupCode = async (length = 6) => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const generate = () => {

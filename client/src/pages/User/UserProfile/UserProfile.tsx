@@ -11,9 +11,9 @@ import {
   Textarea,
   PasswordInput,
   Box,
-} from "@mantine/core";
-import { useState, type JSX } from "react";
-import { useUserProfile } from "@/api/useUserProfile";
+} from '@mantine/core';
+import { useState, type JSX } from 'react';
+import { useUserProfile } from '@/api/useUserProfile';
 // import { Loading } from "@/UIelements/loading";
 
 export const ProfilePage = (): JSX.Element => {
@@ -23,12 +23,12 @@ export const ProfilePage = (): JSX.Element => {
   const user = data?.data?.User ?? {};
   console.log(user);
   const [activeTab, setActiveTab] = useState<
-    "profile" | "password" | "preferences"
-  >("profile");
+    'profile' | 'password' | 'preferences'
+  >('profile');
 
   const renderContent = (): JSX.Element | null => {
     switch (activeTab) {
-      case "profile":
+      case 'profile':
         return (
           <Stack spacing="md">
             <TextInput
@@ -36,8 +36,8 @@ export const ProfilePage = (): JSX.Element => {
               placeholder={user.firstName}
               required
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <TextInput
@@ -45,8 +45,8 @@ export const ProfilePage = (): JSX.Element => {
               placeholder={user.lastName}
               required
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <TextInput
@@ -55,8 +55,8 @@ export const ProfilePage = (): JSX.Element => {
               type="email"
               required
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <Textarea
@@ -64,16 +64,16 @@ export const ProfilePage = (): JSX.Element => {
               placeholder="Tell us a little about yourself"
               minRows={4}
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <Group position="right" mt="md">
               <Button
                 radius="xl"
                 style={{
-                  backgroundColor: "#FF8C42",
-                  color: "white",
+                  backgroundColor: '#FF8C42',
+                  color: 'white',
                   fontWeight: 600,
                 }}
               >
@@ -83,39 +83,39 @@ export const ProfilePage = (): JSX.Element => {
           </Stack>
         );
 
-      case "password":
+      case 'password':
         return (
           <Stack spacing="md">
             <PasswordInput
               label="Current Password"
               placeholder="Enter current password"
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <PasswordInput
               label="New Password"
               placeholder="Enter new password"
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <PasswordInput
               label="Confirm New Password"
               placeholder="Re-enter new password"
               styles={{
-                label: { color: "#222222", fontWeight: 500 },
-                input: { backgroundColor: "#F9F9F9" },
+                label: { color: '#222222', fontWeight: 500 },
+                input: { backgroundColor: '#F9F9F9' },
               }}
             />
             <Group position="right" mt="md">
               <Button
                 radius="xl"
                 style={{
-                  backgroundColor: "#FF8C42",
-                  color: "white",
+                  backgroundColor: '#FF8C42',
+                  color: 'white',
                   fontWeight: 600,
                 }}
               >
@@ -125,7 +125,7 @@ export const ProfilePage = (): JSX.Element => {
           </Stack>
         );
 
-      case "preferences":
+      case 'preferences':
         return (
           <Stack spacing="md">
             <Text>
@@ -137,8 +137,8 @@ export const ProfilePage = (): JSX.Element => {
                 component="a"
                 href="/preferences"
                 style={{
-                  backgroundColor: "#FF8C42",
-                  color: "white",
+                  backgroundColor: '#FF8C42',
+                  color: 'white',
                   fontWeight: 600,
                 }}
               >
@@ -156,7 +156,7 @@ export const ProfilePage = (): JSX.Element => {
   return (
     <>
       <Container size="lg" my="xl">
-        <Title order={2} mb="xl" style={{ color: "#222222", fontWeight: 700 }}>
+        <Title order={2} mb="xl" style={{ color: '#222222', fontWeight: 700 }}>
           My Profile
         </Title>
 
@@ -165,19 +165,19 @@ export const ProfilePage = (): JSX.Element => {
           shadow="md"
           radius="lg"
           style={{
-            backgroundColor: "#FFFFFF",
-            borderColor: "#e0e0e0",
-            display: "flex",
-            minHeight: "500px",
+            backgroundColor: '#FFFFFF',
+            borderColor: '#e0e0e0',
+            display: 'flex',
+            minHeight: '500px',
           }}
         >
           {/* Side Navigation */}
           <Box
             style={{
-              width: "220px",
-              borderRight: "1px solid #e0e0e0",
-              padding: "1.5rem 1rem",
-              backgroundColor: "#f9f9f9",
+              width: '220px',
+              borderRight: '1px solid #e0e0e0',
+              padding: '1.5rem 1rem',
+              backgroundColor: '#f9f9f9',
             }}
           >
             <Stack spacing="md">
@@ -185,49 +185,49 @@ export const ProfilePage = (): JSX.Element => {
                 size={80}
                 radius={80}
                 color="#FF8C42"
-                style={{ margin: "0 auto", fontSize: "2rem" }}
+                style={{ margin: '0 auto', fontSize: '2rem' }}
               >
                 JD
               </Avatar>
               <Button
-                variant={activeTab === "profile" ? "filled" : "light"}
+                variant={activeTab === 'profile' ? 'filled' : 'light'}
                 radius="xl"
                 fullWidth
                 style={{
                   backgroundColor:
-                    activeTab === "profile" ? "#FF8C42" : undefined,
-                  color: activeTab === "profile" ? "white" : "#222222",
+                    activeTab === 'profile' ? '#FF8C42' : undefined,
+                  color: activeTab === 'profile' ? 'white' : '#222222',
                   fontWeight: 500,
                 }}
-                onClick={() => setActiveTab("profile")}
+                onClick={() => setActiveTab('profile')}
               >
                 Profile Info
               </Button>
               <Button
-                variant={activeTab === "password" ? "filled" : "light"}
+                variant={activeTab === 'password' ? 'filled' : 'light'}
                 radius="xl"
                 fullWidth
                 style={{
                   backgroundColor:
-                    activeTab === "password" ? "#FF8C42" : undefined,
-                  color: activeTab === "password" ? "white" : "#222222",
+                    activeTab === 'password' ? '#FF8C42' : undefined,
+                  color: activeTab === 'password' ? 'white' : '#222222',
                   fontWeight: 500,
                 }}
-                onClick={() => setActiveTab("password")}
+                onClick={() => setActiveTab('password')}
               >
                 Password
               </Button>
               <Button
-                variant={activeTab === "preferences" ? "filled" : "light"}
+                variant={activeTab === 'preferences' ? 'filled' : 'light'}
                 radius="xl"
                 fullWidth
                 style={{
                   backgroundColor:
-                    activeTab === "preferences" ? "#FF8C42" : undefined,
-                  color: activeTab === "preferences" ? "white" : "#222222",
+                    activeTab === 'preferences' ? '#FF8C42' : undefined,
+                  color: activeTab === 'preferences' ? 'white' : '#222222',
                   fontWeight: 500,
                 }}
-                onClick={() => setActiveTab("preferences")}
+                onClick={() => setActiveTab('preferences')}
               >
                 Preferences
               </Button>
@@ -235,7 +235,7 @@ export const ProfilePage = (): JSX.Element => {
           </Box>
 
           {/* Main Content */}
-          <Box style={{ flex: 1, padding: "2rem", overflowY: "auto" }}>
+          <Box style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
             {renderContent()}
           </Box>
         </Paper>

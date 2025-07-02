@@ -1,11 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
-import { Group } from './groupModel.js';
+import { Group, GroupDoc } from './groupModel.js';
 import { Types } from 'mongoose';
 import { AppError } from '../common/utils/AppError.js';
 import { UpdateGroupInput } from '../shared/schemas/UpdateGroupSchema.js';
 import { User } from '../users/userModel.js';
+import { CreateGroupInput } from '../shared/schemas/CreateGroupSchema.js';
+import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
 
-export const updateGroupById = async (groupId: string, data: UpdateGroupInput) => {
+export const updateGroupById = async (
+  groupId: string,
+  data: UpdateGroupInput
+) => {
   const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {
     new: true,
     runValidators: true,
@@ -92,4 +97,28 @@ export const leaveGroupById = async (
     groupId,
     userId,
   };
+};
+
+type CreateGroupData = CreateGroupInput & {
+  code: string;
+  users: string[];
+};
+
+export const createGroupForUser = async (
+  userId: string,
+  groupInput: CreateGroupInput
+): Promise<GroupDoc> => {
+  const data: CreateGroupData = {
+    ...groupInput,
+    code: await generateUniqueGroupCode(),
+    users: [userId],
+  };
+
+  const newGroup = await Group.create(data);
+
+  await User.findByIdAndUpdate(userId, {
+    $push: { groups: newGroup._id },
+  });
+
+  return newGroup;
 };

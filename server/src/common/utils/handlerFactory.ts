@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import type { HydratedDocument, Model } from 'mongoose';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 import { AppError } from './AppError.js';
-import { getRequiredFields } from './getRequiredFields.js';
 import { GetOneOptions, DeleteOneOptions } from '../../types/factory.js';
 
 export const getOne = <T>(
@@ -73,28 +72,4 @@ export const deleteOne = <T>(
   });
 };
 
-export const createOne = <T>(Model: Model<T>): RequestHandler => {
-  return catchAsync(async (req, res, next) => {
-    const body = getRequiredFields(Model.schema, req.body);
 
-    if (!req.user) {
-      return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-    }
-
-    if (Model.modelName === 'Group') {
-      body.users = [req.user.id];
-    } else if (Model.modelName === 'History') {
-      body.user = req.user.id;
-      if (req.group?.id) body.group = req.group.id;
-    }
-
-    const doc = await Model.create(body);
-
-    res.status(StatusCodes.CREATED).json({
-      status: 'success',
-      data: {
-        [Model.modelName]: doc,
-      },
-    });
-  });
-};

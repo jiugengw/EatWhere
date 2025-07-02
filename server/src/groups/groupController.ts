@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { Group } from './groupModel.js';
 import {
+  createGroupForUser,
   isUserInGroup,
   joinGroupById,
   leaveGroupById,
@@ -9,11 +10,10 @@ import {
 import { RequestHandler } from 'express';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
-import { createOne, getOne, deleteOne } from '../common/utils/handlerFactory.js';
+import { getOne, deleteOne } from '../common/utils/handlerFactory.js';
 import { UpdateGroupSchema } from '../shared/schemas/UpdateGroupSchema.js';
 import { User } from '../users/userModel.js';
-
-export const createGroup: RequestHandler = createOne(Group);
+import { CreateGroupSchema } from '../shared/schemas/CreateGroupSchema.js';
 
 export const getGroup: RequestHandler = getOne(Group, {
   populateOptions: {
@@ -118,5 +118,30 @@ export const leaveGroup = catchAsync(async (req, res, next) => {
     status: 'success',
     message,
     data: { groupId, userId },
+  });
+});
+
+export const createGroup = catchAsync(async (req, res, next) => {
+  const parsed = CreateGroupSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return next(
+      new AppError(
+        'Group creation validation failed',
+        StatusCodes.BAD_REQUEST,
+        parsed.error.flatten().fieldErrors
+      )
+    );
+  }
+
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const newGroup = await createGroupForUser(req.user.id, parsed.data);
+
+  res.status(StatusCodes.CREATED).json({
+    status: 'success',
+    data: { Group: newGroup },
   });
 });
