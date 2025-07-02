@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { IconChevronDown } from '@tabler/icons-react';
 import Usericon from '../Usericon/Usericon';
 import classes from './Navbar.module.css';
+import { ColorSchemeToggle } from '../ColorSchemeToggle/ColorSchemeToggle';
 
 export default function Navbar() {
   const links = [
@@ -69,8 +70,10 @@ export default function Navbar() {
               );
             })}
           </Group>
-
-          <Usericon />
+          <Group gap="sm">
+            <ColorSchemeToggle />
+            <Usericon />
+          </Group>
         </Flex>
       </Container>
     </Box>
