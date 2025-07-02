@@ -27,7 +27,6 @@ interface UserReview {
 }
 
 export const HomePage = (): JSX.Element => {
-  const { auth } = useAuth();
   console.log(useAuth());
   const recommendedPlaces: RecommendedItem[] = [
     {

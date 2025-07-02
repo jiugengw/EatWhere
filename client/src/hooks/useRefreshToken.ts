@@ -6,7 +6,7 @@ export const useRefreshToken = () => {
 
   const refresh = async (): Promise<string> => {
     try {
-      const response = await api.get("/refresh", {
+      const response = await api.get("/users/refresh-token", {
         withCredentials: true,
       });
       setAuth((prev) => {
