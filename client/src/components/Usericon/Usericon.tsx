@@ -3,20 +3,21 @@ import {
   Popover,
   Text,
   Box,
-  Anchor,
   Container,
   Divider,
   Paper,
-} from "@mantine/core";
-import { IconUserCircle } from "@tabler/icons-react";
-import { Link } from "@tanstack/react-router";
-import useAuth from "@/hooks/useAuth";
-import LogoutButton from "../LogoutButton";
+  Button,
+} from '@mantine/core';
+import { IconUserCircle } from '@tabler/icons-react';
+import { Link } from '@tanstack/react-router';
+import useAuth from '@/hooks/useAuth';
+import { LogoutButton } from '../LogoutButton';
+import classes from './Usericon.module.css';
 
 export default function Usericon() {
   const { auth } = useAuth();
   const loggedIn = !!auth.token;
-  const fullName: string = loggedIn ? (auth.fullName as string) : "";
+  const fullName: string = loggedIn ? (auth.fullName as string) : '';
 
   return (
     <Popover
@@ -24,44 +25,27 @@ export default function Usericon() {
       position="bottom"
       withArrow
       shadow="lg"
-      transitionProps={{ transition: "pop", duration: 150 }}
+      transitionProps={{ transition: 'pop', duration: 150 }}
     >
       <Popover.Target>
-        <Box
-          style={{
-            padding: 6,
-            display: "inline-block",
-            transition: "transform 0.2s ease-out",
-          }}
-        >
+        <Box className={classes.avatarbox}>
           {loggedIn ? (
             <Avatar name={fullName} color="initials">
               {fullName
-                ?.split(" ")
+                ?.split(' ')
                 .map((n) => n[0])
-                .join("")}
+                .join('')}
             </Avatar>
           ) : (
-            <IconUserCircle
-              size={32}
-              stroke={1.5}
-              style={{ cursor: "pointer" }}
-            />
+            <IconUserCircle size={32} stroke={1.5} className={classes.icon} />
           )}
         </Box>
       </Popover.Target>
 
-      <Popover.Dropdown>
+      <Popover.Dropdown className={classes.dropdown}>
         <Paper radius="md" p="sm" withBorder shadow="sm">
           {loggedIn ? (
-            <Container
-              style={{
-                alignItems: "center",
-                display: "flex",
-                flexDirection: "column",
-                textAlign: "center",
-              }}
-            >
+            <Container className={classes.containerCenter}>
               <Text size="md" fw={500}>
                 {fullName}
               </Text>
@@ -69,18 +53,30 @@ export default function Usericon() {
                 There will be a bunch more stuff here next time
               </Text>
               <Divider my="sm" />
-              <Anchor component={Link} to="/profile" fw={500}>
+              <Button
+                component={Link}
+                to="/profile"
+                variant="subtle"
+                fullWidth
+                radius="md"
+              >
                 View my profile
-              </Anchor>{" "}
-              <br/>
+              </Button>
+              <br />
               <LogoutButton />
             </Container>
           ) : (
-            <Container style={{ textAlign: "center" }}>
-              <Anchor component={Link} to="/login" fw={500}>
-                Log in
-              </Anchor>{" "}
-              to access the full features
+            <Container className={classes.loginPrompt}>
+              <Button
+                component={Link}
+                to="/login"
+                variant="subtle"
+                size="sm"
+                radius="md"
+                fullWidth
+              >
+                Log in to access the full features
+              </Button>
             </Container>
           )}
         </Paper>

@@ -1,5 +1,10 @@
-import { createContext, useState, type ReactNode, type Dispatch, type SetStateAction } from "react";
-
+import {
+  createContext,
+  useState,
+  type ReactNode,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 interface AuthData {
   [key: string]: any;

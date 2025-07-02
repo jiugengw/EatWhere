@@ -1,7 +1,7 @@
-import { Button } from "@mantine/core";
-import useLogout from "@/hooks/useLogout";
+import { Button } from '@mantine/core';
+import useLogout from '@/hooks/useLogout';
 
-export default function LogoutButton() {
+export const LogoutButton = () => {
   const logout = useLogout();
 
   return (
@@ -9,4 +9,4 @@ export default function LogoutButton() {
       Logout
     </Button>
   );
-}
+};
