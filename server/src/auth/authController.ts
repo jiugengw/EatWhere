@@ -7,6 +7,8 @@ import {
   verifyAndGetUser,
   updateUserPassword,
   signAccessToken,
+  refreshAccessToken,
+  noRefreshTokenError,
 } from './authService.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
@@ -22,13 +24,13 @@ const createSendToken = (
   res: Response
 ): void => {
   const token = signToken(user.id);
-  const accessToken = signAccessToken(user.id,user.username);
+  const accessToken = signAccessToken(user.id, user.username);
   const cookieOptions: CookieOptions = {
     expires: new Date(
       Date.now() + Number(config.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure:true,
+    secure: true,
   };
   if (config.NODE_ENV === 'production') cookieOptions.secure = true;
 
@@ -114,4 +116,28 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   const user = await updateUserPassword(req.user.id, parsed.data);
 
   createSendToken(user, StatusCodes.OK, res);
+});
+
+export const handleRefreshToken = catchAsync(async (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.jwt) {
+    throw noRefreshTokenError();
+  }
+
+  const refreshToken = cookies.jwt;
+
+  const newAccessToken = await refreshAccessToken(refreshToken);
+
+  res.status(StatusCodes.OK).json({ token: newAccessToken });
+});
+
+export const logout = catchAsync(async (_req, res) => {
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+  });
+
+  res.status(StatusCodes.OK).json({ message: 'Logged out successfully' });
 });

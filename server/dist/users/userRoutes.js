@@ -2,9 +2,10 @@ import express from 'express';
 import { getMe, getUser, updateUser, deleteUser, 
 // getUserHistory,
 getUserGroups, getUserPreferences, updateMyPreferences, getUserByUsername, } from './userController.js';
-import { signup, login, protect, updatePassword } from '../auth/authController.js';
-import { logout } from '../auth/handleRefreshToken.js';
+import { signup, login, protect, updatePassword, handleRefreshToken } from '../auth/authController.js';
+import { logout } from '../auth/authController.js';
 const router = express.Router();
+router.get('/refresh-token', handleRefreshToken);
 /**
  * @swagger
  * /api/users/signup:

@@ -12,7 +12,7 @@ export const signToken = (id) => {
 };
 export const signAccessToken = (id, name) => {
     return jwt.sign({ id, name }, config.JWT_SECRET, {
-        expiresIn: "10s",
+        expiresIn: '10s',
     });
 };
 const verifyToken = (token, secret) => {
@@ -65,4 +65,20 @@ export const updateUserPassword = async (userId, data) => {
     user.passwordConfirm = passwordConfirm;
     await user.save();
     return user;
+};
+export const noRefreshTokenError = () => new AppError('No refresh token found.', StatusCodes.UNAUTHORIZED);
+export const refreshAccessToken = async (refreshToken) => {
+    let decoded;
+    try {
+        decoded = jwt.verify(refreshToken, config.JWT_SECRET);
+    }
+    catch {
+        throw new AppError('Invalid or expired refresh token.', StatusCodes.FORBIDDEN);
+    }
+    const user = await User.findById(decoded.id);
+    if (!user) {
+        throw new AppError('User not found.', StatusCodes.UNAUTHORIZED);
+    }
+    const newAccessToken = jwt.sign({ id: user._id, name: user.firstName }, config.JWT_SECRET, { expiresIn: '10s' });
+    return newAccessToken;
 };
