@@ -11,6 +11,7 @@ export const useLogout = () => {
       await api.post("/users/logout");
       setAuth({});
       localStorage.removeItem("token");
+      sessionStorage.removeItem("auth");
       navigate({ to: '/login' });
 
     } catch (err) {

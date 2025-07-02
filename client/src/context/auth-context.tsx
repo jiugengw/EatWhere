@@ -25,9 +25,10 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [auth, setAuthState] = useState<AuthData>({});
+  const [isInitialised, setIsInitialised] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("auth");
+    const stored = sessionStorage.getItem("auth");
     if (stored) {
       try {
         setAuthState(JSON.parse(stored));
@@ -35,14 +36,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error("Failed to parse stored auth:", err);
       }
     }
+    setIsInitialised(true);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("auth", JSON.stringify(auth));
+    if (isInitialised) {
+      sessionStorage.setItem("auth", JSON.stringify(auth));
+    }
   }, [auth]);
 
   const setAuth: Dispatch<SetStateAction<AuthData>> = (newAuth) => {
-    setAuthState(prev => {
+    setAuthState((prev) => {
       const updated = typeof newAuth === "function" ? newAuth(prev) : newAuth;
       return updated;
     });

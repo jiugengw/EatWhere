@@ -1,7 +1,6 @@
 import { catchAsync } from './catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
 import { AppError } from './AppError.js';
-import { getRequiredFields } from './getRequiredFields.js';
 export const getOne = (Model, options) => {
     const { populateOptions, selectFields, findByFn, enableVirtuals = true, } = options || {};
     return catchAsync(async (req, res, next) => {
@@ -41,28 +40,5 @@ export const deleteOne = (Model, options) => {
             await postDeleteFn(doc);
         }
         res.status(StatusCodes.NO_CONTENT).end();
-    });
-};
-export const createOne = (Model) => {
-    return catchAsync(async (req, res, next) => {
-        const body = getRequiredFields(Model.schema, req.body);
-        if (!req.user) {
-            return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-        }
-        if (Model.modelName === 'Group') {
-            body.users = [req.user.id];
-        }
-        else if (Model.modelName === 'History') {
-            body.user = req.user.id;
-            if (req.group?.id)
-                body.group = req.group.id;
-        }
-        const doc = await Model.create(body);
-        res.status(StatusCodes.CREATED).json({
-            status: 'success',
-            data: {
-                [Model.modelName]: doc,
-            },
-        });
     });
 };

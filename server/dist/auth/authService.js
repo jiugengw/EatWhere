@@ -79,6 +79,6 @@ export const refreshAccessToken = async (refreshToken) => {
     if (!user) {
         throw new AppError('User not found.', StatusCodes.UNAUTHORIZED);
     }
-    const newAccessToken = jwt.sign({ id: user._id, name: user.firstName }, config.JWT_SECRET, { expiresIn: '10s' });
+    const newAccessToken = jwt.sign({ id: user._id, name: user.firstName }, config.JWT_SECRET, { expiresIn: '15m' });
     return newAccessToken;
 };

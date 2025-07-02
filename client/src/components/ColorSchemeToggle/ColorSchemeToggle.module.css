@@ -1,0 +1,18 @@
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background-color: var(--mantine-color-gray-1);
+}
+
+body.dark-mode .iconButton:hover {
+  background-color: var(--mantine-color-dark-5);
+}

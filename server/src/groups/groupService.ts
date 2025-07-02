@@ -1,11 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
-import { Group } from './groupModel.js';
+import { Group, GroupDoc } from './groupModel.js';
 import { Types } from 'mongoose';
 import { AppError } from '../common/utils/AppError.js';
 import { UpdateGroupInput } from '../shared/schemas/UpdateGroupSchema.js';
 import { User } from '../users/userModel.js';
+import { CreateGroupInput } from '../shared/schemas/CreateGroupSchema.js';
+import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
 
-export const updateGroupById = async (groupId: string, data: UpdateGroupInput) => {
+export const updateGroupById = async (
+  groupId: string,
+  data: UpdateGroupInput
+) => {
   const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {
     new: true,
     runValidators: true,
@@ -36,21 +41,25 @@ export const isUserInGroup = async (
   return group.users.some((id: Types.ObjectId) => id.equals(userId));
 };
 
-export const joinGroupById = async (
-  groupId: string,
+export const joinGroupByCode = async (
+  code: string,
   userId: string
 ): Promise<JoinLeaveGroupResponse> => {
-  const alreadyInGroup = await isUserInGroup(groupId, userId);
+  const group = await Group.findOne({ code });
+
+  if (!group) {
+    throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+  }
+
+  const alreadyInGroup = await isUserInGroup(group._id.toString(), userId);
 
   if (!alreadyInGroup) {
-    const group = await Group.findById(groupId);
     const user = await User.findById(userId);
 
-    if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
     if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
 
     group.users.push(new Types.ObjectId(userId));
-    user.groups.push(new Types.ObjectId(groupId));
+    user.groups.push(group._id);
 
     await group.save();
     await user.save();
@@ -60,7 +69,7 @@ export const joinGroupById = async (
     message: alreadyInGroup
       ? 'User is already a member of this group'
       : 'User successfully joined the group',
-    groupId,
+    groupId: group._id.toString(),
     userId,
   };
 };
@@ -92,4 +101,28 @@ export const leaveGroupById = async (
     groupId,
     userId,
   };
+};
+
+type CreateGroupData = CreateGroupInput & {
+  code: string;
+  users: string[];
+};
+
+export const createGroupForUser = async (
+  userId: string,
+  groupInput: CreateGroupInput
+): Promise<GroupDoc> => {
+  const data: CreateGroupData = {
+    ...groupInput,
+    code: await generateUniqueGroupCode(),
+    users: [userId],
+  };
+
+  const newGroup = await Group.create(data);
+
+  await User.findByIdAndUpdate(userId, {
+    $push: { groups: newGroup._id },
+  });
+
+  return newGroup;
 };

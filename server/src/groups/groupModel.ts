@@ -23,6 +23,8 @@ const groupSchema = new Schema<IGroup>(
     code: {
       type: String,
       unique: true,
+      required: true,
+      length: 6,
     },
     users: {
       type: [

@@ -3,6 +3,7 @@ import { Group } from './groupModel.js';
 import { Types } from 'mongoose';
 import { AppError } from '../common/utils/AppError.js';
 import { User } from '../users/userModel.js';
+import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
 export const updateGroupById = async (groupId, data) => {
     const updatedGroup = await Group.findByIdAndUpdate(groupId, data, {
         new: true,
@@ -20,17 +21,18 @@ export const isUserInGroup = async (groupId, userId) => {
     }
     return group.users.some((id) => id.equals(userId));
 };
-export const joinGroupById = async (groupId, userId) => {
-    const alreadyInGroup = await isUserInGroup(groupId, userId);
+export const joinGroupByCode = async (code, userId) => {
+    const group = await Group.findOne({ code });
+    if (!group) {
+        throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+    }
+    const alreadyInGroup = await isUserInGroup(group._id.toString(), userId);
     if (!alreadyInGroup) {
-        const group = await Group.findById(groupId);
         const user = await User.findById(userId);
-        if (!group)
-            throw new AppError('Group not found', StatusCodes.NOT_FOUND);
         if (!user)
             throw new AppError('User not found', StatusCodes.NOT_FOUND);
         group.users.push(new Types.ObjectId(userId));
-        user.groups.push(new Types.ObjectId(groupId));
+        user.groups.push(group._id);
         await group.save();
         await user.save();
     }
@@ -38,7 +40,7 @@ export const joinGroupById = async (groupId, userId) => {
         message: alreadyInGroup
             ? 'User is already a member of this group'
             : 'User successfully joined the group',
-        groupId,
+        groupId: group._id.toString(),
         userId,
     };
 };
@@ -63,4 +65,16 @@ export const leaveGroupById = async (groupId, userId) => {
         groupId,
         userId,
     };
+};
+export const createGroupForUser = async (userId, groupInput) => {
+    const data = {
+        ...groupInput,
+        code: await generateUniqueGroupCode(),
+        users: [userId],
+    };
+    const newGroup = await Group.create(data);
+    await User.findByIdAndUpdate(userId, {
+        $push: { groups: newGroup._id },
+    });
+    return newGroup;
 };
