@@ -3,7 +3,7 @@ import AuthContext from "../context/auth-context";
 
 import type { AuthContextType } from "../context/auth-context";
 
-const useAuth = (): AuthContextType => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
 
   if (!context) {
@@ -15,4 +15,4 @@ const useAuth = (): AuthContextType => {
   return context;
 };
 
-export default useAuth;
+

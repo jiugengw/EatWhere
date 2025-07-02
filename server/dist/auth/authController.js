@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { signToken, signupUser, loginUser, verifyAndGetUser, updateUserPassword, signAccessToken, } from './authService.js';
+import { signToken, signupUser, loginUser, verifyAndGetUser, updateUserPassword, signAccessToken, refreshAccessToken, noRefreshTokenError, } from './authService.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { LoginSchema } from '../shared/schemas/LoginSchema.js';
@@ -63,4 +63,21 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     }
     const user = await updateUserPassword(req.user.id, parsed.data);
     createSendToken(user, StatusCodes.OK, res);
+});
+export const handleRefreshToken = catchAsync(async (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) {
+        throw noRefreshTokenError();
+    }
+    const refreshToken = cookies.jwt;
+    const newAccessToken = await refreshAccessToken(refreshToken);
+    res.status(StatusCodes.OK).json({ token: newAccessToken });
+});
+export const logout = catchAsync(async (_req, res) => {
+    res.clearCookie('jwt', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+    });
+    res.status(StatusCodes.OK).json({ message: 'Logged out successfully' });
 });

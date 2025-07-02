@@ -17,8 +17,6 @@ import { useLogin } from '@/hooks/useLogin';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { Loading } from '@/UIelements/loading';
-// import { useState } from 'react';
-// import Login from '@/pages/Login';
 
 export const LoginPage = (): JSX.Element => {
   const form = useForm<LoginInput>({
@@ -31,14 +29,14 @@ export const LoginPage = (): JSX.Element => {
   });
 
   
-  const signup = useLogin();
+  const login = useLogin();
 
   const handleSubmit = (values: LoginInput): void => {
-    signup.mutate(values);
+    login.mutate(values);
   };
   return (
     <>
-    {signup.status === 'pending' && <Loading/>}
+    {login.status === 'pending' && <Loading/>}
       <Container size="xs" my="xl">
         <Title order={2} className={classes.title}>
           Welcome Back

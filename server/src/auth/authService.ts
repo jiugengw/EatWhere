@@ -9,6 +9,11 @@ import { SignupInput } from '../shared/schemas/SignupSchema.js';
 import { UpdatePasswordInput } from '../shared/schemas/UpdatePasswordSchema.js';
 import { UserDoc, User } from '../users/userModel.js';
 
+interface DecodedToken {
+  id: string;
+  name?: string;
+}
+
 export const signToken = (id: string): string => {
   return jwt.sign({ id }, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRES_IN,
@@ -16,9 +21,9 @@ export const signToken = (id: string): string => {
   });
 };
 
-export const signAccessToken = (id:string , name:string):string => {
+export const signAccessToken = (id: string, name: string): string => {
   return jwt.sign({ id, name }, config.JWT_SECRET, {
-    expiresIn: "10s",
+    expiresIn: '10s',
   });
 };
 
@@ -108,4 +113,36 @@ export const updateUserPassword = async (
   await user.save();
 
   return user;
+};
+
+export const noRefreshTokenError = () =>
+  new AppError('No refresh token found.', StatusCodes.UNAUTHORIZED);
+
+export const refreshAccessToken = async (
+  refreshToken: string
+): Promise<string> => {
+  let decoded: DecodedToken;
+
+  try {
+    decoded = jwt.verify(refreshToken, config.JWT_SECRET) as DecodedToken;
+  } catch {
+    throw new AppError(
+      'Invalid or expired refresh token.',
+      StatusCodes.FORBIDDEN
+    );
+  }
+
+  const user: UserDoc | null = await User.findById(decoded.id);
+
+  if (!user) {
+    throw new AppError('User not found.', StatusCodes.UNAUTHORIZED);
+  }
+
+  const newAccessToken = jwt.sign(
+    { id: user._id, name: user.firstName },
+    config.JWT_SECRET,
+    { expiresIn: '10s' }
+  );
+
+  return newAccessToken;
 };

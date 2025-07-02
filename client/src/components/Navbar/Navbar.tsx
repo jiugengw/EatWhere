@@ -6,7 +6,7 @@ import {
 } from '@mantine/core';
 import classes from './Navbar.module.css';
 import { Link } from '@tanstack/react-router';
-import Usericon from '../Usericon/Usericon';
+import { Usericon } from '../Usericon/Usericon';
 
 export default function Navbar() {
   const links = [

@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { SignupInput } from "@/shared/schemas/SignupSchema";
 import { showNotification } from "@mantine/notifications";
 import { AxiosError } from "axios";
-import useAuth from "./useAuth";
+import { useAuth } from "./useAuth";
 
 export const useSignup = () => {
   const navigate = useNavigate();
