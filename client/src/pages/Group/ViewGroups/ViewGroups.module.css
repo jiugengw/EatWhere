@@ -1,0 +1,22 @@
+.container {
+  padding-top: var(--mantine-spacing-md);
+}
+
+.title {
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.groupCard {
+  border: 1px solid var(--mantine-color-gray-3);
+  padding: var(--mantine-spacing-md);
+  border-radius: var(--mantine-radius-md);
+}
+
+.groupInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.viewButton {
+  font-size: 12px;
+}

@@ -41,21 +41,25 @@ export const isUserInGroup = async (
   return group.users.some((id: Types.ObjectId) => id.equals(userId));
 };
 
-export const joinGroupById = async (
-  groupId: string,
+export const joinGroupByCode = async (
+  code: string,
   userId: string
 ): Promise<JoinLeaveGroupResponse> => {
-  const alreadyInGroup = await isUserInGroup(groupId, userId);
+  const group = await Group.findOne({ code });
+
+  if (!group) {
+    throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+  }
+
+  const alreadyInGroup = await isUserInGroup(group._id.toString(), userId);
 
   if (!alreadyInGroup) {
-    const group = await Group.findById(groupId);
     const user = await User.findById(userId);
 
-    if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
     if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
 
     group.users.push(new Types.ObjectId(userId));
-    user.groups.push(new Types.ObjectId(groupId));
+    user.groups.push(group._id);
 
     await group.save();
     await user.save();
@@ -65,7 +69,7 @@ export const joinGroupById = async (
     message: alreadyInGroup
       ? 'User is already a member of this group'
       : 'User successfully joined the group',
-    groupId,
+    groupId: group._id.toString(),
     userId,
   };
 };

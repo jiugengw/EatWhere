@@ -18,6 +18,8 @@ import { Route as ForgetPasswordRouteImport } from './routes/forget-password'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GroupIndexRouteImport } from './routes/group/index'
+import { Route as GroupJoinRouteImport } from './routes/group/join'
+import { Route as GroupCreateRouteImport } from './routes/group/create'
 import { Route as GroupEditIdRouteImport } from './routes/group/edit/$id'
 
 const SignupRoute = SignupRouteImport.update({
@@ -65,6 +67,16 @@ const GroupIndexRoute = GroupIndexRouteImport.update({
   path: '/group/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroupJoinRoute = GroupJoinRouteImport.update({
+  id: '/group/join',
+  path: '/group/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroupCreateRoute = GroupCreateRouteImport.update({
+  id: '/group/create',
+  path: '/group/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GroupEditIdRoute = GroupEditIdRouteImport.update({
   id: '/group/edit/$id',
   path: '/group/edit/$id',
@@ -80,6 +92,8 @@ export interface FileRoutesByFullPath {
   '/preferences': typeof PreferencesRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/group/create': typeof GroupCreateRoute
+  '/group/join': typeof GroupJoinRoute
   '/group': typeof GroupIndexRoute
   '/group/edit/$id': typeof GroupEditIdRoute
 }
@@ -92,6 +106,8 @@ export interface FileRoutesByTo {
   '/preferences': typeof PreferencesRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/group/create': typeof GroupCreateRoute
+  '/group/join': typeof GroupJoinRoute
   '/group': typeof GroupIndexRoute
   '/group/edit/$id': typeof GroupEditIdRoute
 }
@@ -105,6 +121,8 @@ export interface FileRoutesById {
   '/preferences': typeof PreferencesRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/group/create': typeof GroupCreateRoute
+  '/group/join': typeof GroupJoinRoute
   '/group/': typeof GroupIndexRoute
   '/group/edit/$id': typeof GroupEditIdRoute
 }
@@ -119,6 +137,8 @@ export interface FileRouteTypes {
     | '/preferences'
     | '/profile'
     | '/signup'
+    | '/group/create'
+    | '/group/join'
     | '/group'
     | '/group/edit/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +151,8 @@ export interface FileRouteTypes {
     | '/preferences'
     | '/profile'
     | '/signup'
+    | '/group/create'
+    | '/group/join'
     | '/group'
     | '/group/edit/$id'
   id:
@@ -143,6 +165,8 @@ export interface FileRouteTypes {
     | '/preferences'
     | '/profile'
     | '/signup'
+    | '/group/create'
+    | '/group/join'
     | '/group/'
     | '/group/edit/$id'
   fileRoutesById: FileRoutesById
@@ -156,6 +180,8 @@ export interface RootRouteChildren {
   PreferencesRoute: typeof PreferencesRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
+  GroupCreateRoute: typeof GroupCreateRoute
+  GroupJoinRoute: typeof GroupJoinRoute
   GroupIndexRoute: typeof GroupIndexRoute
   GroupEditIdRoute: typeof GroupEditIdRoute
 }
@@ -225,6 +251,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GroupIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/group/join': {
+      id: '/group/join'
+      path: '/group/join'
+      fullPath: '/group/join'
+      preLoaderRoute: typeof GroupJoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/group/create': {
+      id: '/group/create'
+      path: '/group/create'
+      fullPath: '/group/create'
+      preLoaderRoute: typeof GroupCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/group/edit/$id': {
       id: '/group/edit/$id'
       path: '/group/edit/$id'
@@ -244,6 +284,8 @@ const rootRouteChildren: RootRouteChildren = {
   PreferencesRoute: PreferencesRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
+  GroupCreateRoute: GroupCreateRoute,
+  GroupJoinRoute: GroupJoinRoute,
   GroupIndexRoute: GroupIndexRoute,
   GroupEditIdRoute: GroupEditIdRoute,
 }

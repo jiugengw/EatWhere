@@ -1,12 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 import { Group } from './groupModel.js';
-import { createGroupForUser, isUserInGroup, joinGroupById, leaveGroupById, updateGroupById, } from './groupService.js';
+import { createGroupForUser, isUserInGroup, joinGroupByCode, leaveGroupById, updateGroupById, } from './groupService.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { getOne, deleteOne } from '../common/utils/handlerFactory.js';
 import { UpdateGroupSchema } from '../shared/schemas/UpdateGroupSchema.js';
 import { User } from '../users/userModel.js';
 import { CreateGroupSchema } from '../shared/schemas/CreateGroupSchema.js';
+import { JoinGroupSchema } from '../shared/schemas/JoinGroupSchema.js';
 export const getGroup = getOne(Group, {
     populateOptions: {
         path: 'users',
@@ -62,7 +63,11 @@ export const joinGroup = catchAsync(async (req, res, next) => {
     if (!req.user) {
         return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
     }
-    const { message, groupId, userId } = await joinGroupById(req.params.id, req.user.id);
+    const parsed = JoinGroupSchema.safeParse(req.body);
+    if (!parsed.success) {
+        return next(new AppError('Validation failed', StatusCodes.BAD_REQUEST, parsed.error.flatten().fieldErrors));
+    }
+    const { message, groupId, userId } = await joinGroupByCode(parsed.data.code, req.user.id);
     res.status(StatusCodes.OK).json({
         status: 'success',
         message,
