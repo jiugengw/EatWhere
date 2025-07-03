@@ -10,11 +10,11 @@ import {
 } from '@mantine/core';
 import { IconUserCircle } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
-import useAuth from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { LogoutButton } from '../LogoutButton';
 import classes from './Usericon.module.css';
 
-export default function Usericon() {
+export function Usericon() {
   const { auth } = useAuth();
   const loggedIn = !!auth.token;
   const fullName: string = loggedIn ? (auth.fullName as string) : '';

@@ -3,7 +3,7 @@ import api from "@/lib/axios";
 import { useNavigate } from "@tanstack/react-router";
 import type { LoginInput } from "@/shared/schemas/LoginSchema";
 import type { AxiosError } from "axios";
-import useAuth from "./useAuth";
+import { useAuth } from "./useAuth";
 import { showNotification } from "@mantine/notifications";
 // import { data } from "react-router-dom";
 

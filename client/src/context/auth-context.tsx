@@ -1,10 +1,11 @@
 import {
   createContext,
   useState,
+  useEffect,
   type ReactNode,
   type Dispatch,
   type SetStateAction,
-} from 'react';
+} from "react";
 
 interface AuthData {
   [key: string]: any;
@@ -23,7 +24,33 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [auth, setAuth] = useState<AuthData>({});
+  const [auth, setAuthState] = useState<AuthData>({});
+  const [isInitialised, setIsInitialised] = useState(false);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("auth");
+    if (stored) {
+      try {
+        setAuthState(JSON.parse(stored));
+      } catch (err) {
+        console.error("Failed to parse stored auth:", err);
+      }
+    }
+    setIsInitialised(true);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialised) {
+      sessionStorage.setItem("auth", JSON.stringify(auth));
+    }
+  }, [auth]);
+
+  const setAuth: Dispatch<SetStateAction<AuthData>> = (newAuth) => {
+    setAuthState((prev) => {
+      const updated = typeof newAuth === "function" ? newAuth(prev) : newAuth;
+      return updated;
+    });
+  };
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

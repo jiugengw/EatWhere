@@ -1,8 +1,8 @@
 import api from "@/lib/axios";
 import { useNavigate } from "@tanstack/react-router";
-import useAuth from "./useAuth";
+import { useAuth } from "./useAuth";
 
-const useLogout = () => {
+export const useLogout = () => {
   const { setAuth } = useAuth();
   const navigate = useNavigate();
 
@@ -11,6 +11,7 @@ const useLogout = () => {
       await api.post("/users/logout");
       setAuth({});
       localStorage.removeItem("token");
+      sessionStorage.removeItem("auth");
       navigate({ to: '/login' });
 
     } catch (err) {
@@ -20,4 +21,4 @@ const useLogout = () => {
   return logout;
 };
 
-export default useLogout;
+

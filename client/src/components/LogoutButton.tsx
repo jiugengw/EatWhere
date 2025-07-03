@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core';
-import useLogout from '@/hooks/useLogout';
+import { useLogout } from '@/hooks/useLogout';
 
 export const LogoutButton = () => {
   const logout = useLogout();
