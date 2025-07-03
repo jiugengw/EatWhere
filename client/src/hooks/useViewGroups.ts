@@ -6,7 +6,6 @@ export const useViewGroups = () => {
 
   const fetchGroups = async () => {
     const res = await axiosPrivate.get('users/me/groups');
-    console.log("Group API response:", res.data);
     return res.data;
   };
 

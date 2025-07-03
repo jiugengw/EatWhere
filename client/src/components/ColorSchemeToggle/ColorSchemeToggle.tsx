@@ -3,7 +3,7 @@ import { IconMoon, IconSun } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import classes from './ColorSchemeToggle.module.css';
 
-export function ColorSchemeToggle() {
+export const ColorSchemeToggle = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -25,4 +25,4 @@ export function ColorSchemeToggle() {
       {darkMode ? <IconSun size={22} /> : <IconMoon size={22} />}
     </ActionIcon>
   );
-}
+};

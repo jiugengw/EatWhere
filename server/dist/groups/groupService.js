@@ -40,30 +40,7 @@ export const joinGroupByCode = async (code, userId) => {
         message: alreadyInGroup
             ? 'User is already a member of this group'
             : 'User successfully joined the group',
-        groupId: group._id.toString(),
-        userId,
-    };
-};
-export const leaveGroupById = async (groupId, userId) => {
-    const alreadyInGroup = await isUserInGroup(groupId, userId);
-    if (alreadyInGroup) {
-        const group = await Group.findById(groupId);
-        const user = await User.findById(userId);
-        if (!group)
-            throw new AppError('Group not found', StatusCodes.NOT_FOUND);
-        if (!user)
-            throw new AppError('User not found', StatusCodes.NOT_FOUND);
-        group.users.pull(userId);
-        user.groups.pull(groupId);
-        await group.save();
-        await user.save();
-    }
-    return {
-        message: alreadyInGroup
-            ? 'You have left the group'
-            : 'You are not a member of this group',
-        groupId,
-        userId,
+        group,
     };
 };
 export const createGroupForUser = async (userId, groupInput) => {

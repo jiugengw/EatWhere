@@ -5,7 +5,7 @@ import {
   updateGroup,
   deleteGroup,
   joinGroup,
-  leaveGroup,
+  // leaveGroup,
   // getGroupHistory,
   checkUserInGroup,
   getGroupUsers,
@@ -141,7 +141,7 @@ router
  *             schema:
  *               $ref: '#/components/schemas/GroupJoinLeaveResponse'
  */
-router.patch('/:id/join', joinGroup);
+router.patch('/:code/join', joinGroup);
 /**
  * @swagger
  * /api/groups/{id}/leave:
@@ -165,7 +165,7 @@ router.patch('/:id/join', joinGroup);
  *             schema:
  *               $ref: '#/components/schemas/GroupJoinLeaveResponse'
  */
-router.patch('/:id/leave', leaveGroup);
+// router.patch('/:id/leave', leaveGroup);
 /**
  * @swagger
  * /api/groups/{id}/history:

@@ -1,6 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { Group } from './groupModel.js';
-import { createGroupForUser, isUserInGroup, joinGroupByCode, leaveGroupById, updateGroupById, } from './groupService.js';
+import { createGroupForUser, isUserInGroup, joinGroupByCode, 
+// leaveGroupById,
+updateGroupById, } from './groupService.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { getOne, deleteOne } from '../common/utils/handlerFactory.js';
@@ -63,28 +65,34 @@ export const joinGroup = catchAsync(async (req, res, next) => {
     if (!req.user) {
         return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
     }
-    const parsed = JoinGroupSchema.safeParse(req.body);
+    console.log(req);
+    const parsed = JoinGroupSchema.safeParse(req.params);
     if (!parsed.success) {
+        console.log('Validation errors:', parsed.error.flatten().fieldErrors);
         return next(new AppError('Validation failed', StatusCodes.BAD_REQUEST, parsed.error.flatten().fieldErrors));
     }
-    const { message, groupId, userId } = await joinGroupByCode(parsed.data.code, req.user.id);
+    const { code } = parsed.data;
+    const { message, group } = await joinGroupByCode(code, req.user.id);
     res.status(StatusCodes.OK).json({
         status: 'success',
         message,
-        data: { groupId, userId },
+        data: { Group: group },
     });
 });
-export const leaveGroup = catchAsync(async (req, res, next) => {
-    if (!req.user) {
-        return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-    }
-    const { message, groupId, userId } = await leaveGroupById(req.params.id, req.user.id);
-    res.status(StatusCodes.OK).json({
-        status: 'success',
-        message,
-        data: { groupId, userId },
-    });
-});
+// export const leaveGroup = catchAsync(async (req, res, next) => {
+//   if (!req.user) {
+//     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+//   }
+//   const { message, groupId, userId } = await leaveGroupById(
+//     req.params.id,
+//     req.user.id
+//   );
+//   res.status(StatusCodes.OK).json({
+//     status: 'success',
+//     message,
+//     data: { groupId, userId },
+//   });
+// });
 export const createGroup = catchAsync(async (req, res, next) => {
     const parsed = CreateGroupSchema.safeParse(req.body);
     if (!parsed.success) {

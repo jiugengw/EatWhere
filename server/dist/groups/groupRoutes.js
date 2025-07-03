@@ -1,5 +1,6 @@
 import express from 'express';
-import { createGroup, getGroup, updateGroup, deleteGroup, joinGroup, leaveGroup, 
+import { createGroup, getGroup, updateGroup, deleteGroup, joinGroup, 
+// leaveGroup,
 // getGroupHistory,
 checkUserInGroup, getGroupUsers, getGroupByCode, } from './groupController.js';
 import { protect } from '../auth/authController.js';
@@ -127,7 +128,7 @@ router
  *             schema:
  *               $ref: '#/components/schemas/GroupJoinLeaveResponse'
  */
-router.patch('/:id/join', joinGroup);
+router.patch('/:code/join', joinGroup);
 /**
  * @swagger
  * /api/groups/{id}/leave:
@@ -151,7 +152,7 @@ router.patch('/:id/join', joinGroup);
  *             schema:
  *               $ref: '#/components/schemas/GroupJoinLeaveResponse'
  */
-router.patch('/:id/leave', leaveGroup);
+// router.patch('/:id/leave', leaveGroup);
 /**
  * @swagger
  * /api/groups/{id}/history:

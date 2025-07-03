@@ -1,0 +1,12 @@
+.container {
+  padding-top: 2rem;
+}
+
+.card {
+  background-color: var(--mantine-color-body);
+}
+
+.title {
+  margin-bottom: 1rem;
+  text-align: center;
+}

@@ -20,7 +20,7 @@ export const JoinGroupPage = () => {
   const { mutate: joinGroup, isPending } = useJoinGroup();
 
   const handleSubmit = (values: JoinGroupInput) => {
-    joinGroup(values);
+    joinGroup(values.code);
   };
 
   return (

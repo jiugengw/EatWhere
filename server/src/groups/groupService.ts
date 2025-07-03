@@ -25,8 +25,7 @@ export const updateGroupById = async (
 
 type JoinLeaveGroupResponse = {
   message: string;
-  groupId: string;
-  userId: string;
+  group: GroupDoc;
 };
 
 export const isUserInGroup = async (
@@ -69,39 +68,38 @@ export const joinGroupByCode = async (
     message: alreadyInGroup
       ? 'User is already a member of this group'
       : 'User successfully joined the group',
-    groupId: group._id.toString(),
-    userId,
+    group,
   };
 };
 
-export const leaveGroupById = async (
-  groupId: string,
-  userId: string
-): Promise<JoinLeaveGroupResponse> => {
-  const alreadyInGroup = await isUserInGroup(groupId, userId);
+// export const leaveGroupById = async (
+//   groupId: string,
+//   userId: string
+// ): Promise<JoinLeaveGroupResponse> => {
+//   const alreadyInGroup = await isUserInGroup(groupId, userId);
 
-  if (alreadyInGroup) {
-    const group = await Group.findById(groupId);
-    const user = await User.findById(userId);
+//   if (alreadyInGroup) {
+//     const group = await Group.findById(groupId);
+//     const user = await User.findById(userId);
 
-    if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
-    if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
+//     if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
+//     if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
 
-    (group.users as Types.Array<Types.ObjectId>).pull(userId);
-    (user.groups as Types.Array<Types.ObjectId>).pull(groupId);
+//     (group.users as Types.Array<Types.ObjectId>).pull(userId);
+//     (user.groups as Types.Array<Types.ObjectId>).pull(groupId);
 
-    await group.save();
-    await user.save();
-  }
+//     await group.save();
+//     await user.save();
+//   }
 
-  return {
-    message: alreadyInGroup
-      ? 'You have left the group'
-      : 'You are not a member of this group',
-    groupId,
-    userId,
-  };
-};
+//   return {
+//     message: alreadyInGroup
+//       ? 'You have left the group'
+//       : 'You are not a member of this group',
+//     groupId,
+//     userId,
+//   };
+// };
 
 type CreateGroupData = CreateGroupInput & {
   code: string;

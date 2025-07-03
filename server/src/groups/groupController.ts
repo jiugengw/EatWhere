@@ -4,7 +4,7 @@ import {
   createGroupForUser,
   isUserInGroup,
   joinGroupByCode,
-  leaveGroupById,
+  // leaveGroupById,
   updateGroupById,
 } from './groupService.js';
 import { RequestHandler } from 'express';
@@ -92,9 +92,11 @@ export const joinGroup = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
+  console.log(req);
+  const parsed = JoinGroupSchema.safeParse(req.params);
 
-  const parsed = JoinGroupSchema.safeParse(req.body);
   if (!parsed.success) {
+    console.log('Validation errors:', parsed.error.flatten().fieldErrors);
     return next(
       new AppError(
         'Validation failed',
@@ -104,34 +106,33 @@ export const joinGroup = catchAsync(async (req, res, next) => {
     );
   }
 
-  const { message, groupId, userId } = await joinGroupByCode(
-    parsed.data.code,
-    req.user.id
-  );
+  const { code } = parsed.data;
+
+  const { message, group } = await joinGroupByCode(code, req.user.id);
 
   res.status(StatusCodes.OK).json({
     status: 'success',
     message,
-    data: { groupId, userId },
+    data: { Group: group },
   });
 });
 
-export const leaveGroup = catchAsync(async (req, res, next) => {
-  if (!req.user) {
-    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-  }
+// export const leaveGroup = catchAsync(async (req, res, next) => {
+//   if (!req.user) {
+//     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+//   }
 
-  const { message, groupId, userId } = await leaveGroupById(
-    req.params.id,
-    req.user.id
-  );
+//   const { message, groupId, userId } = await leaveGroupById(
+//     req.params.id,
+//     req.user.id
+//   );
 
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    message,
-    data: { groupId, userId },
-  });
-});
+//   res.status(StatusCodes.OK).json({
+//     status: 'success',
+//     message,
+//     data: { groupId, userId },
+//   });
+// });
 
 export const createGroup = catchAsync(async (req, res, next) => {
   const parsed = CreateGroupSchema.safeParse(req.body);

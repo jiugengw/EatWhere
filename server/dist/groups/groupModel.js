@@ -4,12 +4,18 @@ const groupSchema = new Schema({
     name: {
         type: String,
         required: true,
+        minlength: 3,
+        maxlength: 50,
     },
     code: {
         type: String,
         unique: true,
         required: true,
         length: 6,
+    },
+    description: {
+        type: String,
+        maxlength: 500,
     },
     users: {
         type: [
