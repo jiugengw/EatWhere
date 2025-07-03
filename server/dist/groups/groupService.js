@@ -19,7 +19,7 @@ export const isUserInGroup = async (groupId, userId) => {
     if (!group) {
         throw new AppError('Group not found or inactive.', StatusCodes.NOT_FOUND);
     }
-    return group.users.some((entry) => entry.user.equals(groupId));
+    return group.users.some((entry) => entry.user.equals(userId));
 };
 export const joinGroupByCode = async (code, userId) => {
     const group = await Group.findOne({ code });

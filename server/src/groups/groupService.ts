@@ -37,7 +37,7 @@ export const isUserInGroup = async (
     throw new AppError('Group not found or inactive.', StatusCodes.NOT_FOUND);
   }
 
-  return group.users.some((entry) => entry.user.equals(groupId));
+  return group.users.some((entry) => entry.user.equals(userId));
 };
 
 export const joinGroupByCode = async (
