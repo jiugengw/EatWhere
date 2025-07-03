@@ -9,7 +9,10 @@ interface IGroup {
   name: string;
   code: string;
   description?: string;
-  users: Types.ObjectId[];
+  users: {
+    user: Types.ObjectId;
+    role: 'admin' | 'member';
+  }[];
   active: boolean;
 }
 
@@ -36,9 +39,16 @@ const groupSchema = new Schema<IGroup>(
     users: {
       type: [
         {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
-          default: [],
+          user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+          },
+          role: {
+            type: String,
+            enum: ['admin', 'member'],
+            default: 'member',
+          },
         },
       ],
       default: [],

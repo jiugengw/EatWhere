@@ -18,8 +18,8 @@ import { JoinGroupSchema } from '../shared/schemas/JoinGroupSchema.js';
 
 export const getGroup: RequestHandler = getOne(Group, {
   populateOptions: {
-    path: 'users',
-    select: 'username firstName lastName',
+    path: 'users.user',
+    select: 'username fullName firstName lastName email',
   },
 });
 

@@ -28,7 +28,7 @@ export const getUser = getOne(User);
 export const getUserGroups = getOne(User, {
   populateOptions: { path: 'groups' },
   selectFields: 'groups',
-  enableVirtuals: false,
+  enableVirtuals: true,
 });
 
 export const getUserPreferences = getOne(User, {

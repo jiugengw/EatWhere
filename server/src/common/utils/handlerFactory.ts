@@ -15,7 +15,7 @@ export const getOne = <T>(
     findByFn,
     enableVirtuals = true,
   } = options || {};
-  return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  return catchAsync(async (req, res, next) => {
     let query;
     if (findByFn) {
       const filter = findByFn(req);

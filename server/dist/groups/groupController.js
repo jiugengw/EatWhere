@@ -12,8 +12,8 @@ import { CreateGroupSchema } from '../shared/schemas/CreateGroupSchema.js';
 import { JoinGroupSchema } from '../shared/schemas/JoinGroupSchema.js';
 export const getGroup = getOne(Group, {
     populateOptions: {
-        path: 'users',
-        select: 'username firstName lastName',
+        path: 'users.user',
+        select: 'username fullName firstName lastName email',
     },
 });
 export const updateGroup = catchAsync(async (req, res, next) => {

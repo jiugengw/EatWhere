@@ -20,9 +20,16 @@ const groupSchema = new Schema({
     users: {
         type: [
             {
-                type: Schema.Types.ObjectId,
-                ref: 'User',
-                default: [],
+                user: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'User',
+                    required: true,
+                },
+                role: {
+                    type: String,
+                    enum: ['admin', 'member'],
+                    default: 'member',
+                },
             },
         ],
         default: [],

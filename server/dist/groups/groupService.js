@@ -19,7 +19,7 @@ export const isUserInGroup = async (groupId, userId) => {
     if (!group) {
         throw new AppError('Group not found or inactive.', StatusCodes.NOT_FOUND);
     }
-    return group.users.some((id) => id.equals(userId));
+    return group.users.some((entry) => entry.user.equals(groupId));
 };
 export const joinGroupByCode = async (code, userId) => {
     const group = await Group.findOne({ code });
@@ -31,7 +31,7 @@ export const joinGroupByCode = async (code, userId) => {
         const user = await User.findById(userId);
         if (!user)
             throw new AppError('User not found', StatusCodes.NOT_FOUND);
-        group.users.push(new Types.ObjectId(userId));
+        group.users.push({ user: new Types.ObjectId(userId), role: 'member' });
         user.groups.push(group._id);
         await group.save();
         await user.save();
@@ -47,7 +47,12 @@ export const createGroupForUser = async (userId, groupInput) => {
     const data = {
         ...groupInput,
         code: await generateUniqueGroupCode(),
-        users: [userId],
+        users: [
+            {
+                user: userId,
+                role: 'admin',
+            },
+        ],
     };
     const newGroup = await Group.create(data);
     await User.findByIdAndUpdate(userId, {

@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAxiosPrivate } from './useAxiosPrivate';
+import type { ViewGroupsResponse } from '@/types/apiResponse';
 
 export const useViewGroups = () => {
   const axiosPrivate = useAxiosPrivate();
 
-  const fetchGroups = async () => {
-    const res = await axiosPrivate.get('users/me/groups');
+  const fetchGroups = async (): Promise<ViewGroupsResponse> => {
+    const res = await axiosPrivate.get('/users/me/groups');
     return res.data;
   };
 
-  return useQuery({ queryKey: ['groups'], queryFn: fetchGroups });
+  return useQuery<ViewGroupsResponse>({ queryKey: ['groups'], queryFn: fetchGroups });
 };
