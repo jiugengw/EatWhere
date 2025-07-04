@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import cx from 'clsx';
 import { Checkbox, ScrollArea, Table } from '@mantine/core';
 import classes from './TableSelection.module.css';
@@ -10,28 +9,39 @@ type TableSelectionProps<T> = {
         header: string;
         render?: (item: T) => React.ReactNode;
     }[];
+    selection: string[];
+    onSelectionChange: (selection: string[]) => void;
+    disableCheckbox?: (row: T) => boolean;
 };
 
 export function TableSelection<T extends { id: string }>({
     data,
     columns,
+    selection,
+    onSelectionChange,
+    disableCheckbox,
 }: TableSelectionProps<T>) {
-    const [selection, setSelection] = useState<string[]>([]);
-
     const toggleRow = (id: string) =>
-        setSelection((current) =>
-            current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
+        onSelectionChange(
+            selection.includes(id)
+                ? selection.filter((item) => item !== id)
+                : [...selection, id]
         );
 
     const toggleAll = () =>
-        setSelection((current) => (current.length === data.length ? [] : data.map((item) => item.id)));
+        onSelectionChange(
+            selection.length === data.length ? [] : data.map((item) => item.id)
+        );
 
     const rows = data.map((item) => {
         const selected = selection.includes(item.id);
         return (
             <Table.Tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
                 <Table.Td>
-                    <Checkbox checked={selected} onChange={() => toggleRow(item.id)} />
+                    <Checkbox checked={selected}
+                        disabled={disableCheckbox?.(item)}
+                        onChange={() => toggleRow(item.id)}
+                    />
                 </Table.Td>
 
                 {columns.map((col) => (
@@ -45,7 +55,7 @@ export function TableSelection<T extends { id: string }>({
 
     return (
         <ScrollArea>
-            <Table miw={800} verticalSpacing="sm">
+            <Table miw={800} verticalSpacing="sm" className={classes.table}>
                 <Table.Thead>
                     <Table.Tr>
                         <Table.Th w={40}>

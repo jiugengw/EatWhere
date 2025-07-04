@@ -10,5 +10,5 @@ export const useViewGroups = () => {
     return res.data;
   };
 
-  return useQuery<ViewGroupsResponse>({ queryKey: ['groups'], queryFn: fetchGroups });
+  return useQuery<ViewGroupsResponse>({ queryKey: ['viewGroups'], queryFn: fetchGroups });
 };

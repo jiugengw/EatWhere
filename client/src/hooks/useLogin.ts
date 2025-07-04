@@ -5,7 +5,6 @@ import type { LoginInput } from "@/shared/schemas/LoginSchema";
 import type { AxiosError } from "axios";
 import { useAuth } from "./useAuth";
 import { showNotification } from "@mantine/notifications";
-// import { data } from "react-router-dom";
 
 export const useLogin = () => {
   const navigate = useNavigate();

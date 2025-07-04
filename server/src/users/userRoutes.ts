@@ -4,7 +4,6 @@ import {
   getUser,
   updateUser,
   deleteUser,
-  // getUserHistory,
   getUserGroups,
   getUserPreferences,
   updateMyPreferences,

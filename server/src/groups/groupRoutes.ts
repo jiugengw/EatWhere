@@ -5,11 +5,12 @@ import {
   updateGroup,
   deleteGroup,
   joinGroup,
-  // leaveGroup,
-  // getGroupHistory,
   checkUserInGroup,
   getGroupUsers,
   getGroupByCode,
+  leaveGroups,
+  removeGroupMembers,
+  updateGroupRoles,
 } from './groupController.js';
 import { protect } from '../auth/authController.js';
 
@@ -17,6 +18,24 @@ const router = express.Router();
 
 router.use(protect);
 
+router.route('/').post(createGroup);
+router.patch('/leave', leaveGroups); 
+router.get('/code/:code', getGroupByCode);
+
+router
+  .route('/:id')
+  .get(getGroup)
+  .patch(updateGroup)
+  .delete(deleteGroup);
+
+router.patch('/:code/join', joinGroup);
+
+router.get('/:id/isMember', checkUserInGroup);
+router.get('/:id/users', getGroupUsers);
+router.patch('/:id/users/role', updateGroupRoles); 
+router.delete('/:id/users', removeGroupMembers); 
+
+export default router;
 /**
  * @swagger
  * /api/groups:
@@ -39,10 +58,9 @@ router.use(protect);
  *             schema:
  *               $ref: '#/components/schemas/GroupResponse'
  */
-router.route('/').post(createGroup);
 
-router
-  .route('/:id')
+
+
   /**
    * @swagger
    * /api/groups/{id}:
@@ -66,7 +84,7 @@ router
    *             schema:
    *               $ref: '#/components/schemas/GroupWithPopulatedUsersResponse'
    */
-  .get(getGroup)
+  
   /**
    * @swagger
    * /api/groups/{id}:
@@ -96,7 +114,7 @@ router
    *             schema:
    *               $ref: '#/components/schemas/GroupResponse'
    */
-  .patch(updateGroup)
+ 
   /**
    * @swagger
    * /api/groups/{id}:
@@ -116,7 +134,7 @@ router
    *       204:
    *         description: Group deleted successfully
    */
-  .delete(deleteGroup);
+  
 
 /**
  * @swagger
@@ -141,7 +159,7 @@ router
  *             schema:
  *               $ref: '#/components/schemas/GroupJoinLeaveResponse'
  */
-router.patch('/:code/join', joinGroup);
+
 /**
  * @swagger
  * /api/groups/{id}/leave:
@@ -166,30 +184,7 @@ router.patch('/:code/join', joinGroup);
  *               $ref: '#/components/schemas/GroupJoinLeaveResponse'
  */
 // router.patch('/:id/leave', leaveGroup);
-/**
- * @swagger
- * /api/groups/{id}/history:
- *   get:
- *     summary: Get history records of a group
- *     tags: [Group]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Group ID
- *     responses:
- *       200:
- *         description: Group history retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/GroupHistoryOnlyResponse'
- *       404:
- *         description: Group not found
- */
-// router.get('/:id/history', getGroupHistory);
+
 /**
  * @swagger
  * /api/groups/{id}/isMember:
@@ -225,7 +220,7 @@ router.patch('/:code/join', joinGroup);
  *       404:
  *         description: Group not found
  */
-router.get('/:id/isMember', checkUserInGroup);
+
 /**
  * @swagger
  * /api/groups/{id}/users:
@@ -249,7 +244,7 @@ router.get('/:id/isMember', checkUserInGroup);
  *       404:
  *         description: Group not found
  */
-router.get('/:id/users', getGroupUsers);
+
 
 /**
  * @swagger
@@ -274,6 +269,4 @@ router.get('/:id/users', getGroupUsers);
  *       404:
  *         description: Group not found
  */
-router.route('/code/:code').get(getGroupByCode);
 
-export default router;

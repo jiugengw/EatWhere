@@ -3,9 +3,10 @@ import { Group, GroupDoc } from './groupModel.js';
 import { Types } from 'mongoose';
 import { AppError } from '../common/utils/AppError.js';
 import { UpdateGroupInput } from '../shared/schemas/UpdateGroupSchema.js';
-import { User } from '../users/userModel.js';
+import { User, type UserDoc } from '../users/userModel.js';
 import { CreateGroupInput } from '../shared/schemas/CreateGroupSchema.js';
 import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
+import { removeGroupsFromUsers } from './utils/removeGroupsFromUsers.js';
 
 export const updateGroupById = async (
   groupId: string,
@@ -23,11 +24,6 @@ export const updateGroupById = async (
   return updatedGroup;
 };
 
-type JoinLeaveGroupResponse = {
-  message: string;
-  group: GroupDoc;
-};
-
 export const isUserInGroup = async (
   groupId: string,
   userId: string
@@ -43,7 +39,7 @@ export const isUserInGroup = async (
 export const joinGroupByCode = async (
   code: string,
   userId: string
-): Promise<JoinLeaveGroupResponse> => {
+): Promise<{ message: string; group: GroupDoc }> => {
   const group = await Group.findOne({ code });
 
   if (!group) {
@@ -72,34 +68,70 @@ export const joinGroupByCode = async (
   };
 };
 
-// export const leaveGroupById = async (
-//   groupId: string,
-//   userId: string
-// ): Promise<JoinLeaveGroupResponse> => {
-//   const alreadyInGroup = await isUserInGroup(groupId, userId);
+export const leaveGroupsByIds = async (
+  groupIds: string[],
+  userId: string
+): Promise<{
+  message: string;
+  leftGroupNames: string[];
+  failedGroups: { id: string; name: string; reason: string }[];
+  userId: string;
+}> => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError('User not found', StatusCodes.NOT_FOUND);
+  }
 
-//   if (alreadyInGroup) {
-//     const group = await Group.findById(groupId);
-//     const user = await User.findById(userId);
+  const leftGroupNames: string[] = [];
+  const failedGroups: { id: string; name: string; reason: string }[] = [];
 
-//     if (!group) throw new AppError('Group not found', StatusCodes.NOT_FOUND);
-//     if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
+  for (const groupId of groupIds) {
+    const group = await Group.findById(groupId);
+    if (!group) continue;
 
-//     (group.users as Types.Array<Types.ObjectId>).pull(userId);
-//     (user.groups as Types.Array<Types.ObjectId>).pull(groupId);
+    const userEntry = group.users.find((entry: any) =>
+      entry.user.equals(userId)
+    );
+    if (!userEntry) continue;
 
-//     await group.save();
-//     await user.save();
-//   }
+    const isOnlyUser = group.users.length === 1;
 
-//   return {
-//     message: alreadyInGroup
-//       ? 'You have left the group'
-//       : 'You are not a member of this group',
-//     groupId,
-//     userId,
-//   };
-// };
+    const isOnlyAdmin =
+      userEntry.role === 'admin' &&
+      group.users.filter((entry: any) => entry.role === 'admin').length === 1;
+
+    if (isOnlyAdmin && !isOnlyUser) {
+      failedGroups.push({
+        id: group._id.toString(),
+        name: group.name,
+        reason: 'You are the only admin. Please promote another member before leaving.',
+      });
+      continue;
+    }
+
+    group.users = group.users.filter((entry: any) => !entry.user.equals(userId));
+    if (group.userCount === 0) {
+      group.active = false;
+      await removeGroupsFromUsers(group._id.toString());
+    }
+
+    await group.save();
+
+    user.groups = user.groups.filter(
+      (gId: Types.ObjectId) => gId.toString() !== groupId
+    );
+    leftGroupNames.push(group.name);
+  }
+
+  await user.save();
+
+  return {
+    message: `Left ${leftGroupNames.length} group${leftGroupNames.length !== 1 ? 's' : ''} successfully.`,
+    leftGroupNames,
+    failedGroups,
+    userId,
+  };
+};
 
 type CreateGroupData = CreateGroupInput & {
   code: string;
@@ -131,4 +163,62 @@ export const createGroupForUser = async (
   });
 
   return newGroup;
+};
+
+type PopulatedGroupMember = {
+  user: UserDoc
+  role: 'admin' | 'member';
+};
+
+export const updateGroupMemberRoles = async (
+  groupId: string,
+  userIds: string[],
+  newRole: 'admin' | 'member'
+): Promise<{
+  alreadyInRole: string[];
+  updatedUsers: string[];
+}> => {
+  const group = await Group.findById(groupId)
+    .populate<{ users: PopulatedGroupMember[] }>('users.user', 'username');
+
+  if (!group) throw new Error('Group not found');
+
+  const alreadyInRole: string[] = [];
+  const updatedUsers: string[] = [];
+
+  group.users.forEach((member) => {
+    const user = member.user;
+
+    if (userIds.includes(user._id.toString())) {
+      if (member.role === newRole) {
+        alreadyInRole.push(user.username);
+      } else {
+        member.role = newRole;
+        updatedUsers.push(user.username);
+      }
+    }
+  });
+
+  await group.save();
+
+  return { alreadyInRole, updatedUsers };
+};
+
+export const removeMembers = async (
+  groupId: string,
+  userIds: string[]
+) => {
+  const group = await Group.findById(groupId);
+  if (!group) throw new Error('Group not found');
+
+  group.users = group.users.filter(
+    (member) => !userIds.includes(member.user.toString())
+  );
+
+  await group.save();
+
+  await User.updateMany(
+    { _id: { $in: userIds.map((id) => new Types.ObjectId(id)) } },
+    { $pull: { groups: group._id } }
+  );
 };

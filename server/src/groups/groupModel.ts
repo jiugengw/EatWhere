@@ -14,6 +14,7 @@ interface IGroup {
     role: 'admin' | 'member';
   }[];
   active: boolean;
+  userCount: number;
 }
 
 export type GroupDoc = HydratedDocument<IGroup>;
@@ -70,12 +71,6 @@ const groupSchema = new Schema<IGroup>(
     versionKey: false,
   }
 );
-
-// groupSchema.virtual('history', {
-//   ref: 'History',
-//   foreignField: 'group',
-//   localField: '_id',
-// });
 
 groupSchema.virtual('userCount').get(function () {
   return this.users?.length || 0;
