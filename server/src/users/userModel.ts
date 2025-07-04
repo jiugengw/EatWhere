@@ -18,6 +18,7 @@ interface IUser {
   groups: Types.ObjectId[];
   active?: boolean;
   id?: string;
+  fullName?: string;
   correctPassword: (
     candidatePassword: string,
     userPassword: string
@@ -106,12 +107,6 @@ const userSchema = new Schema<IUser>(
 userSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
-
-// userSchema.virtual('history', {
-//   ref: 'History',
-//   foreignField: 'user',
-//   localField: '_id',
-// });
 
 userSchema.pre<HydratedDocument<IUser>>('save', async function (next) {
   if (!this.isModified('password')) return next();

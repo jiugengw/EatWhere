@@ -5,19 +5,49 @@ import {
   Table,
   ActionIcon,
   Text,
+  Group,
+  Button,
 } from '@mantine/core';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useGroupDetails } from '@/hooks/useGroupDetails';
 import { useParams } from '@tanstack/react-router';
 import classes from './GroupDetails.module.css';
 import { TableSelection } from '@/components/TableSelection/TableSelection';
+import { maskEmail } from '@/utils/maskEmail';
+import { useGroupRole } from '@/hooks/useGroupRole';
+import { useUpdateGroupRoles } from '@/hooks/useUpdateGroupRoles';
+import { useRemoveGroupMembers } from '@/hooks/useRemoveGroupMembers';
+import { useAuth } from '@/hooks/useAuth';
 
 export const GroupDetailPage = () => {
+  const { auth } = useAuth();
+  const currentUserId = auth?.id;
   const { id } = useParams({ from: '/group/$id/' });
   const { data, isLoading } = useGroupDetails(id);
   const [showCode, setShowCode] = useState(false);
-
+  const [selected, setSelected] = useState<string[]>([]);
   const group = data?.data?.Group;
+  const { isAdmin } = useGroupRole(group?.users ?? []);
+  const updateRoles = useUpdateGroupRoles(group?._id ?? '');
+  const remove = useRemoveGroupMembers(group?._id ?? '');
+
+  const handlePromote = () => {
+    updateRoles.mutate({
+      userIds: selected,
+      role: 'admin',
+    });
+  };
+
+  const handleDemote = () => {
+    updateRoles.mutate({
+      userIds: selected,
+      role: 'member'
+    });
+  };
+
+  const handleRemove = () => {
+    remove.mutate(selected);
+  };
 
   if (isLoading || !group) {
     return (
@@ -30,7 +60,8 @@ export const GroupDetailPage = () => {
   const members = group.users.map((member) => ({
     id: member.user._id,
     fullName: member.user.fullName,
-    email: member.user.email,
+    username: member.user.username,
+    email: isAdmin ? member.user.email : maskEmail(member.user.email),
     role: member.role,
   }));
 
@@ -77,14 +108,47 @@ export const GroupDetailPage = () => {
       {members.length === 0 ? (
         <Text c="dimmed">No members in this group yet.</Text>
       ) : (
-        <TableSelection
-          data={members}
-          columns={[
-            { key: 'fullName', header: 'Full Name' },
-            { key: 'email', header: 'Email' },
-            { key: 'role', header: 'Role' },
-          ]}
-        />
+        <>
+          <Group className={classes.actions}>
+            <Button
+              onClick={handleRemove}
+              disabled={!isAdmin || selected.length === 0}
+              className={classes.remove}
+              color="red"
+            >
+              Remove
+            </Button>
+
+            <Button
+              onClick={handlePromote}
+              disabled={!isAdmin || selected.length === 0}
+              className={classes.promote}
+            >
+              Promote
+            </Button>
+
+            <Button
+              onClick={handleDemote}
+              disabled={!isAdmin || selected.length === 0}
+              className={classes.demote}
+            >
+              Demote
+            </Button>
+          </Group>
+
+          <TableSelection
+            data={members}
+            columns={[
+              { key: 'username', header: 'Username' },
+              { key: 'fullName', header: 'Full Name' },
+              { key: 'email', header: 'Email' },
+              { key: 'role', header: 'Role' },
+            ]}
+            selection={selected}
+            onSelectionChange={setSelected}
+            disableCheckbox={(row) => row.id === currentUserId}
+          />
+        </>
       )}
     </Container>
   );

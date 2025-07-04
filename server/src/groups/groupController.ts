@@ -4,17 +4,22 @@ import {
   createGroupForUser,
   isUserInGroup,
   joinGroupByCode,
-  // leaveGroupById,
+  leaveGroupsByIds,
+  removeMembers,
   updateGroupById,
+  updateGroupMemberRoles
 } from './groupService.js';
 import { RequestHandler } from 'express';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { getOne, deleteOne } from '../common/utils/handlerFactory.js';
 import { UpdateGroupSchema } from '../shared/schemas/UpdateGroupSchema.js';
-import { User } from '../users/userModel.js';
 import { CreateGroupSchema } from '../shared/schemas/CreateGroupSchema.js';
 import { JoinGroupSchema } from '../shared/schemas/JoinGroupSchema.js';
+import { RemoveGroupMembersSchema } from '../shared/schemas/RemoveMembersSchema.js';
+import { LeaveGroupsSchema } from '../shared/schemas/LeaveGroupsSchema.js';
+import { UpdateGroupRolesSchema } from '../shared/schemas/UpdateGroupRolesSchema.js';
+import { removeGroupsFromUsers } from './utils/removeGroupsFromUsers.js';
 
 export const getGroup: RequestHandler = getOne(Group, {
   populateOptions: {
@@ -25,7 +30,7 @@ export const getGroup: RequestHandler = getOne(Group, {
 
 export const updateGroup = catchAsync(async (req, res, next) => {
   const parsed = UpdateGroupSchema.safeParse(req.body);
-
+  console.log(parsed);
   if (!parsed.success) {
     return next(
       new AppError(
@@ -46,12 +51,10 @@ export const updateGroup = catchAsync(async (req, res, next) => {
   });
 });
 
+
 export const deleteGroup: RequestHandler = deleteOne(Group, {
   postDeleteFn: async (group) => {
-    await User.updateMany(
-      { groups: group.id },
-      { $pull: { groups: group.id } }
-    );
+    await removeGroupsFromUsers(group.id);
   },
 });
 
@@ -117,22 +120,44 @@ export const joinGroup = catchAsync(async (req, res, next) => {
   });
 });
 
-// export const leaveGroup = catchAsync(async (req, res, next) => {
-//   if (!req.user) {
-//     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-//   }
+export const leaveGroups = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
 
-//   const { message, groupId, userId } = await leaveGroupById(
-//     req.params.id,
-//     req.user.id
-//   );
+  const parsed = LeaveGroupsSchema.safeParse(req.body);
 
-//   res.status(StatusCodes.OK).json({
-//     status: 'success',
-//     message,
-//     data: { groupId, userId },
-//   });
-// });
+  if (!parsed.success) {
+    return next(
+      new AppError(parsed.error.errors[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
+
+  const { groupIds } = parsed.data;
+
+  const { leftGroupNames, message, failedGroups } = await leaveGroupsByIds(groupIds, req.user.id);
+
+  const status =
+    failedGroups.length > 0
+      ? leftGroupNames.length > 0
+        ? StatusCodes.OK // partial success
+        : StatusCodes.BAD_REQUEST // all failed
+      : StatusCodes.OK;  // all passed
+
+  res.status(status).json({
+    status: failedGroups.length > 0
+      ? leftGroupNames.length > 0
+        ? 'partial'
+        : 'fail'
+      : 'success',
+    message,
+    data: {
+      leftGroupNames,
+      failedGroups,
+      userId: req.user.id,
+    },
+  });
+});
 
 export const createGroup = catchAsync(async (req, res, next) => {
   const parsed = CreateGroupSchema.safeParse(req.body);
@@ -156,5 +181,57 @@ export const createGroup = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.CREATED).json({
     status: 'success',
     data: { Group: newGroup },
+  });
+});
+
+export const updateGroupRoles = catchAsync(async (req, res, next) => {
+  const { id: groupId } = req.params;
+
+  const parsed = UpdateGroupRolesSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return next(
+      new AppError('Invalid request body', StatusCodes.BAD_REQUEST, parsed.error)
+    );
+  }
+
+  const { userIds, role } = parsed.data;
+
+  const { alreadyInRole, updatedUsers } = await updateGroupMemberRoles(groupId, userIds, role);
+
+  let message = '';
+  if (updatedUsers.length > 0) {
+    message += `Updated role "${role}" for: ${updatedUsers.join(', ')}. `;
+  }
+
+  if (alreadyInRole.length > 0) {
+    message += `Users already have role "${role}": ${alreadyInRole.join(', ')}.`;
+  }
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    message: message.trim(),
+    data: {
+      role,
+      updatedUsers,
+      alreadyInRole,
+    },
+  });
+});
+
+export const removeGroupMembers = catchAsync(async (req, res) => {
+  const { id: groupId } = req.params;
+  const parsed = RemoveGroupMembersSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    throw new AppError('Invalid request data', StatusCodes.BAD_REQUEST);
+  }
+
+  const { userIds } = parsed.data;
+
+  await removeMembers(groupId, userIds);
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    message: 'Users removed from group',
   });
 });

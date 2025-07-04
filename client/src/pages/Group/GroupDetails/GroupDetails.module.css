@@ -9,3 +9,43 @@
 .members {
   color: gray;
 }
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.promote {
+  background-color: #12bd62;
+  color: white;
+}
+
+.promote:disabled {
+  background-color: #a0d8bb; 
+  color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.demote {
+  background-color: #fc9f47;
+  color: white;
+}
+
+.demote:disabled {
+  background-color: #fcd5a4;
+  color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.remove {
+  background-color: #db1212;
+  color: white;
+}
+
+.remove:disabled {
+  background-color: #f5aaaa; 
+  color: #f0f0f0;
+  cursor: not-allowed;
+}
