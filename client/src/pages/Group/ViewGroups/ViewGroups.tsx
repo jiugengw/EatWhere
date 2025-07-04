@@ -2,6 +2,9 @@ import {
   Container,
   Title,
   Button,
+  Stack,
+  Group,
+  Text
 } from '@mantine/core';
 import { useViewGroups } from '@/hooks/useViewGroups';
 import { Link } from '@tanstack/react-router';
@@ -51,6 +54,18 @@ export const ViewGroupsPage = () => {
 
       {isLoading ? (
         <p>Loading...</p>
+      ) : groupRows.length === 0 ? (
+        <Stack className={classes.noGroupsContainer}>
+          <Text>No groups currently.</Text>
+          <Group className={classes.actionButtons}>
+            <Button component={Link} to="/group/create" color="green">
+              Create Group
+            </Button>
+            <Button component={Link} to="/group/join" variant="default">
+              Join Group
+            </Button>
+          </Group>
+        </Stack>
       ) : (
         <>
           <Button
@@ -86,4 +101,4 @@ export const ViewGroupsPage = () => {
       )}
     </Container>
   );
-};
+}
