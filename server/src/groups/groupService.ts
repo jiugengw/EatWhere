@@ -72,7 +72,6 @@ export const leaveGroupsByIds = async (
   groupIds: string[],
   userId: string
 ): Promise<{
-  message: string;
   leftGroupNames: string[];
   failedGroups: { id: string; name: string; reason: string }[];
   userId: string;
@@ -126,7 +125,6 @@ export const leaveGroupsByIds = async (
   await user.save();
 
   return {
-    message: `Left ${leftGroupNames.length} group${leftGroupNames.length !== 1 ? 's' : ''} successfully.`,
     leftGroupNames,
     failedGroups,
     userId,

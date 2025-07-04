@@ -135,26 +135,42 @@ export const leaveGroups = catchAsync(async (req, res, next) => {
 
   const { groupIds } = parsed.data;
 
-  const { leftGroupNames, message, failedGroups } = await leaveGroupsByIds(groupIds, req.user.id);
+  const { leftGroupNames, failedGroups } = await leaveGroupsByIds(groupIds, req.user.id);
 
-  const status =
-    failedGroups.length > 0
-      ? leftGroupNames.length > 0
-        ? StatusCodes.OK // partial success
-        : StatusCodes.BAD_REQUEST // all failed
-      : StatusCodes.OK;  // all passed
+  const isPartial = failedGroups.length > 0 && leftGroupNames.length > 0;
+  const isFail = failedGroups.length > 0 && leftGroupNames.length === 0;
 
-  res.status(status).json({
-    status: failedGroups.length > 0
-      ? leftGroupNames.length > 0
-        ? 'partial'
-        : 'fail'
-      : 'success',
-    message,
+  if (isFail) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      status: 'fail',
+      partial: false,
+      data: {
+        leftGroupNames,
+        failedGroups,
+        userId: req.user.id
+      },
+    });
+  }
+
+  if (isPartial) {
+    return res.status(StatusCodes.OK).json({
+      status: 'success',
+      partial: true,
+      data: {
+        leftGroupNames,
+        failedGroups,
+        userId: req.user.id
+      },
+    });
+  }
+
+  return res.status(StatusCodes.OK).json({
+    status: 'success',
+    partial: false,
     data: {
       leftGroupNames,
       failedGroups,
-      userId: req.user.id,
+      userId: req.user.id
     },
   });
 });
