@@ -1,0 +1,40 @@
+.title {
+  color: #222222;
+  font-weight: 700;
+}
+
+.paper {
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+  display: flex;
+  min-height: 500px;
+}
+
+.sidebar {
+  width: 220px;
+  border-right: 1px solid #e0e0e0;
+  padding: 1.5rem 1rem;
+  background-color: #f9f9f9;
+}
+
+.avatar {
+  margin: 0 auto;
+  font-size: 2rem;
+}
+
+.activeButton {
+  background-color: #ff8c42;
+  color: white;
+  font-weight: 500;
+}
+
+.inactiveButton {
+  color: #222222;
+  font-weight: 500;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}

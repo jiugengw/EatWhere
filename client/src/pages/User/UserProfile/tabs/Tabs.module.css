@@ -1,0 +1,16 @@
+/* tabs.module.css */
+
+.label {
+  color: #222222;
+  font-weight: 500;
+}
+
+.input {
+  background-color: #f9f9f9;
+}
+
+.button {
+  background-color: #FF8C42;
+  color: white;
+  font-weight: 600;
+}
