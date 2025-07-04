@@ -11,7 +11,7 @@ import {
 import { useEffect, useState, type JSX } from "react";
 import { useUserPreferences } from "@/hooks/usePreferences";
 import { useUpdateUserPreferences } from "@/hooks/useUpdatePreferences";
-import styles from "./preferences.module.css";
+import styles from "./preference.module.css";
 
 const cuisines: string[] = [
   "Chinese",
