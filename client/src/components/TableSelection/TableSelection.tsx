@@ -2,17 +2,19 @@ import cx from 'clsx';
 import { Checkbox, ScrollArea, Table } from '@mantine/core';
 import classes from './TableSelection.module.css';
 
-type TableSelectionProps<T> = {
+export interface TableColumn<T> {
+    key: keyof T;
+    header: string;
+    render?: (row: T) => React.ReactNode;
+}
+
+export interface TableSelectionProps<T extends { id: string }> {
     data: T[];
-    columns: {
-        key: keyof T | string;
-        header: string;
-        render?: (item: T) => React.ReactNode;
-    }[];
+    columns: TableColumn<T>[];
     selection: string[];
-    onSelectionChange: (selection: string[]) => void;
-    disableCheckbox?: (row: T) => boolean;
-};
+    onSelectionChange: (selected: string[]) => void;
+    disableCheckbox?: (item: T) => boolean;
+}
 
 export function TableSelection<T extends { id: string }>({
     data,
@@ -21,6 +23,9 @@ export function TableSelection<T extends { id: string }>({
     onSelectionChange,
     disableCheckbox,
 }: TableSelectionProps<T>) {
+    const enabledItems = data.filter((item) => !disableCheckbox?.(item));
+    const enabledIds = enabledItems.map((item) => item.id);
+
     const toggleRow = (id: string) =>
         onSelectionChange(
             selection.includes(id)
@@ -28,25 +33,36 @@ export function TableSelection<T extends { id: string }>({
                 : [...selection, id]
         );
 
-    const toggleAll = () =>
-        onSelectionChange(
-            selection.length === data.length ? [] : data.map((item) => item.id)
-        );
+    const toggleAll = () => {
+        const allSelected = enabledIds.every((id) => selection.includes(id));
+
+        if (allSelected) {
+            onSelectionChange(selection.filter((id) => !enabledIds.includes(id)));
+        } else {
+            onSelectionChange([...new Set([...selection, ...enabledIds])]);
+        }
+    };
+
+    const allEnabledSelected = enabledIds.length > 0 && enabledIds.every((id) => selection.includes(id));
+    const someEnabledSelected = enabledIds.some((id) => selection.includes(id));
 
     const rows = data.map((item) => {
         const selected = selection.includes(item.id);
+        const isDisabled = disableCheckbox?.(item);
+
         return (
             <Table.Tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
                 <Table.Td>
-                    <Checkbox checked={selected}
-                        disabled={disableCheckbox?.(item)}
+                    <Checkbox
+                        checked={selected}
+                        disabled={isDisabled}
                         onChange={() => toggleRow(item.id)}
                     />
                 </Table.Td>
 
                 {columns.map((col) => (
                     <Table.Td key={col.key.toString()}>
-                        {col.render ? col.render(item) : (item[col.key as keyof T] as React.ReactNode)}
+                        {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}
                     </Table.Td>
                 ))}
             </Table.Tr>
@@ -61,8 +77,8 @@ export function TableSelection<T extends { id: string }>({
                         <Table.Th w={40}>
                             <Checkbox
                                 onChange={toggleAll}
-                                checked={selection.length === data.length}
-                                indeterminate={selection.length > 0 && selection.length !== data.length}
+                                checked={allEnabledSelected}
+                                indeterminate={!allEnabledSelected && someEnabledSelected}
                             />
                         </Table.Th>
                         {columns.map((col) => (
