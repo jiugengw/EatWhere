@@ -8,9 +8,9 @@ import {
 } from "@mantine/core";
 import { Link } from "@tanstack/react-router";
 import { useForm } from "@mantine/form";
-import { useUpdateUserProfile } from "@/hooks/useUpdateUserProfile";
+import { useUpdateUserProfile } from "@/hooks/users/useUpdateUserProfile";
 import { useUserProfile } from "@/api/useUserProfile";
-import { useUpdatePassword } from "@/hooks/useUpdatePassword";
+import { useUpdatePassword } from "@/hooks/auth/useUpdatePassword";
 import { zodResolver } from "mantine-form-zod-resolver";
 
 import styles from "./tabs.module.css";

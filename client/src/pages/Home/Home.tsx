@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import type { JSX } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 interface RecommendedItem {
   title: string;

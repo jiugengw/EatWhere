@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useAxiosPrivate } from './useAxiosPrivate';
+import { useAxiosPrivate } from '../auth/useAxiosPrivate';
 import type { ViewGroupsResponse } from '@/types/apiResponse';
 
 export const useViewGroups = () => {

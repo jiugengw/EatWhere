@@ -6,7 +6,7 @@ import { useAxiosPrivate } from "./useAxiosPrivate";
 interface UpdatePasswordInput {
   passwordCurrent: string;
   passwordNew: string;
-  passwordConfirm:string;
+  passwordConfirm: string;
 }
 
 export const useUpdatePassword = () => {
@@ -24,7 +24,7 @@ export const useUpdatePassword = () => {
         color: "green",
       });
     },
-    onError: (error:unknown) => {
+    onError: (error: unknown) => {
       const err = error as AxiosError<{ message: string }>;
       showNotification({
         title: "Update failed",

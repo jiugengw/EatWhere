@@ -1,5 +1,5 @@
 import type { GroupMember } from "@/types/apiResponse";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../auth/useAuth";
 
 // WRONG CAUSE SHOULDNT THROW ERROR JIC STILL LOADING
 // export const useGroupRole = (

@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { useAxiosPrivate } from './useAxiosPrivate';
+import { useAxiosPrivate } from '../auth/useAxiosPrivate';
 import type { GroupDetailResponse } from '@/types/apiResponse';
 
 export const useGroupDetails = (id: string): UseQueryResult<GroupDetailResponse, unknown> => {

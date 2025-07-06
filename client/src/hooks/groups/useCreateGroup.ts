@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import type { AxiosError } from 'axios';
 
 import type { CreateGroupInput } from '@/shared/schemas/CreateGroupSchema';
-import { useAxiosPrivate } from '@/hooks/useAxiosPrivate';
+import { useAxiosPrivate } from '@/hooks/auth/useAxiosPrivate';
 
 export const useCreateGroup = () => {
   const axiosPrivate = useAxiosPrivate();

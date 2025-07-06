@@ -6,11 +6,11 @@ import {
   Group,
   Text
 } from '@mantine/core';
-import { useViewGroups } from '@/hooks/useViewGroups';
+import { useViewGroups } from '@/hooks/groups/useViewGroups';
 import { Link } from '@tanstack/react-router';
 import classes from './ViewGroups.module.css';
 import { TableSelection } from '@/components/TableSelection/TableSelection';
-import { useLeaveGroups } from '@/hooks/useLeaveGroups.tsx';
+import { useLeaveGroups } from '@/hooks/groups/useLeaveGroups';
 import { useState } from 'react';
 import { modals } from '@mantine/modals';
 

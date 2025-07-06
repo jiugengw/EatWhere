@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAxiosPrivate } from "./useAxiosPrivate";
+import { useAxiosPrivate } from "../auth/useAxiosPrivate";
 import { showNotification } from "@mantine/notifications";
 import { AxiosError } from "axios";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../auth/useAuth";
 
 interface UpdateUserInput {
   firstName?: string;
@@ -20,7 +20,7 @@ export const useUpdateUserProfile = () => {
       return res.data;
     },
     onSuccess: (data) => {
-        console.log(data);
+      console.log(data);
       showNotification({
         title: "Profile updated",
         message: "Your profile was successfully updated.",

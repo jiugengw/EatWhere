@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { useAxiosPrivate } from './useAxiosPrivate';
+import { useAxiosPrivate } from '../auth/useAxiosPrivate';
 import { useNavigate } from '@tanstack/react-router';
 import { showNotification } from '@mantine/notifications';
 import type { AxiosError } from 'axios';

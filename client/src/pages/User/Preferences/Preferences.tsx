@@ -9,8 +9,8 @@ import {
   Divider,
 } from "@mantine/core";
 import { useEffect, useState, type JSX } from "react";
-import { useUserPreferences } from "@/hooks/usePreferences";
-import { useUpdateUserPreferences } from "@/hooks/useUpdatePreferences";
+import { useUserPreferences } from "@/hooks/users/usePreferences";
+import { useUpdateUserPreferences } from "@/hooks/users/useUpdatePreferences";
 import styles from "./preference.module.css";
 
 const cuisines: string[] = [

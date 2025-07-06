@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { IconUserCircle } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { LogoutButton } from '../LogoutButton';
 import classes from './Usericon.module.css';
 

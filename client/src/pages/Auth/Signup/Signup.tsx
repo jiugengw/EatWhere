@@ -14,7 +14,7 @@ import { Link } from '@tanstack/react-router';
 import { SignupSchema, type SignupInput } from '@/shared/schemas/SignupSchema';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import { useSignup } from '@/hooks/useSignup';
+import { useSignup } from '@/hooks/auth/useSignup';
 import { Loader } from '@mantine/core';
 
 export const SignupPage = (): JSX.Element => {

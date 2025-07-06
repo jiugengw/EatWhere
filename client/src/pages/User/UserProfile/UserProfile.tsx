@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { useState,type JSX } from "react";
 import { Profiletab, Passwordtab, Preferencestab } from "./tabs/tabs";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 import styles from "./userprofile.module.css";
 
 export const ProfilePage = (): JSX.Element => {

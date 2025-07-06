@@ -9,15 +9,15 @@ import {
   Button,
 } from '@mantine/core';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
-import { useGroupDetails } from '@/hooks/useGroupDetails';
+import { useGroupDetails } from '@/hooks/groups/useGroupDetails';
 import { useParams } from '@tanstack/react-router';
 import classes from './GroupDetails.module.css';
 import { TableSelection } from '@/components/TableSelection/TableSelection';
 import { maskEmail } from '@/utils/maskEmail';
-import { useGroupRole } from '@/hooks/useGroupRole';
-import { useUpdateGroupRoles } from '@/hooks/useUpdateGroupRoles';
-import { useRemoveGroupMembers } from '@/hooks/useRemoveGroupMembers';
-import { useAuth } from '@/hooks/useAuth';
+import { useGroupRole } from '@/hooks/groups/useGroupRole';
+import { useUpdateGroupRoles } from '@/hooks/groups/useUpdateGroupRoles';
+import { useRemoveGroupMembers } from '@/hooks/groups/useRemoveGroupMembers';
+import { useAuth } from '@/hooks/auth/useAuth';
 
 export const GroupDetailPage = () => {
   const { auth } = useAuth();

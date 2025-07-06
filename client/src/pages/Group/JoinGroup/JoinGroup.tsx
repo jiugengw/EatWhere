@@ -1,6 +1,6 @@
 import { Button, Container, Paper, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useJoinGroup } from '@/hooks/useJoinGroup';
+import { useJoinGroup } from '@/hooks/groups/useJoinGroup';
 import type { JoinGroupInput } from '@/shared/schemas/JoinGroupSchema';
 import classes from './JoinGroup.module.css';
 

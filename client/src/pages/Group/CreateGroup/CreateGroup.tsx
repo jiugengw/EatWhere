@@ -14,7 +14,7 @@ import {
 } from '@/shared/schemas/CreateGroupSchema';
 import classes from './CreateGroup.module.css';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import { useCreateGroup } from '@/hooks/useCreateGroup';
+import { useCreateGroup } from '@/hooks/groups/useCreateGroup';
 
 export const CreateGroupPage = () => {
   const form = useForm<CreateGroupInput>({

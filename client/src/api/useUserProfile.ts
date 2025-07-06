@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAxiosPrivate } from "@/hooks/useAxiosPrivate";
+import { useAxiosPrivate } from "@/hooks/auth/useAxiosPrivate";
 
 export const useUserProfile = () => {
-  
+
   const axiosPrivate = useAxiosPrivate();
 
-  
+
   const fetchUser = async () => {
     const response = await axiosPrivate.get("/users/me");
     // console.log("this is the response", response.data);

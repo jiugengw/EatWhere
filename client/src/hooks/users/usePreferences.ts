@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAxiosPrivate } from "./useAxiosPrivate";
+import { useAxiosPrivate } from "../auth/useAxiosPrivate";
 
 export const useUserPreferences = () => {
   const axiosPrivate = useAxiosPrivate();
