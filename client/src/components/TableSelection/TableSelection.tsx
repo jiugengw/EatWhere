@@ -3,7 +3,7 @@ import { Checkbox, ScrollArea, Table } from '@mantine/core';
 import classes from './TableSelection.module.css';
 
 export interface TableColumn<T> {
-    key: keyof T;
+    key: keyof T | string;
     header: string;
     render?: (row: T) => React.ReactNode;
 }
@@ -62,7 +62,13 @@ export function TableSelection<T extends { id: string }>({
 
                 {columns.map((col) => (
                     <Table.Td key={col.key.toString()}>
-                        {col.render ? col.render(item) : (item[col.key] as React.ReactNode)}
+                        {col.render ? (
+                            col.render(item)
+                        ) : (
+                            (typeof col.key === 'string' && col.key in item)
+                                ? (item[col.key as keyof T] as React.ReactNode)
+                                : null
+                        )}
                     </Table.Td>
                 ))}
             </Table.Tr>

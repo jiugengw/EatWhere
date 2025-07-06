@@ -1,4 +1,3 @@
-// preferences.tsx
 import {
   Container,
   Title,
@@ -11,7 +10,7 @@ import {
 import { useEffect, useState, type JSX } from "react";
 import { useUserPreferences } from "@/hooks/users/usePreferences";
 import { useUpdateUserPreferences } from "@/hooks/users/useUpdatePreferences";
-import styles from "./preference.module.css";
+import classes from "./preference.module.css";
 
 const cuisines: string[] = [
   "Chinese",
@@ -67,15 +66,15 @@ export const PreferencesPage = (): JSX.Element => {
 
   return (
     <Container size="sm" my="xl">
-      <Title align="center" mb="xl" className={styles.header}>
+      <Title mb="xl" className={classes.header}>
         Cuisine Preferences
       </Title>
 
-      <Paper withBorder shadow="md" p="xl" radius="md" className={styles.paper}>
-        <Stack spacing="xl" className={styles.sliderStack}>
+      <Paper withBorder shadow="md" p="xl" radius="md" className={classes.paper}>
+        <Stack gap="xl" className={classes.sliderStack}>
           {cuisines.map((cuisine, index) => (
-            <div key={cuisine} className={styles.sliderContainer}>
-              <Title order={5} mb="xs" className={styles.sliderLabel}>
+            <div key={cuisine} className={classes.sliderContainer}>
+              <Title order={5} mb="xs" className={classes.sliderLabel}>
                 {cuisine}
               </Title>
 
@@ -103,7 +102,7 @@ export const PreferencesPage = (): JSX.Element => {
               />
 
               {index !== cuisines.length - 1 && (
-                <Divider my="lg" className={styles.divider} />
+                <Divider my="lg" className={classes.divider} />
               )}
             </div>
           ))}
@@ -116,7 +115,7 @@ export const PreferencesPage = (): JSX.Element => {
         radius="xl"
         size="md"
         loading={isPending}
-        className={styles.saveButton}
+        className={classes.saveButton}
         onClick={handleSubmit}
       >
         Save Preferences

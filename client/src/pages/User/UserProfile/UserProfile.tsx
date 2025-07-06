@@ -8,11 +8,11 @@ import {
   Box,
 } from "@mantine/core";
 import { useState,type JSX } from "react";
-import { Profiletab, Passwordtab, Preferencestab } from "./tabs/tabs";
+import { Profiletab, Passwordtab, Preferencestab } from "./tabs/Tabs";
 import { useAuth } from "@/hooks/auth/useAuth";
-import styles from "./userprofile.module.css";
+import classes from "./userprofile.module.css";
 
-export const ProfilePage = (): JSX.Element => {
+export const ProfilePage = () => {
   const { auth } = useAuth();
   const [activeTab, setActiveTab] = useState<"profile" | "password" | "preferences">("profile");
 
@@ -34,7 +34,7 @@ export const ProfilePage = (): JSX.Element => {
       variant={activeTab === tab ? "filled" : "light"}
       radius="xl"
       fullWidth
-      className={activeTab === tab ? styles.activeButton : styles.inactiveButton}
+      className={activeTab === tab ? classes.activeButton : classes.inactiveButton}
       onClick={() => setActiveTab(tab)}
     >
       {tab[0].toUpperCase() + tab.slice(1)}
@@ -43,19 +43,19 @@ export const ProfilePage = (): JSX.Element => {
 
   return (
     <Container size="lg" my="xl">
-      <Title order={2} mb="xl" className={styles.title}>
+      <Title order={2} mb="xl" className={classes.title}>
         My Profile
       </Title>
 
-      <Paper withBorder shadow="md" radius="lg" className={styles.paper}>
+      <Paper withBorder shadow="md" radius="lg" className={classes.paper}>
         {/* Side Navigation */}
-        <Box className={styles.sidebar}>
-          <Stack spacing="md">
+        <Box className={classes.sidebar}>
+          <Stack gap="md">
             <Avatar
               size={80}
               radius={80}
               color='initials'
-              className={styles.avatar}
+              className={classes.avatar}
               name={auth.fullName}
             >
               {auth.fullName
@@ -71,7 +71,7 @@ export const ProfilePage = (): JSX.Element => {
         </Box>
 
         {/* Main Content */}
-        <Box className={styles.content}>{renderContent()}</Box>
+        <Box className={classes.content}>{renderContent()}</Box>
       </Paper>
     </Container>
   );

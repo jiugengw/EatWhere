@@ -2,12 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAxiosPrivate } from "../auth/useAxiosPrivate";
 import { showNotification } from "@mantine/notifications";
 import { AxiosError } from "axios";
-
-interface UpdatePreferencesInput {
-  cuisine: string;
-  points: number;
-}
-
+import type { UpdatePreferencesInput } from "@/shared/schemas/UpdatePreferencesSchema";
 
 export const useUpdateUserPreferences = () => {
   const axiosPrivate = useAxiosPrivate();

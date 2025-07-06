@@ -46,7 +46,7 @@ export const Profiletab = () => {
 
   return (
     <form onSubmit={form.onSubmit((v) => mutate(v))} noValidate>
-      <Stack spacing="md">
+      <Stack gap="md">
         <TextInput
           label="Username"
           placeholder={user.username ?? ""}
@@ -72,7 +72,7 @@ export const Profiletab = () => {
           classNames={{ label: styles.label, input: styles.input }}
           {...form.getInputProps("email")}
         />
-        <Group position="right" mt="md">
+        <Group align="right" mt="md">
           <Button
             radius="xl"
             className={styles.button}
@@ -105,7 +105,7 @@ export const Passwordtab = () => {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Stack spacing="md">
+      <Stack gap="md">
         <PasswordInput
           label="Current Password"
           {...form.getInputProps("passwordCurrent")}
@@ -118,7 +118,7 @@ export const Passwordtab = () => {
           label="Confirm New Password"
           {...form.getInputProps("passwordConfirm")}
         />
-        <Group position="right" mt="md">
+        <Group align="right" mt="md">
           <Button
             radius="xl"
             className={styles.button}
@@ -135,11 +135,11 @@ export const Passwordtab = () => {
 
 export const Preferencestab = () => {
   return (
-    <Stack spacing="md">
+    <Stack gap="md">
       <Text>
         Manage your cuisine preferences on the dedicated preferences page.
       </Text>
-      <Group position="right" mt="md">
+      <Group align="right" mt="md">
         <Button
           radius="xl"
           component={Link}
