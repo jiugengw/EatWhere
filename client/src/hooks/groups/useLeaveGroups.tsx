@@ -15,12 +15,8 @@ export const useLeaveGroups = () => {
             return res.data;
         },
         onSuccess: (data) => {
-            const {
-                status,
-                partial,
-                leftGroupNames = [],
-                failedGroups = []
-            } = data;
+            const { status, partial, data: responseData } = data;
+            const { leftGroupNames = [], failedGroups = [] } = responseData || {};
 
             const left = leftGroupNames.length
                 ? `Left: ${leftGroupNames.join(', ')}.`

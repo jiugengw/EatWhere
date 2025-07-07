@@ -13,13 +13,13 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginInput) => {
       const res = await api.post("/users/login", data);
-      console.log(res.data);
       return res.data;
     },
     onSuccess: (data) => {
+      console.log(data);
       setAuth({
         token: data.token,
-        fullName: data.data.user.fullname,
+        fullName: data.data.user.fullName,
         id: data.data.user.id,
       });
 

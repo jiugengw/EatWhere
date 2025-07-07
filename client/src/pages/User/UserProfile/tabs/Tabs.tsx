@@ -21,7 +21,7 @@ export const Profiletab = () => {
   const { data } = useUserProfile();
   const { mutate, isPending } = useUpdateUserProfile();
 
-  const user = data?.user ?? {};
+  const user = data?.data?.user ?? {};
 
   const form = useForm({
     initialValues: {

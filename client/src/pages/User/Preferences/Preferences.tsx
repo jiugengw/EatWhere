@@ -37,7 +37,7 @@ export const PreferencesPage = (): JSX.Element => {
   const [preferences, setPreferences] = useState<PreferencesState | null>(null);
 
   useEffect(() => {
-    if (data?.user?.preferences) {
+    if (data?.data?.user?.preferences) {
       const initial = cuisines.reduce((acc, cuisine) => {
         acc[cuisine] = backendPreferences[cuisine] ?? 3;
         return acc;

@@ -37,7 +37,7 @@ const createSendToken = (
   res.cookie('jwt', token, cookieOptions);
 
   // user.password = undefined;
-
+  console.log(user);
   res.status(statusCode).json({
     status: 'success',
     token: accessToken,
