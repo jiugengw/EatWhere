@@ -6,11 +6,13 @@ interface CuisineCardProps {
   cuisineName: string;
   score: number;
   reasoning: string;
-  confidenceLevel: number;
+  confidenceLevel?: number;
+  discoveryLevel?: number;
   onShowDetails: () => void;
   onLike?: () => void;
   variant?: 'full' | 'compact' | 'mini';
   isLiked?: boolean;
+  isDiscoverMode?: boolean;
 }
 
 const getCuisineImage = (cuisine: string): string => {
@@ -128,19 +130,29 @@ const getConfidenceBadge = (level: number): { color: string; label: string } => 
   return { color: 'orange', label: 'Low confidence' };
 };
 
+const getDiscoveryBadge = (level: number): { color: string; label: string } => {
+  if (level >= 0.7) return { color: 'grape', label: 'High Discovery' };
+  if (level >= 0.4) return { color: 'purple', label: 'Medium Discovery' };
+  return { color: 'violet', label: 'Low Discovery' };
+};
+
 export function CuisineCard({
   cuisineName,
   score,
   reasoning,
   confidenceLevel,
+  discoveryLevel,
   onShowDetails,
   onLike,
-  isLiked = false
+  isLiked = false,
+  isDiscoverMode = false,
 }: CuisineCardProps) {
   const image = getCuisineImage(cuisineName);
   const features = getCuisineFeatures(cuisineName);
   const scoreColor = getScoreColor(score);
-  const confidence = getConfidenceBadge(confidenceLevel);
+  const confidence = getConfidenceBadge(confidenceLevel || 0);
+  const discovery = getDiscoveryBadge(discoveryLevel || 0.5);
+
 
   const featureBadges = features.map((feature) => (
     <Badge variant="light" key={feature.label} leftSection={feature.emoji}>
@@ -163,9 +175,15 @@ export function CuisineCard({
             <Badge size="sm" variant="filled" color={scoreColor} leftSection={<IconStar size={12} />}>
               {score.toFixed(1)}
             </Badge>
-            <Badge size="sm" variant="light" color={confidence.color}>
-              {confidence.label}
-            </Badge>
+            {isDiscoverMode ? (
+              <Badge size="sm" variant="light" color={discovery.color}>
+                {discovery.label}
+              </Badge>
+            ) : (
+              <Badge size="sm" variant="light" color={confidence.color}>
+                {confidence.label}
+              </Badge>
+            )}
           </Group>
         </Stack>
         <Text fz="sm" mt="xs" c="dimmed">

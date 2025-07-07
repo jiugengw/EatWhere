@@ -13,7 +13,8 @@ export interface RecommendationRequest {
 export interface RecommendationResult {
   cuisineName: string;
   score: number;
-  confidenceLevel: number;
+  confidenceLevel?: number;
+  discoveryLevel?: number;
   reasoning: string;
 }
 

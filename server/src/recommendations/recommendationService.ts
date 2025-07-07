@@ -256,7 +256,7 @@ const calculateDiscoverScores = (user: any, hiddenData: UserRecommendationDoc): 
         results.push({
             cuisineName: cuisine,
             score: Math.round(finalScore * 100) / 100,
-            confidenceLevel: 0.5,
+            discoveryLevel: 0.5,
             reasoning
         });
     }
