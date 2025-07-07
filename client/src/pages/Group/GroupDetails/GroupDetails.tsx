@@ -131,7 +131,7 @@ export const GroupDetailPage = () => {
           ) : (
             <Stack gap="md">
               {isAdmin && (
-                <Paper withBorder p="md" radius="md" style={{ backgroundColor: '#f8f9fa' }}>
+                <Paper withBorder p="md" radius="md">
                   <Text size="sm" fw={500} mb="sm">Admin Actions</Text>
                   <Group gap="sm">
                     <Button
