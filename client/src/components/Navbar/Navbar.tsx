@@ -8,7 +8,7 @@ import { ColorSchemeToggle } from "../ColorSchemeToggle/ColorSchemeToggle";
 export default function Navbar() {
   const links = [
     { name: "Home", path: "/" },
-    { name: "Explore", path: "/explore" },
+    { name: "Recommendations", path: "/recommendations" },
     {
       name: "Group",
       links: [

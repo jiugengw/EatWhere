@@ -1,37 +1,19 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { model, Schema, Document, type HydratedDocument, type Model } from 'mongoose';
 import { CuisineType } from './types.js';
 
-export interface IUserPreferences extends Document {
+export interface IUserRecommendationData extends Document {
   userId: string;
-  
-  manualPreferences: {
-    [K in CuisineType]: number;
-  };
-  
   hiddenAdjustments: {
     [K in CuisineType]: number;
   };
-  
+  favourites: string[];
   totalRatings: number;
   adaptationRate: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const cuisineDefaults = {
-  Chinese: { type: Number, default: 0, min: -2, max: 2 },
-  Korean: { type: Number, default: 0, min: -2, max: 2 },
-  Japanese: { type: Number, default: 0, min: -2, max: 2 },
-  Italian: { type: Number, default: 0, min: -2, max: 2 },
-  Mexican: { type: Number, default: 0, min: -2, max: 2 },
-  Indian: { type: Number, default: 0, min: -2, max: 2 },
-  Thai: { type: Number, default: 0, min: -2, max: 2 },
-  French: { type: Number, default: 0, min: -2, max: 2 },
-  Muslim: { type: Number, default: 0, min: -2, max: 2 },
-  Vietnamese: { type: Number, default: 0, min: -2, max: 2 },
-  Western: { type: Number, default: 0, min: -2, max: 2 },
-  'Fast Food': { type: Number, default: 0, min: -2, max: 2 }
-};
+export type UserRecommendationDoc = HydratedDocument<IUserRecommendationData>;
 
 const hiddenAdjustmentDefaults = {
   Chinese: { type: Number, default: 0, min: -2, max: 2 },
@@ -48,17 +30,18 @@ const hiddenAdjustmentDefaults = {
   'Fast Food': { type: Number, default: 0, min: -2, max: 2 }
 };
 
-const UserPreferencesSchema: Schema = new Schema({
+const UserRecommendationDataSchema: Schema = new Schema({
   userId: {
     type: String,
     required: true,
     unique: true,
     index: true
   },
-  
-  manualPreferences: cuisineDefaults,
   hiddenAdjustments: hiddenAdjustmentDefaults,
-  
+  favourites: {
+    type: [String],
+    default: []
+  },
   totalRatings: {
     type: Number,
     default: 0,
@@ -74,4 +57,4 @@ const UserPreferencesSchema: Schema = new Schema({
   timestamps: true
 });
 
-export const UserPreferences = mongoose.model<IUserPreferences>('UserPreferences', UserPreferencesSchema);
+export const UserRecommendationData = model<IUserRecommendationData>('UserRecommendationData', UserRecommendationDataSchema);

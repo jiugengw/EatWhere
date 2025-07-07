@@ -1,0 +1,29 @@
+.container {
+  max-width: 1200px;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--mantine-color-blue-0) 0%, var(--mantine-color-indigo-0) 100%);
+  border: 1px solid var(--mantine-color-blue-2);
+}
+
+.info {
+  background: var(--mantine-color-gray-0);
+  border: 1px solid var(--mantine-color-gray-2);
+}
+
+.cuisineGrid {
+  transition: opacity 0.10s ease-in-out;
+}
+
+.cuisineGrid.switching {
+  opacity: 0.3;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: var(--mantine-spacing-md);
+  }
+}
+
+

@@ -1,0 +1,33 @@
+.card {
+    transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mantine-shadow-md);
+}
+
+.section {
+    padding-left: var(--mantine-spacing-xs);
+    border-bottom: 1px solid var(--mantine-color-gray-3);
+    padding-bottom: var(--mantine-spacing-xs);
+    min-height: 100px;
+}
+
+.section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.label {
+    font-weight: 500;
+    font-size: var(--mantine-font-size-sm);
+}
+
+.like {
+    color: var(--mantine-color-red-6);
+}
+
+.like:hover {
+    transform: scale(1.05);
+}

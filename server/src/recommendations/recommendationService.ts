@@ -1,261 +1,297 @@
-import { UserPreferences, IUserPreferences } from './userPreferencesModel.js';
-import { 
-  RecommendationRequest, 
-  RecommendationResponse, 
-  RecommendationResult,
-  CuisineRating,
-  CUISINES,
-  CuisineType 
+import { User } from '../users/userModel.js';
+import { UserRecommendationData, UserRecommendationDoc } from './recommendationModel.js';
+import {
+    RecommendationRequest,
+    RecommendationResponse,
+    RecommendationResult,
+    CUISINES,
+    CuisineType
 } from './types.js';
 
-export const generateRecommendations = async (
-  request: RecommendationRequest
-): Promise<RecommendationResponse> => {
-  try {
-    const userPrefs = await UserPreferences.findOne({ userId: request.userId });
-    if (!userPrefs) {
-      throw new Error('User preferences not found');
+const createDefaultHiddenData = async (userId: string): Promise<UserRecommendationDoc> => {
+    const defaultAdjustments: { [K in CuisineType]: number } = {} as any;
+    for (const cuisine of CUISINES) {
+        defaultAdjustments[cuisine] = 0;
     }
 
-    const finalScores = calculateFinalCuisineScores(userPrefs);
-    
-    const recommendations = finalScores
-      .sort((a, b) => b.score - a.score)
-      .slice(0, request.limit || 5);
-
-    return {
-      recommendations,
-      userAdaptationLevel: getUserAdaptationLevel(userPrefs.totalRatings),
-      totalRatings: userPrefs.totalRatings,
-      generatedAt: new Date()
-    };
-  } catch (error: any) {
-    throw new Error(`Failed to generate recommendations: ${error.message}`);
-  }
-};
-
-const calculateFinalCuisineScores = (userPrefs: IUserPreferences): RecommendationResult[] => {
-  const results: RecommendationResult[] = [];
-  
-  for (const cuisine of CUISINES) {
-    // CORE: Combine manual preference + hidden adjustment
-    const manualScore = userPrefs.manualPreferences[cuisine];
-    const hiddenAdjustment = userPrefs.hiddenAdjustments[cuisine];
-    // Convert from -2,2 scale to 1,5 scale for calculations: add 3 to shift scale
-    const baseScore = Math.max(1, Math.min(5, (manualScore + hiddenAdjustment) + 3));
-    
-    // Apply additional algorithm factors
-    const confidenceWeight = calculateConfidenceWeight(userPrefs.totalRatings);
-    const explorationFactor = calculateExplorationFactor(userPrefs, cuisine, baseScore);
-    const diversityBonus = calculateDiversityBonus(userPrefs, baseScore);
-    
-    const finalScore = (
-      baseScore * confidenceWeight +
-      explorationFactor +
-      diversityBonus
-    );
-
-    const confidenceLevel = calculateConfidenceLevel(userPrefs.totalRatings, baseScore);
-    const reasoning = generateReasoning(
-      manualScore, 
-      hiddenAdjustment, 
-      explorationFactor, 
-      userPrefs.totalRatings
-    );
-
-    results.push({
-      cuisineName: cuisine,
-      score: Math.round(finalScore * 100) / 100,
-      confidenceLevel,
-      reasoning
+    const hiddenData = new UserRecommendationData({
+        userId,
+        hiddenAdjustments: defaultAdjustments,
+        totalRatings: 0,
+        adaptationRate: 0.3
     });
-  }
 
-  return results;
+    await hiddenData.save();
+    return hiddenData;
 };
 
 const calculateConfidenceWeight = (totalRatings: number): number => {
-  return Math.min(0.9, 0.6 + (totalRatings * 0.01));
+    return Math.min(0.9, 0.6 + (totalRatings * 0.01));
 };
 
 const calculateExplorationFactor = (
-  userPrefs: IUserPreferences, 
-  cuisine: string, 
-  baseScore: number
+    hiddenData: UserRecommendationDoc,
+    baseScore: number
 ): number => {
-  const totalRatings = userPrefs.totalRatings;
-  
-  const explorationBonus = totalRatings < 20 ? 0.8 : 0.3;
-  const neutralityBonus = Math.abs(baseScore - 2.5) < 0.5 ? 0.4 : 0;
-  
-  return explorationBonus + neutralityBonus;
+    const totalRatings = hiddenData.totalRatings;
+
+    const explorationBonus = totalRatings < 20 ? 0.8 : 0.3;
+    const neutralityBonus = Math.abs(baseScore - 2.5) < 0.5 ? 0.4 : 0;
+
+    return explorationBonus + neutralityBonus;
 };
 
-const calculateDiversityBonus = (userPrefs: IUserPreferences, baseScore: number): number => {
-  const manualScores = Object.values(userPrefs.manualPreferences);
-  const avgScore = manualScores.reduce((sum, score) => sum + score, 0) / manualScores.length;
-  // Convert avgScore to 1-5 scale for comparison
-  const avgScoreConverted = avgScore + 3;
-  
-  return Math.abs(baseScore - avgScoreConverted) * 0.1;
+const calculateDiversityBonus = (user: any, baseScore: number): number => {
+    const manualScores = Array.from(user.preferences.values()) as number[];
+    const avgScore = manualScores.reduce((sum, score) => sum + score, 0) / manualScores.length;
+    const avgScoreConverted = avgScore + 3;
+
+    return Math.abs(baseScore - avgScoreConverted) * 0.1;
 };
 
 const calculateConfidenceLevel = (totalRatings: number, baseScore: number): number => {
-  const ratingConfidence = Math.min(1, totalRatings / 50);
-  const scoreConfidence = Math.abs(baseScore - 2.5) / 2.5;
-  
-  return Math.round((ratingConfidence + scoreConfidence) * 50) / 100;
+    const ratingConfidence = Math.min(1, totalRatings / 50);
+    const scoreConfidence = Math.abs(baseScore - 2.5) / 2.5;
+
+    return Math.round((ratingConfidence + scoreConfidence) * 50) / 100;
 };
 
 const generateReasoning = (
-  manualScore: number,
-  hiddenAdjustment: number,
-  explorationFactor: number,
-  totalRatings: number
+    manualScore: number,
+    hiddenAdjustment: number,
+    explorationFactor: number,
+    totalRatings: number
 ): string => {
-  const finalScore = (manualScore + hiddenAdjustment) + 3; // Convert to 1-5 scale
-  
-  // If hidden algorithm has learned something significant
-  if (Math.abs(hiddenAdjustment) > 0.3) {
-    if (hiddenAdjustment > 0) {
-      return "You enjoy this more than expected based on your ratings";
-    } else {
-      return "You might enjoy this less than your preference suggests";
+    const finalScore = (manualScore + hiddenAdjustment) + 3;
+
+    if (Math.abs(hiddenAdjustment) > 0.3) {
+        if (hiddenAdjustment > 0) {
+            return "You enjoy this more than expected based on your previous ratings";
+        } else {
+            return "You might enjoy this less than your current preference suggests";
+        }
     }
-  }
-  
-  if (finalScore >= 4) {
-    return "Strong match for your taste profile";
-  } else if (finalScore <= 2) {
-    return "May not align with your preferences";
-  } else if (explorationFactor > 0.5) {
-    return totalRatings < 10 ? "New cuisine to explore" : "Worth trying again";
-  } else {
-    return "Moderate match for your preferences";
-  }
+
+    if (finalScore >= 4) {
+        return "This cuisine is a strong match for your established taste profile";
+    } else if (finalScore <= 2) {
+        return "This cuisine may not align well with your current preferences";
+    } else if (explorationFactor > 0.5) {
+        return totalRatings < 10 ? "This is a new cuisine that you should definitely explore" : "This cuisine is worth trying again based on your history";
+    } else {
+        return "This cuisine offers a moderate match for your taste preferences";
+    }
 };
+
 
 const getUserAdaptationLevel = (totalRatings: number): string => {
-  if (totalRatings < 5) return 'new';
-  if (totalRatings < 25) return 'learning';
-  return 'established';
-};
-
-// CORE FUNCTION: This updates the hidden layer when user rates food
-export const processRating = async (
-  userId: string,
-  cuisineName: CuisineType,
-  rating: number
-): Promise<IUserPreferences> => {
-  try {
-    const userPrefs = await UserPreferences.findOne({ userId });
-    if (!userPrefs) {
-      throw new Error('User preferences not found');
-    }
-
-    // Calculate what the system expected vs what user actually rated
-    const manualScore = userPrefs.manualPreferences[cuisineName];
-    const currentHiddenAdjustment = userPrefs.hiddenAdjustments[cuisineName];
-    // Convert to 1-5 scale for comparison with rating
-    const expectedScore = (manualScore + currentHiddenAdjustment) + 3;
-    
-    // How far off was our prediction?
-    const predictionError = rating - expectedScore;
-    
-    // Update hidden adjustment based on prediction error
-    const adaptationRate = calculateAdaptationRate(userPrefs.totalRatings);
-    const newHiddenAdjustment = currentHiddenAdjustment + (predictionError * adaptationRate);
-    
-    // Clamp hidden adjustment to reasonable bounds (-2 to +2)
-    const clampedAdjustment = Math.max(-2, Math.min(2, newHiddenAdjustment));
-
-    // Update the database
-    const updatedPrefs = await UserPreferences.findOneAndUpdate(
-      { userId },
-      {
-        $set: {
-          [`hiddenAdjustments.${cuisineName}`]: clampedAdjustment,
-          totalRatings: userPrefs.totalRatings + 1,
-          adaptationRate: calculateAdaptationRate(userPrefs.totalRatings + 1)
-        }
-      },
-      { new: true }
-    );
-
-    return updatedPrefs!;
-  } catch (error: any) {
-    throw new Error(`Failed to process rating: ${error.message}`);
-  }
+    if (totalRatings < 5) return 'new';
+    if (totalRatings < 25) return 'learning';
+    return 'established';
 };
 
 const calculateAdaptationRate = (totalRatings: number): number => {
-  if (totalRatings < 10) return 0.2;   // Fast learning for new users
-  if (totalRatings < 50) return 0.1;   // Moderate for learning users  
-  return 0.05;                         // Slow for experienced users
+    if (totalRatings < 10) return 0.2;
+    if (totalRatings < 50) return 0.1;
+    return 0.05;
 };
 
-// User can update their manual preferences anytime (Layer 1)
-export const updateManualPreferences = async (
-  userId: string,
-  newManualPreferences: Partial<{ [K in CuisineType]: number }>
-): Promise<IUserPreferences> => {
-  try {
-    const updateObject: any = {};
-    
-    for (const [cuisine, score] of Object.entries(newManualPreferences)) {
-      if (CUISINES.includes(cuisine as CuisineType) && score >= -2 && score <= 2) {
-        updateObject[`manualPreferences.${cuisine}`] = score;
-      }
+const calculateFinalCuisineScores = (user: any, hiddenData: UserRecommendationDoc): RecommendationResult[] => {
+    const results: RecommendationResult[] = [];
+    const favourites = hiddenData.favourites || [];
+
+    for (const cuisine of CUISINES) {
+        const manualScore = user.preferences.get(cuisine) || 0;
+        const hiddenAdjustment = hiddenData.hiddenAdjustments[cuisine] || 0;
+        const favouriteBonus = favourites.includes(cuisine) ? 0.5 : 0;
+        const baseScore = Math.max(1, Math.min(5, (manualScore + hiddenAdjustment + favouriteBonus) + 3));
+        const confidenceWeight = calculateConfidenceWeight(hiddenData.totalRatings);
+        const explorationFactor = calculateExplorationFactor(hiddenData, baseScore);
+        const diversityBonus = calculateDiversityBonus(user, baseScore);
+
+        const finalScore = (
+            baseScore * confidenceWeight +
+            explorationFactor +
+            diversityBonus
+        );
+
+        const confidenceLevel = calculateConfidenceLevel(hiddenData.totalRatings, baseScore);
+        const reasoning = generateReasoning(
+            manualScore,
+            hiddenAdjustment,
+            explorationFactor,
+            hiddenData.totalRatings
+        );
+
+        results.push({
+            cuisineName: cuisine,
+            score: Math.round(finalScore * 100) / 100,
+            confidenceLevel,
+            reasoning
+        });
     }
 
-    const updatedPrefs = await UserPreferences.findOneAndUpdate(
-      { userId },
-      { $set: updateObject },
-      { new: true }
+    return results;
+};
+
+export const generateRecommendations = async (
+    request: RecommendationRequest
+): Promise<RecommendationResponse> => {
+    const user = await User.findById(request.userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    let hiddenData = await UserRecommendationData.findOne({ userId: request.userId });
+    if (!hiddenData) {
+        hiddenData = await createDefaultHiddenData(request.userId);
+    }
+
+    const finalScores = calculateFinalCuisineScores(user, hiddenData);
+
+    const recommendations = finalScores
+        .sort((a, b) => b.score - a.score)
+        .slice(0, request.limit || 5);
+
+    return {
+        recommendations,
+        userAdaptationLevel: getUserAdaptationLevel(hiddenData.totalRatings),
+        totalRatings: hiddenData.totalRatings,
+        generatedAt: new Date()
+    };
+};
+
+export const processRating = async (
+    userId: string,
+    cuisineName: CuisineType,
+    rating: number
+): Promise<void> => {
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    let hiddenData = await UserRecommendationData.findOne({ userId });
+    if (!hiddenData) {
+        hiddenData = await createDefaultHiddenData(userId);
+    }
+
+    const manualScore = user.preferences.get(cuisineName) || 0;
+    const currentHiddenAdjustment = hiddenData.hiddenAdjustments[cuisineName] || 0;
+    const expectedScore = (manualScore + currentHiddenAdjustment) + 3;
+
+    const predictionError = rating - expectedScore;
+
+    const adaptationRate = calculateAdaptationRate(hiddenData.totalRatings);
+    const newHiddenAdjustment = currentHiddenAdjustment + (predictionError * adaptationRate);
+    const clampedAdjustment = Math.max(-2, Math.min(2, newHiddenAdjustment));
+
+    await UserRecommendationData.findOneAndUpdate(
+        { userId },
+        {
+            $set: {
+                [`hiddenAdjustments.${cuisineName}`]: clampedAdjustment,
+                totalRatings: hiddenData.totalRatings + 1,
+                adaptationRate: calculateAdaptationRate(hiddenData.totalRatings + 1)
+            }
+        },
+        { new: true }
+    );
+};
+
+export const toggleUserFavourite = async (
+    userId: string,
+    cuisineName: CuisineType
+): Promise<{ isFavourited: boolean }> => {
+    let hiddenData = await UserRecommendationData.findOne({ userId });
+    if (!hiddenData) {
+        hiddenData = await createDefaultHiddenData(userId);
+    }
+
+    const favourites = hiddenData.favourites || [];
+    const isFavourited = favourites.includes(cuisineName);
+
+    let updatedFavourites;
+    if (isFavourited) {
+        updatedFavourites = favourites.filter(fav => fav !== cuisineName);
+    } else {
+        updatedFavourites = [...favourites, cuisineName];
+    }
+
+    await UserRecommendationData.findOneAndUpdate(
+        { userId },
+        { $set: { favourites: updatedFavourites } },
+        { new: true }
     );
 
-    if (!updatedPrefs) {
-      throw new Error('User preferences not found');
-    }
-
-    return updatedPrefs;
-  } catch (error: any) {
-    throw new Error(`Failed to update preferences: ${error.message}`);
-  }
+    return { isFavourited: !isFavourited };
 };
 
-export const initializeUserPreferences = async (
-  userId: string,
-  initialManualPreferences: Partial<{ [K in CuisineType]: number }> = {}
-): Promise<IUserPreferences> => {
-  try {
-    // Check if user already exists
-    const existingPrefs = await UserPreferences.findOne({ userId });
-    if (existingPrefs) {
-      throw new Error('User preferences already exist');
+export const getUserFavourites = async (userId: string): Promise<string[]> => {
+    let hiddenData = await UserRecommendationData.findOne({ userId });
+    if (!hiddenData) {
+        hiddenData = await createDefaultHiddenData(userId);
     }
 
-    // Create complete manual preferences with defaults
-    const completeManualPrefs: { [K in CuisineType]: number } = {} as any;
+    return hiddenData.favourites || [];
+};
+
+const calculateDiscoverScores = (user: any, hiddenData: UserRecommendationDoc): RecommendationResult[] => {
+    const results: RecommendationResult[] = [];
+    const favourites = hiddenData.favourites || [];
+
     for (const cuisine of CUISINES) {
-      completeManualPrefs[cuisine] = initialManualPreferences[cuisine] || 0; // Default to 0 (neutral)
+        const manualScore = user.preferences.get(cuisine) || 0;
+        const hiddenAdjustment = hiddenData.hiddenAdjustments[cuisine] || 0;
+        const favouriteBonus = favourites.includes(cuisine) ? 0.2 : 0;
+
+        const baseScore = Math.max(1, Math.min(5, (manualScore + hiddenAdjustment + favouriteBonus) + 3));
+        const discoveryBonus = Math.random() * 2;
+        const explorationWeight = 2.0;
+
+        const finalScore = baseScore * 0.6 + discoveryBonus + explorationWeight;
+
+        const reasoning = generateDiscoverReasoning();
+
+        results.push({
+            cuisineName: cuisine,
+            score: Math.round(finalScore * 100) / 100,
+            confidenceLevel: 0.5,
+            reasoning
+        });
     }
-    
-    const userPrefs = new UserPreferences({
-      userId,
-      manualPreferences: completeManualPrefs,
-      // hiddenAdjustments default to 0 (from schema)
-      totalRatings: 0,
-      adaptationRate: 0.3
-    });
-    
-    await userPrefs.save();
-    return userPrefs;
-  } catch (error: any) {
-    throw new Error(`Failed to initialize user preferences: ${error.message}`);
-  }
+
+    return results;
 };
 
-export const getUserPreferences = async (userId: string): Promise<IUserPreferences | null> => {
-  return await UserPreferences.findOne({ userId });
+const generateDiscoverReasoning = (): string => {
+    return "Enhanced for exploration - perfect time to try something new";
 };
+
+export const generateDiscoverRecommendations = async (
+    request: RecommendationRequest
+): Promise<RecommendationResponse> => {
+    const user = await User.findById(request.userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    let hiddenData = await UserRecommendationData.findOne({ userId: request.userId });
+    if (!hiddenData) {
+        hiddenData = await createDefaultHiddenData(request.userId);
+    }
+
+    const finalScores = calculateDiscoverScores(user, hiddenData);
+
+    const shuffledScores = finalScores
+        .sort(() => Math.random() - 0.5)
+        .slice(0, request.limit || 4);
+
+    return {
+        recommendations: shuffledScores,
+        userAdaptationLevel: getUserAdaptationLevel(hiddenData.totalRatings),
+        totalRatings: hiddenData.totalRatings,
+        generatedAt: new Date()
+    };
+};
+

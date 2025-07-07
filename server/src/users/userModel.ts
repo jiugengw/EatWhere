@@ -14,7 +14,7 @@ interface IUser {
   password: string;
   passwordConfirm?: string;
   passwordChangedAt?: Date;
-  preferences?: Map<string, number>;
+  preferences: Map<string, number>;
   groups: Types.ObjectId[];
   active?: boolean;
   id?: string;
@@ -152,3 +152,4 @@ userSchema.methods.changedPasswordAfter = function (
 
 export const User =
   (models.User as Model<IUser>) || model<IUser>('User', userSchema);
+

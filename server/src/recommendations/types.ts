@@ -30,3 +30,11 @@ export const CUISINES = [
 ] as const;
 
 export type CuisineType = typeof CUISINES[number];
+
+export interface UserWithRecommendations {
+  id: string;
+  preferences: Map<string, number>; 
+  hiddenAdjustments?: Map<string, number>; 
+  totalRatings?: number;
+  adaptationRate?: number;
+}
