@@ -1,5 +1,5 @@
 import cx from 'clsx';
-import { Checkbox, ScrollArea, Table } from '@mantine/core';
+import { Checkbox, Paper, ScrollArea, Table } from '@mantine/core';
 import classes from './TableSelection.module.css';
 
 export interface TableColumn<T> {
@@ -76,24 +76,31 @@ export function TableSelection<T extends { id: string }>({
     });
 
     return (
-        <ScrollArea>
-            <Table miw={800} verticalSpacing="sm" className={classes.table}>
-                <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th w={40}>
-                            <Checkbox
-                                onChange={toggleAll}
-                                checked={allEnabledSelected}
-                                indeterminate={!allEnabledSelected && someEnabledSelected}
-                            />
-                        </Table.Th>
-                        {columns.map((col) => (
-                            <Table.Th key={col.key.toString()}>{col.header}</Table.Th>
-                        ))}
-                    </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>{rows}</Table.Tbody>
-            </Table>
-        </ScrollArea>
+        <Paper withBorder shadow="sm" radius="md" p="md">
+            <ScrollArea>
+                <Table
+                    miw={800}
+                    verticalSpacing="md"
+                    className={classes.table}
+                    highlightOnHover
+                >
+                    <Table.Thead>
+                        <Table.Tr>
+                            <Table.Th w={40}>
+                                <Checkbox
+                                    onChange={toggleAll}
+                                    checked={allEnabledSelected}
+                                    indeterminate={!allEnabledSelected && someEnabledSelected}
+                                />
+                            </Table.Th>
+                            {columns.map((col) => (
+                                <Table.Th key={col.key.toString()}>{col.header}</Table.Th>
+                            ))}
+                        </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>{rows}</Table.Tbody>
+                </Table>
+            </ScrollArea>
+        </Paper>
     );
 }

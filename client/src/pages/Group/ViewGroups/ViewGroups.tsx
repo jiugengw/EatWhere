@@ -71,6 +71,7 @@ export const ViewGroupsPage = () => {
           <Button
             onClick={handleLeave}
             disabled={selected.length === 0 || leave.isPending}
+            mb="md"
           >
             Leave Selected
           </Button>
