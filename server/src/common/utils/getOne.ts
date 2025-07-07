@@ -1,7 +1,7 @@
 import { catchAsync } from './catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
-import type { HydratedDocument, Model } from 'mongoose';
-import type { NextFunction, Request, RequestHandler, Response } from 'express';
+import type { Model } from 'mongoose';
+import type { RequestHandler } from 'express';
 import { AppError } from './AppError.js';
 import { GetOneOptions, DeleteOneOptions } from '../../types/factory.js';
 
@@ -38,38 +38,8 @@ export const getOne = <T>(
 
     res.status(StatusCodes.OK).json({
       status: 'success',
-      data: {
-        [Model.modelName]: output,
-      },
+      [Model.modelName.toLowerCase()]: output,
     });
   });
 };
-
-export const deleteOne = <T>(
-  Model: Model<T>,
-  options: DeleteOneOptions<HydratedDocument<T>>
-): RequestHandler => {
-  return catchAsync(async (req, res, next) => {
-    const { postDeleteFn } = options || {};
-
-    const doc = await Model.findByIdAndUpdate(
-      req.params.id,
-      { active: false },
-      { new: true, runValidators: true }
-    );
-
-    if (!doc) {
-      return next(
-        new AppError(`No ${Model.modelName} found`, StatusCodes.NOT_FOUND)
-      );
-    }
-
-    if (typeof postDeleteFn === 'function') {
-      await postDeleteFn(doc);
-    }
-
-    res.status(StatusCodes.NO_CONTENT).end();
-  });
-};
-
 

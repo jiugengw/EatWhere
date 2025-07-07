@@ -3,7 +3,6 @@ import {
   createGroup,
   getGroup,
   updateGroup,
-  deleteGroup,
   joinGroup,
   checkUserInGroup,
   getGroupUsers,
@@ -26,7 +25,6 @@ router
   .route('/:id')
   .get(getGroup)
   .patch(updateGroup)
-  .delete(deleteGroup);
 
 router.patch('/:code/join', joinGroup);
 

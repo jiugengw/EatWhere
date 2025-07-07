@@ -16,7 +16,6 @@ import {
 import { IconUser } from '@tabler/icons-react';
 import { useState, type JSX } from 'react';
 
-// Types
 type Member = {
   id: number;
   name: string;

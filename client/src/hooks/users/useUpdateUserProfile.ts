@@ -30,7 +30,7 @@ export const useUpdateUserProfile = () => {
       // Optional: update auth state if name/email changed
       setAuth((prev) => ({
         ...prev,
-        fullName: data.data.user.fullName,
+        fullName: data.user.fullName,
       }));
     },
     onError: (error: unknown) => {

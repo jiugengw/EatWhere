@@ -26,7 +26,7 @@ export const GroupDetailPage = () => {
   const { data, isLoading } = useGroupDetails(id);
   const [showCode, setShowCode] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
-  const group = data?.data?.Group;
+  const group = data?.group;
   const { isAdmin } = useGroupRole(group?.users ?? []);
   const updateRoles = useUpdateGroupRoles(group?._id ?? '');
   const remove = useRemoveGroupMembers(group?._id ?? '');

@@ -17,7 +17,7 @@ import { modals } from '@mantine/modals';
 export const ViewGroupsPage = () => {
   const { data, isLoading } = useViewGroups();
   const [selected, setSelected] = useState<string[]>([]);
-  const groups = data?.data?.User?.groups ?? [];
+  const groups = data?.user?.groups ?? [];
 
   const leave = useLeaveGroups();
   const handleLeave = () => {

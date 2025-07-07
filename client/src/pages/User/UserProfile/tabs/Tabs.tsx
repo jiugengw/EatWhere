@@ -9,7 +9,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useForm } from "@mantine/form";
 import { useUpdateUserProfile } from "@/hooks/users/useUpdateUserProfile";
-import { useUserProfile } from "@/api/useUserProfile";
+import { useUserProfile } from "@/hooks/users/useUserProfile";
 import { useUpdatePassword } from "@/hooks/auth/useUpdatePassword";
 import { zodResolver } from "mantine-form-zod-resolver";
 
@@ -21,7 +21,7 @@ export const Profiletab = () => {
   const { data } = useUserProfile();
   const { mutate, isPending } = useUpdateUserProfile();
 
-  const user = data?.data?.User ?? {};
+  const user = data?.user ?? {};
 
   const form = useForm({
     initialValues: {

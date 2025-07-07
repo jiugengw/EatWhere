@@ -3,7 +3,6 @@ import {
   getMe,
   getUser,
   updateUser,
-  deleteUser,
   getUserGroups,
   getUserPreferences,
   updateMyPreferences,
@@ -115,7 +114,6 @@ router
    *       204:
    *         description: User deleted successfully
    */
-  .delete(getMe, deleteUser);
 
 /**
  * @swagger

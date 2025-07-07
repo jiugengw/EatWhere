@@ -15,7 +15,7 @@ export const useJoinGroup = () => {
     },
     onSuccess: (data) => {
       console.log('Success:', data);
-      const groupName = data.data.Group.name;
+      const groupName = data.group.name;
       const message = data.message;
 
       const isAlreadyInGroup = message.includes('already');

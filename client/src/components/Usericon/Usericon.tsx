@@ -11,7 +11,7 @@ import {
 import { IconUserCircle } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/auth/useAuth';
-import { LogoutButton } from '../LogoutButton';
+import { LogoutButton } from '../ LogoutButton/LogoutButton';
 import classes from './Usericon.module.css';
 
 export function Usericon() {

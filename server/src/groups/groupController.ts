@@ -12,14 +12,13 @@ import {
 import { RequestHandler } from 'express';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
-import { getOne, deleteOne } from '../common/utils/handlerFactory.js';
+import { getOne } from '../common/utils/getOne.js';
 import { UpdateGroupSchema } from '../shared/schemas/UpdateGroupSchema.js';
 import { CreateGroupSchema } from '../shared/schemas/CreateGroupSchema.js';
 import { JoinGroupSchema } from '../shared/schemas/JoinGroupSchema.js';
 import { RemoveGroupMembersSchema } from '../shared/schemas/RemoveMembersSchema.js';
 import { LeaveGroupsSchema } from '../shared/schemas/LeaveGroupsSchema.js';
 import { UpdateGroupRolesSchema } from '../shared/schemas/UpdateGroupRolesSchema.js';
-import { removeGroupsFromUsers } from './utils/removeGroupsFromUsers.js';
 
 export const getGroup: RequestHandler = getOne(Group, {
   populateOptions: {
@@ -45,23 +44,9 @@ export const updateGroup = catchAsync(async (req, res, next) => {
 
   res.status(StatusCodes.OK).json({
     status: 'success',
-    data: {
-      group: updatedGroup,
-    },
+    group: updatedGroup,
   });
 });
-
-
-export const deleteGroup: RequestHandler = deleteOne(Group, {
-  postDeleteFn: async (group) => {
-    await removeGroupsFromUsers(group.id);
-  },
-});
-
-// export const getGroupHistory: RequestHandler = getOne(Group, {
-//   populateOptions: { path: 'history' },
-//   selectFields: 'history',
-// });
 
 export const getGroupUsers: RequestHandler = getOne(Group, {
   populateOptions: { path: 'users' },
@@ -116,7 +101,7 @@ export const joinGroup = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).json({
     status: 'success',
     message,
-    data: { Group: group },
+    group: group
   });
 });
 
@@ -144,11 +129,9 @@ export const leaveGroups = catchAsync(async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({
       status: 'fail',
       partial: false,
-      data: {
-        leftGroupNames,
-        failedGroups,
-        userId: req.user.id
-      },
+      leftGroupNames,
+      failedGroups,
+      userId: req.user.id
     });
   }
 
@@ -156,22 +139,18 @@ export const leaveGroups = catchAsync(async (req, res, next) => {
     return res.status(StatusCodes.OK).json({
       status: 'success',
       partial: true,
-      data: {
-        leftGroupNames,
-        failedGroups,
-        userId: req.user.id
-      },
+      leftGroupNames,
+      failedGroups,
+      userId: req.user.id
     });
   }
 
   return res.status(StatusCodes.OK).json({
     status: 'success',
     partial: false,
-    data: {
-      leftGroupNames,
-      failedGroups,
-      userId: req.user.id
-    },
+    leftGroupNames,
+    failedGroups,
+    userId: req.user.id
   });
 });
 
@@ -196,7 +175,7 @@ export const createGroup = catchAsync(async (req, res, next) => {
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
-    data: { Group: newGroup },
+    group: newGroup,
   });
 });
 
@@ -226,11 +205,9 @@ export const updateGroupRoles = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).json({
     status: 'success',
     message: message.trim(),
-    data: {
-      role,
-      updatedUsers,
-      alreadyInRole,
-    },
+    role,
+    updatedUsers,
+    alreadyInRole,
   });
 });
 

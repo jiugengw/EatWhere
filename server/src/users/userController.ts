@@ -4,7 +4,7 @@ import { updateUserPreferences, updateUserProfile } from './userService.js';
 import { User } from './userModel.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
-import { getOne, deleteOne } from '../common/utils/handlerFactory.js';
+import { getOne } from '../common/utils/getOne.js';
 import { Group } from '../groups/groupModel.js';
 import { UpdatePreferencesSchema } from '../shared/schemas/UpdatePreferencesSchema.js';
 import { UpdateUserProfileSchema } from '../shared/schemas/UpdateUserProfileSchema.js';
@@ -40,12 +40,6 @@ export const getUserByUsername = getOne(User, {
   selectFields: 'username firstName lastName',
   findByFn: (req) => ({ username: req.params.username }),
   enableVirtuals: true,
-});
-
-export const deleteUser = deleteOne(User, {
-  postDeleteFn: async (user) => {
-    await Group.updateMany({ users: user.id }, { $pull: { users: user.id } });
-  },
 });
 
 export const updateUser = catchAsync(async (req, res, next) => {

@@ -30,17 +30,13 @@ export type Group = {
 
 export type GroupDetailResponse = {
     status: string;
-    data: {
-        Group: Group;
-    };
+    group: Group;
 };
 
 export type ViewGroupsResponse = {
     status: string;
-    data: {
-        User: {
-            _id: string;
-            groups: GroupSummary[];
-        };
+    user: {
+        _id: string;
+        groups: GroupSummary[];
     };
-};
+}

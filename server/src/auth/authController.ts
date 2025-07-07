@@ -41,9 +41,7 @@ const createSendToken = (
   res.status(statusCode).json({
     status: 'success',
     token: accessToken,
-    data: {
-      User: user,
-    },
+    user: user,
   });
 };
 
@@ -98,7 +96,7 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
-  console.log("this is the request body: ",req.body)
+  console.log("this is the request body: ", req.body)
   const parsed = UpdatePasswordSchema.safeParse(req.body);
   if (!parsed.success) {
     return next(

@@ -6,7 +6,6 @@ import { UpdateGroupInput } from '../shared/schemas/UpdateGroupSchema.js';
 import { User, type UserDoc } from '../users/userModel.js';
 import { CreateGroupInput } from '../shared/schemas/CreateGroupSchema.js';
 import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
-import { removeGroupsFromUsers } from './utils/removeGroupsFromUsers.js';
 
 export const updateGroupById = async (
   groupId: string,
@@ -111,7 +110,6 @@ export const leaveGroupsByIds = async (
     group.users = group.users.filter((entry: any) => !entry.user.equals(userId));
     if (group.userCount === 0) {
       group.active = false;
-      await removeGroupsFromUsers(group._id.toString());
     }
 
     await group.save();
