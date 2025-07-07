@@ -38,7 +38,7 @@ export const getOne = <T>(
 
     res.status(StatusCodes.OK).json({
       status: 'success',
-      [Model.modelName.toLowerCase()]: output,
+      data: { [Model.modelName.toLowerCase()]: output },
     });
   });
 };

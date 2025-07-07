@@ -18,8 +18,8 @@ export const useSignup = () => {
     onSuccess: (data) => {
       setAuth({
         token: data.token,
-        fullName: data.user.fullName,
-        id: data.user.id,
+        fullName: data.data.user.fullName,
+        id: data.data.user.id,
       });
       localStorage.setItem("token",data.token);
       navigate({ to: "/" });

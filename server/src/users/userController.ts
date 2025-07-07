@@ -90,7 +90,7 @@ export const updateMyPreferences = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).json({
     status: 'success',
     data: {
-      User: {
+      user: {
         id: updatedUser.id,
         preferences: updatedUser.preferences,
       },

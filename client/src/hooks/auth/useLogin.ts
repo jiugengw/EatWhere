@@ -19,8 +19,8 @@ export const useLogin = () => {
     onSuccess: (data) => {
       setAuth({
         token: data.token,
-        fullName: data.user.fullname,
-        id: data.user.id,
+        fullName: data.data.user.fullname,
+        id: data.data.user.id,
       });
 
       // optionally store token for persistence

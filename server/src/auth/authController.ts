@@ -41,7 +41,7 @@ const createSendToken = (
   res.status(statusCode).json({
     status: 'success',
     token: accessToken,
-    user: user,
+    data: { user: user, }
   });
 };
 

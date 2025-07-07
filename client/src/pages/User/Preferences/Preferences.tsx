@@ -32,7 +32,7 @@ type PreferencesState = Record<string, number>;
 export const PreferencesPage = (): JSX.Element => {
   const { data } = useUserPreferences();
   const { mutate, isPending } = useUpdateUserPreferences();
-  const backendPreferences = data?.user?.preferences || {};
+  const backendPreferences = data?.data?.user?.preferences || {};
 
   const [preferences, setPreferences] = useState<PreferencesState | null>(null);
 

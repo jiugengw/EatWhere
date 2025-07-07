@@ -19,7 +19,7 @@ export const useCreateGroup = () => {
     onSuccess: (data) => {
       showNotification({
         title: 'Group Created',
-        message: `Welcome to "${data.group.name}"`,
+        message: `Welcome to "${data.data.group.name}"`,
         color: 'green',
       });
 

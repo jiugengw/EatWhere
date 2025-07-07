@@ -44,7 +44,7 @@ export const updateGroup = catchAsync(async (req, res, next) => {
 
   res.status(StatusCodes.OK).json({
     status: 'success',
-    group: updatedGroup,
+    data: { group: updatedGroup, }
   });
 });
 
@@ -101,7 +101,7 @@ export const joinGroup = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).json({
     status: 'success',
     message,
-    group: group
+    data: { group: group }
   });
 });
 
@@ -129,9 +129,11 @@ export const leaveGroups = catchAsync(async (req, res, next) => {
     return res.status(StatusCodes.BAD_REQUEST).json({
       status: 'fail',
       partial: false,
-      leftGroupNames,
-      failedGroups,
-      userId: req.user.id
+      data: {
+        leftGroupNames,
+        failedGroups,
+        userId: req.user.id
+      }
     });
   }
 
@@ -139,18 +141,22 @@ export const leaveGroups = catchAsync(async (req, res, next) => {
     return res.status(StatusCodes.OK).json({
       status: 'success',
       partial: true,
-      leftGroupNames,
-      failedGroups,
-      userId: req.user.id
+      data: {
+        leftGroupNames,
+        failedGroups,
+        userId: req.user.id
+      }
     });
   }
 
   return res.status(StatusCodes.OK).json({
     status: 'success',
     partial: false,
-    leftGroupNames,
-    failedGroups,
-    userId: req.user.id
+    data: {
+      leftGroupNames,
+      failedGroups,
+      userId: req.user.id
+    }
   });
 });
 
@@ -175,7 +181,7 @@ export const createGroup = catchAsync(async (req, res, next) => {
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
-    group: newGroup,
+    data: { group: newGroup, }
   });
 });
 
@@ -205,9 +211,11 @@ export const updateGroupRoles = catchAsync(async (req, res, next) => {
   res.status(StatusCodes.OK).json({
     status: 'success',
     message: message.trim(),
-    role,
-    updatedUsers,
-    alreadyInRole,
+    data: {
+      role,
+      updatedUsers,
+      alreadyInRole,
+    }
   });
 });
 
