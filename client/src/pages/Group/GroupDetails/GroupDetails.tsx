@@ -2,13 +2,19 @@ import { useState } from 'react';
 import {
   Container,
   Title,
-  Table,
   ActionIcon,
   Text,
   Group,
   Button,
+  Paper,
+  Badge,
+  Code,
+  SimpleGrid,
+  Stack,
+  Card,
+  TextInput,
 } from '@mantine/core';
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconChefHat, IconEye, IconEyeOff, IconSettings, IconUserPlus } from '@tabler/icons-react';
 import { useGroupDetails } from '@/hooks/groups/useGroupDetails';
 import { useParams } from '@tanstack/react-router';
 import classes from './GroupDetails.module.css';
@@ -18,6 +24,8 @@ import { useGroupRole } from '@/hooks/groups/useGroupRole';
 import { useUpdateGroupRoles } from '@/hooks/groups/useUpdateGroupRoles';
 import { useRemoveGroupMembers } from '@/hooks/groups/useRemoveGroupMembers';
 import { useAuth } from '@/hooks/auth/useAuth';
+import { Link } from '@tanstack/react-router';
+import { useLeaveGroup } from '@/hooks/groups/useLeaveGroup';
 
 export const GroupDetailPage = () => {
   const { auth } = useAuth();
@@ -30,6 +38,7 @@ export const GroupDetailPage = () => {
   const { isAdmin } = useGroupRole(group?.users ?? []);
   const updateRoles = useUpdateGroupRoles(group?._id ?? '');
   const remove = useRemoveGroupMembers(group?._id ?? '');
+  const { handleLeaveGroup, isLoading: isLeavingGroup } = useLeaveGroup();
 
   const handlePromote = () => {
     updateRoles.mutate({
@@ -49,6 +58,13 @@ export const GroupDetailPage = () => {
     remove.mutate(selected);
   };
 
+  const onLeaveClick = () => {
+    if (group) {
+      handleLeaveGroup(group._id, group.name, group.userCount, true);
+    }
+  };
+
+
   if (isLoading || !group) {
     return (
       <Container>
@@ -63,93 +79,202 @@ export const GroupDetailPage = () => {
     username: member.user.username,
     email: isAdmin ? member.user.email : maskEmail(member.user.email),
     role: member.role,
+    joinedAt: new Date(member.joinedAt).toLocaleDateString(),
   }));
 
   return (
-    <Container className={classes.container}>
-      <Title className={classes.title}>{group.name}</Title>
+    <Container size="lg" className={classes.container}>
+      <Paper withBorder shadow="sm" radius="md" p="lg" mb="xl">
+        <Group justify="space-between" align="flex-start">
+          <div>
+            <Title className={classes.title} order={1}>{group.name}</Title>
+            <Text c="dimmed" mt="xs">
+              {group.description || 'No description provided'}
+            </Text>
+            <Group gap="xs" mt="md">
+              <Badge variant="light" color="blue">
+                {group.userCount} {group.userCount === 1 ? 'member' : 'members'}
+              </Badge>
+              <Badge variant="light" color="gray">
+                Created {new Date(group.createdAt).toLocaleDateString()}
+              </Badge>
+            </Group>
+          </div>
 
-      <Table striped withColumnBorders mt="md">
-        <tbody>
-          <tr>
-            <td><strong>Name</strong></td>
-            <td>{group.name}</td>
-          </tr>
-          <tr>
-            <td><strong>Description</strong></td>
-            <td>{group.description || 'No description'}</td>
-          </tr>
-          <tr>
-            <td><strong>Code</strong></td>
-            <td>
-              {showCode ? group.code : '******'}
+          <Paper withBorder p="sm" radius="md" style={{ backgroundColor: '#f8f9fa' }}>
+            <Group gap="xs" align="center">
+              <Text size="sm" fw={500}>Group Code:</Text>
+              <Code>{showCode ? group.code : '******'}</Code>
               <ActionIcon
                 variant="subtle"
                 size="sm"
-                ml="xs"
                 onClick={() => setShowCode((prev) => !prev)}
                 aria-label={showCode ? 'Hide code' : 'Show code'}
               >
                 {showCode ? <IconEyeOff size={16} /> : <IconEye size={16} />}
               </ActionIcon>
-            </td>
-          </tr>
-          <tr>
-            <td><strong>Total Members</strong></td>
-            <td>{group.userCount}</td>
-          </tr>
-        </tbody>
-      </Table>
+            </Group>
+          </Paper>
+        </Group>
+      </Paper>
 
-      <Title order={3} mt="xl" mb="sm">
-        Members
-      </Title>
+      <SimpleGrid cols={{ base: 1, md: 10 }} spacing="xl">
+        <div style={{ gridColumn: 'span 7' }}>
+          <Title order={2} mb="lg">
+            Members ({members.length})
+          </Title>
 
-      {members.length === 0 ? (
-        <Text c="dimmed">No members in this group yet.</Text>
-      ) : (
-        <>
-          <Group className={classes.actions}>
-            <Button
-              onClick={handleRemove}
-              disabled={!isAdmin || selected.length === 0}
-              className={classes.remove}
-              color="red"
-            >
-              Remove
-            </Button>
+          {members.length === 0 ? (
+            <Paper withBorder p="xl" radius="md" style={{ textAlign: 'center' }}>
+              <Text c="dimmed">No members in this group yet.</Text>
+            </Paper>
+          ) : (
+            <Stack gap="md">
+              {isAdmin && (
+                <Paper withBorder p="md" radius="md" style={{ backgroundColor: '#f8f9fa' }}>
+                  <Text size="sm" fw={500} mb="sm">Admin Actions</Text>
+                  <Group gap="sm">
+                    <Button
+                      onClick={handlePromote}
+                      disabled={selected.length === 0}
+                      size="xs"
+                      color="green"
+                      variant="light"
+                    >
+                      Promote ({selected.length})
+                    </Button>
 
-            <Button
-              onClick={handlePromote}
-              disabled={!isAdmin || selected.length === 0}
-              className={classes.promote}
-            >
-              Promote
-            </Button>
+                    <Button
+                      onClick={handleDemote}
+                      disabled={selected.length === 0}
+                      size="xs"
+                      color="orange"
+                      variant="light"
+                    >
+                      Demote ({selected.length})
+                    </Button>
 
-            <Button
-              onClick={handleDemote}
-              disabled={!isAdmin || selected.length === 0}
-              className={classes.demote}
-            >
-              Demote
-            </Button>
-          </Group>
+                    <Button
+                      onClick={handleRemove}
+                      disabled={selected.length === 0}
+                      size="xs"
+                      color="red"
+                      variant="light"
+                    >
+                      Remove ({selected.length})
+                    </Button>
+                  </Group>
+                </Paper>
+              )}
 
-          <TableSelection
-            data={members}
-            columns={[
-              { key: 'username', header: 'Username' },
-              { key: 'fullName', header: 'Full Name' },
-              { key: 'email', header: 'Email' },
-              { key: 'role', header: 'Role' },
-            ]}
-            selection={selected}
-            onSelectionChange={setSelected}
-            disableCheckbox={(row) => row.id === currentUserId}
-          />
-        </>
-      )}
+              <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
+                <TableSelection
+                  data={members}
+                  columns={[
+                    { key: 'username', header: 'Username' },
+                    { key: 'fullName', header: 'Full Name' },
+                    { key: 'email', header: 'Email' },
+                    {
+                      key: 'role',
+                      header: 'Role',
+                      render: (row) => (
+                        <Stack gap="xs" align="flex-start">
+                          <Badge
+                            variant="light"
+                            color={row.role === 'admin' ? 'orange' : 'blue'}
+                          >
+                            {row.role}
+                          </Badge>
+                          <Badge variant="light" color="green" size="xs">
+                            Member since {new Date(row.joinedAt).toLocaleDateString()}
+                          </Badge>
+                        </Stack>
+                      )
+                    },
+                  ]}
+                  selection={selected}
+                  onSelectionChange={setSelected}
+                  disableCheckbox={(row) => row.id === currentUserId}
+                />
+              </Paper>
+            </Stack>
+          )}
+        </div>
+
+        <div style={{ gridColumn: 'span 3' }}>
+          <Title order={2} mb="lg">
+            Group Actions
+          </Title>
+
+          <Stack gap="md">
+            <Card withBorder shadow="sm" padding="lg" radius="md">
+              <Group justify="space-between" align="flex-start">
+                <div style={{ flex: 1 }}>
+                  <Group gap="xs" mb="xs">
+                    <IconChefHat size={20} color="#FF8C42" />
+                    <Text fw={600}>Food Recommendations</Text>
+                  </Group>
+                  <Text size="sm" c="dimmed" mb="md">
+                    Get personalized cuisine suggestions based on your group's preferences and dining history
+                  </Text>
+                  <Button
+                    component={Link}
+                    to={`/recommendations?mode=group&groupId=${group._id}`}
+                    fullWidth
+                    style={{ backgroundColor: '#FF8C42' }}
+                  >
+                    View Group Recommendations
+                  </Button>
+                </div>
+              </Group>
+            </Card>
+            <Card withBorder shadow="sm" padding="lg" radius="md">
+              <Group gap="xs" mb="xs">
+                <IconSettings size={20} color="#6c757d" />
+                <Text fw={600}>Group Settings</Text>
+              </Group>
+              <Text size="sm" c="dimmed" mb="md">
+                Manage group information and preferences
+              </Text>
+              <Stack gap="xs">
+                <Button variant="light" fullWidth size="sm">
+                  Edit Group Details
+                </Button>
+                <Button
+                  variant="light"
+                  color="red"
+                  fullWidth
+                  size="sm"
+                  loading={isLeavingGroup}
+                  onClick={onLeaveClick}
+                >
+                  Leave Group
+                </Button>
+              </Stack>
+            </Card>
+            <Card withBorder shadow="sm" padding="lg" radius="md">
+              <Group gap="xs" mb="xs">
+                <IconUserPlus size={20} color="#28a745" />
+                <Text fw={600}>Invite Members</Text>
+              </Group>
+              <Text size="sm" c="dimmed" mb="md">
+                Share the group code with friends to invite them
+              </Text>
+              <Group gap="xs">
+                <TextInput
+                  value={group.code}
+                  readOnly
+                  style={{ flex: 1 }}
+                  size="sm"
+                />
+                <Button size="sm" variant="light">
+                  Copy
+                </Button>
+              </Group>
+            </Card>
+          </Stack>
+        </div>
+      </SimpleGrid>
     </Container>
   );
 };

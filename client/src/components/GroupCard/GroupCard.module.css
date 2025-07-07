@@ -1,0 +1,147 @@
+.groupCard {
+  transition: all 0.2s ease;
+  border: 1px solid #e0e0e0;
+  background-color: var(--mantine-color-white);
+}
+
+[data-mantine-color-scheme="dark"] .groupCard {
+  border: 1px solid var(--mantine-color-dark-4);
+  background-color: var(--mantine-color-dark-6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.groupCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: var(--card-primary, #FF8C42);
+}
+
+[data-mantine-color-scheme="dark"] .groupCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border-color: var(--card-primary, #FF8C42);
+  background-color: var(--mantine-color-dark-5);
+}
+
+.groupInfo {
+  flex: 1;
+}
+
+.groupName {
+  color: var(--mantine-color-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .groupName {
+  color: var(--mantine-color-dark-0);
+}
+
+.memberBadge {
+  background-color: var(--card-secondary, var(--mantine-color-gray-1));
+  color: var(--badge-color, var(--mantine-color-gray-7));
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .memberBadge {
+  background-color: var(--card-secondary, var(--mantine-color-dark-4));
+  color: var(--badge-color, var(--mantine-color-dark-1));
+}
+
+.menuButton {
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .menuButton {
+  color: var(--mantine-color-dark-2);
+}
+
+.menuButton:hover {
+  background-color: var(--card-secondary, var(--mantine-color-gray-1));
+  color: var(--card-primary, #FF8C42);
+}
+
+[data-mantine-color-scheme="dark"] .menuButton:hover {
+  background-color: var(--card-secondary, var(--mantine-color-dark-4));
+  color: var(--card-primary, #FF8C42);
+}
+
+.cardFooter {
+  padding-top: 0.75rem;
+  border-top: 1px solid #f0f0f0;
+  transition: border-color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .cardFooter {
+  border-top: 1px solid var(--mantine-color-dark-4);
+}
+
+.exploreText {
+  color: #888;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .exploreText {
+  color: var(--mantine-color-dark-2);
+}
+
+.openButton {
+  background-color: var(--card-primary, #FF8C42);
+  color: white;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.2);
+}
+
+.openButton:hover {
+  background-color: var(--card-primary, #FF8C42);
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+}
+
+[data-mantine-color-scheme="dark"] .openButton {
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+}
+
+[data-mantine-color-scheme="dark"] .openButton:hover {
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
+  opacity: 1;
+  background-color: #ffa94d;
+}
+
+[data-mantine-color-scheme="dark"] .groupCard {
+  backdrop-filter: blur(10px);
+}
+
+.openButton:focus {
+  outline: 2px solid var(--card-primary, #FF8C42);
+  outline-offset: 2px;
+}
+
+.menuButton:focus {
+  outline: 2px solid var(--card-primary, #FF8C42);
+  outline-offset: 2px;
+}
+
+.groupCard:hover .openButton {
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .groupCard:hover .openButton {
+  background-color: #ffa94d;
+}
+
+:root {
+  --card-primary: #FF8C42;
+  --card-secondary: #f8f9fa;
+  --badge-color: #6c757d;
+}
+
+[data-mantine-color-scheme="dark"] {
+  --card-secondary: var(--mantine-color-dark-4);
+  --badge-color: var(--mantine-color-dark-1);
+}

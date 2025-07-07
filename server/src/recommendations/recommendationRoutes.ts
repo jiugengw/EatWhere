@@ -2,6 +2,8 @@ import { Router } from 'express';
 import {
     discoverRecommendations,
     getFavourites,
+    getGroupDiscoverRecommendations,
+    getGroupRecommendations,
     getRecommendations,
     submitRating,
     toggleFavourite,
@@ -20,5 +22,8 @@ router.route('/favourites')
     .get(getFavourites);
 
 router.get('/discover', discoverRecommendations);
+
+router.get('/group/:groupId', getGroupRecommendations);
+router.get('/group/:groupId/discover', getGroupDiscoverRecommendations);
 
 export default router;

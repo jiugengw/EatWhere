@@ -15,11 +15,13 @@ export type User = {
 };
 
 export type GroupMember = {
+    joinedAt: string | number | Date;
     user: User;
     role: 'admin' | 'member';
 };
 
 export type Group = {
+    createdAt: string | number | Date;
     _id: string;
     name: string;
     description?: string;

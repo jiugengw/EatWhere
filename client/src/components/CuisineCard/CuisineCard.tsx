@@ -131,9 +131,9 @@ const getConfidenceBadge = (level: number): { color: string; label: string } => 
 };
 
 const getDiscoveryBadge = (level: number): { color: string; label: string } => {
-  if (level >= 0.7) return { color: 'grape', label: 'High Discovery' };
-  if (level >= 0.4) return { color: 'purple', label: 'Medium Discovery' };
-  return { color: 'violet', label: 'Low Discovery' };
+  if (level >= 0.7) return { color: 'white', label: 'High Discovery' };
+  if (level >= 0.4) return { color: 'yellow', label: 'Medium Discovery' };
+  return { color: 'red', label: 'Low Discovery' };
 };
 
 export function CuisineCard({

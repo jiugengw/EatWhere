@@ -7,9 +7,9 @@ import {
   checkUserInGroup,
   getGroupUsers,
   getGroupByCode,
-  leaveGroups,
   removeGroupMembers,
   updateGroupRoles,
+  leaveGroup,
 } from './groupController.js';
 import { protect } from '../auth/authController.js';
 
@@ -18,7 +18,6 @@ const router = express.Router();
 router.use(protect);
 
 router.route('/').post(createGroup);
-router.patch('/leave', leaveGroups); 
 router.get('/code/:code', getGroupByCode);
 
 router
@@ -28,6 +27,7 @@ router
 
 router.patch('/:code/join', joinGroup);
 
+router.patch('/:id/leave', leaveGroup); 
 router.get('/:id/isMember', checkUserInGroup);
 router.get('/:id/users', getGroupUsers);
 router.patch('/:id/users/role', updateGroupRoles); 

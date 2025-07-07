@@ -1,3 +1,4 @@
+import { Group } from '../groups/groupModel.js';
 import { User } from '../users/userModel.js';
 import { UserRecommendationData, UserRecommendationDoc } from './recommendationModel.js';
 import {
@@ -5,7 +6,8 @@ import {
     RecommendationResponse,
     RecommendationResult,
     CUISINES,
-    CuisineType
+    CuisineType,
+    type GroupRecommendationRequest
 } from './types.js';
 
 const createDefaultHiddenData = async (userId: string): Promise<UserRecommendationDoc> => {
@@ -295,3 +297,118 @@ export const generateDiscoverRecommendations = async (
     };
 };
 
+const getGroupReasoning = (groupScore: number, memberCount: number): string => {
+    const roundedScore = Math.round(groupScore * 10) / 10; // Round to 1 decimal
+    
+    if (roundedScore >= 1.5) {
+        return `Highly favored by your group of ${memberCount} members`;
+    } else if (roundedScore >= 0.5) {
+        return `Generally liked among your ${memberCount} group members`;
+    } else if (roundedScore >= -0.5) {
+        return `Mixed preferences among your ${memberCount} group members`;
+    } else if (roundedScore >= -1.5) {
+        return `Less popular choice among your ${memberCount} group members`;
+    } else {
+        return `Not preferred by most of your ${memberCount} group members`;
+    }
+};
+
+export const generateGroupRecommendations = async (
+    request: GroupRecommendationRequest
+): Promise<RecommendationResponse> => {
+    const group = await Group.findById(request.groupId).populate('users.user');
+    if (!group) {
+        throw new Error('Group not found');
+    }
+
+    const userIds = group.users.map(u => u.user._id);
+    const users = await User.find({ _id: { $in: userIds } });
+
+    const userRecommendationData = await UserRecommendationData.find({
+        userId: { $in: userIds.map(id => id.toString()) }
+    });
+
+    const groupPreferences = new Map<string, number>();
+
+    CUISINES.forEach(cuisine => {
+        const scores = users.map(user => user.preferences.get(cuisine) || 0);
+        const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+        groupPreferences.set(cuisine, avgScore);
+    });
+
+    const results: RecommendationResult[] = [];
+
+    for (const cuisine of CUISINES) {
+        const groupScore = groupPreferences.get(cuisine) || 0;
+
+        const normalizedScore = ((groupScore + 2) / 4) * 4 + 1; 
+        const finalScore = Math.max(1, Math.min(5, normalizedScore));
+        results.push({
+            cuisineName: cuisine,
+            score: Math.round(finalScore * 100) / 100,
+            confidenceLevel: 0.7,
+            reasoning: getGroupReasoning(groupScore, users.length) 
+        });
+    }
+
+    const recommendations = results
+        .sort((a, b) => b.score - a.score)
+        .slice(0, request.limit || 5);
+
+    const totalRatings = userRecommendationData.reduce((sum, data) => sum + data.totalRatings, 0);
+
+    return {
+        recommendations,
+        userAdaptationLevel: 'group',
+        totalRatings,
+        generatedAt: new Date()
+    };
+};
+
+export const generateGroupDiscoverRecommendations = async (
+  request: GroupRecommendationRequest
+): Promise<RecommendationResponse> => {
+  const group = await Group.findById(request.groupId).populate('users.user');
+  if (!group) {
+    throw new Error('Group not found');
+  }
+
+  const userIds = group.users.map(u => u.user._id);
+  const users = await User.find({ _id: { $in: userIds } });
+
+  const groupPreferences = new Map<string, number>();
+  CUISINES.forEach(cuisine => {
+    const scores = users.map(user => user.preferences.get(cuisine) || 0);
+    const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    groupPreferences.set(cuisine, avgScore);
+  });
+
+  const results: RecommendationResult[] = [];
+  
+  for (const cuisine of CUISINES) {
+    const groupScore = groupPreferences.get(cuisine) || 0;
+    const baseScore = ((groupScore + 2) / 4) * 4 + 1;
+    
+    const discoveryBonus = Math.random() * 2;
+    const explorationWeight = 1.5;
+    const finalScore = baseScore * 0.6 + discoveryBonus + explorationWeight;
+
+    results.push({
+      cuisineName: cuisine,
+      score: Math.round(finalScore * 100) / 100,
+      discoveryLevel: 0.5,
+      reasoning: `Great group exploration choice - try something new together!`
+    });
+  }
+
+  const shuffledResults = results
+    .sort(() => Math.random() - 0.5)
+    .slice(0, request.limit || 4);
+
+  return {
+    recommendations: shuffledResults,
+    userAdaptationLevel: 'group',
+    totalRatings: 0, 
+    generatedAt: new Date()
+  };
+};

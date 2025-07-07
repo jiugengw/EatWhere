@@ -4,7 +4,7 @@ import {
   createGroupForUser,
   isUserInGroup,
   joinGroupByCode,
-  leaveGroupsByIds,
+  leaveGroupById,
   removeMembers,
   updateGroupById,
   updateGroupMemberRoles
@@ -105,57 +105,29 @@ export const joinGroup = catchAsync(async (req, res, next) => {
   });
 });
 
-export const leaveGroups = catchAsync(async (req, res, next) => {
+export const leaveGroup = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
 
-  const parsed = LeaveGroupsSchema.safeParse(req.body);
+  const { id: groupId } = req.params;
 
-  if (!parsed.success) {
-    return next(
-      new AppError(parsed.error.errors[0].message, StatusCodes.BAD_REQUEST)
-    );
-  }
+  const { leftGroupName, error } = await leaveGroupById(groupId, req.user.id);
 
-  const { groupIds } = parsed.data;
-
-  const { leftGroupNames, failedGroups } = await leaveGroupsByIds(groupIds, req.user.id);
-
-  const isPartial = failedGroups.length > 0 && leftGroupNames.length > 0;
-  const isFail = failedGroups.length > 0 && leftGroupNames.length === 0;
-
-  if (isFail) {
+  if (error) {
     return res.status(StatusCodes.BAD_REQUEST).json({
       status: 'fail',
-      partial: false,
-      data: {
-        leftGroupNames,
-        failedGroups,
-        userId: req.user.id
-      }
-    });
-  }
-
-  if (isPartial) {
-    return res.status(StatusCodes.OK).json({
-      status: 'success',
-      partial: true,
-      data: {
-        leftGroupNames,
-        failedGroups,
-        userId: req.user.id
-      }
+      message: error
     });
   }
 
   return res.status(StatusCodes.OK).json({
     status: 'success',
-    partial: false,
+    message: `Successfully left "${leftGroupName}"`,
     data: {
-      leftGroupNames,
-      failedGroups,
-      userId: req.user.id
+      groupId,
+      userId: req.user.id,
+      groupName: leftGroupName
     }
   });
 });

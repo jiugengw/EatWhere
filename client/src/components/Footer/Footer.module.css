@@ -1,22 +1,40 @@
 .footer {
   margin-top: 3rem;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
+  background-color: var(--mantine-color-gray-0);
+  border-top: 1px solid var(--mantine-color-gray-2);
   padding: 2rem 0;
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .footer {
+  background-color: var(--mantine-color-dark-7);
+  border-top-color: var(--mantine-color-dark-4);
 }
 
 .leftText {
-  color: #555555;
-  font-size: 0.875rem; /* Mantine's 'sm' size */
+  color: var(--mantine-color-gray-6);
+  font-size: 0.875rem;
+}
+
+[data-mantine-color-scheme="dark"] .leftText {
+  color: var(--mantine-color-gray-4);
 }
 
 .link {
-  color: #555555;
+  color: var(--mantine-color-gray-6);
   font-size: 0.9rem;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
+[data-mantine-color-scheme="dark"] .link {
+  color: var(--mantine-color-gray-4);
+}
+
 .link:hover {
-  color: #ff8c42;
+  color: var(--mantine-color-primary-6);
+}
+
+[data-mantine-color-scheme="dark"] .link:hover {
+  color: var(--mantine-color-primary-4);
 }

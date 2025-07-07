@@ -39,3 +39,8 @@ export interface UserWithRecommendations {
   totalRatings?: number;
   adaptationRate?: number;
 }
+
+export interface GroupRecommendationRequest {
+  groupId: string;
+  limit?: number;
+}

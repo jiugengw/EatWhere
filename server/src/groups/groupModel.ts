@@ -12,6 +12,7 @@ interface IGroup {
   users: {
     user: Types.ObjectId;
     role: 'admin' | 'member';
+    joinedAt: Date
   }[];
   active: boolean;
   userCount: number;
@@ -50,6 +51,10 @@ const groupSchema = new Schema<IGroup>(
             enum: ['admin', 'member'],
             default: 'member',
           },
+          joinedAt: { 
+            type: Date,
+            default: Date.now
+          }
         },
       ],
       default: [],

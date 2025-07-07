@@ -2,104 +2,117 @@ import {
   Container,
   Title,
   Button,
-  Stack,
   Group,
-  Text
+  Text,
+  SimpleGrid,
+  Skeleton,
+  Box,
+  Flex
 } from '@mantine/core';
+import {
+  IconUsers,
+  IconPlus,
+  IconLogin,
+} from '@tabler/icons-react';
 import { useViewGroups } from '@/hooks/groups/useViewGroups';
 import { Link } from '@tanstack/react-router';
-import classes from './ViewGroups.module.css';
-import { TableSelection } from '@/components/TableSelection/TableSelection';
-import { useLeaveGroups } from '@/hooks/groups/useLeaveGroups';
-import { useState } from 'react';
-import { modals } from '@mantine/modals';
+import { useLeaveGroup } from '@/hooks/groups/useLeaveGroup';
+import { GroupCard } from '@/components/GroupCard/GroupCard';
 
 export const ViewGroupsPage = () => {
   const { data, isLoading } = useViewGroups();
-  const [selected, setSelected] = useState<string[]>([]);
   const groups = data?.data?.user?.groups ?? [];
+  const { handleLeaveGroup } = useLeaveGroup();
 
-  const leave = useLeaveGroups();
-  const handleLeave = () => {
-    const selectedGroups = groups.filter((g) => selected.includes(g._id));
+  if (isLoading) {
+    return (
+      <Container size="lg" py="xl">
+        <Title order={2} mb="xl" ta="center">My Groups</Title>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} height={200} radius="md" />
+          ))}
+        </SimpleGrid>
+      </Container>
+    );
+  }
 
-    const lastUserGroups = selectedGroups.filter((g) => g.userCount === 1);
+  if (groups.length === 0) {
+    return (
+      <Container size="sm" py="xl">
+        <Box ta="center">
+          <IconUsers size={64} color="#ccc" style={{ marginBottom: '1rem' }} />
+          <Title order={2} mb="md" c="dimmed">No Groups Yet</Title>
+          <Text c="dimmed" mb="xl">
+            Create your first group or join an existing one to start discovering great food together!
+          </Text>
 
-    const willBeRemovedNames = lastUserGroups.map((g) => `"${g.name}"`).join(', ');
-
-    if (lastUserGroups.length > 0) {
-      modals.openConfirmModal({
-        title: 'Are you sure?',
-        children: `You are the last member in ${willBeRemovedNames}. Leaving will delete the group${lastUserGroups.length > 1 ? 's' : ''}. Continue?`,
-        labels: { confirm: 'Yes, leave', cancel: 'Cancel' },
-        confirmProps: { color: 'red' },
-        onConfirm: () => leave.mutate(selected),
-      });
-    } else {
-      leave.mutate(selected);
-    }
-  };
-
-  const groupRows = groups.map((group) => ({
-    id: group._id,
-    name: group.name,
-    members: group.userCount,
-  }));
-
-  return (
-    <Container size="sm" className={classes.container}>
-      <Title order={2} className={classes.title}>
-        My Groups
-      </Title>
-
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : groupRows.length === 0 ? (
-        <Stack className={classes.noGroupsContainer}>
-          <Text>No groups currently.</Text>
-          <Group className={classes.actionButtons}>
-            <Button component={Link} to="/group/create" color="green">
+          <Group justify="center" gap="md">
+            <Button
+              component={Link}
+              to="/group/create"
+              leftSection={<IconPlus size={18} />}
+              size="lg"
+            >
               Create Group
             </Button>
-            <Button component={Link} to="/group/join" variant="default">
+            <Button
+              component={Link}
+              to="/group/join"
+              variant="light"
+              leftSection={<IconLogin size={18} />}
+              size="lg"
+            >
               Join Group
             </Button>
           </Group>
-        </Stack>
-      ) : (
-        <>
+        </Box>
+      </Container>
+    );
+  }
+
+  return (
+    <Container size="lg" py="xl">
+      <Flex justify="space-between" align="center" mb="xl">
+        <Title order={2}>My Groups</Title>
+        <Group>
           <Button
-            onClick={handleLeave}
-            disabled={selected.length === 0 || leave.isPending}
-            mb="md"
+            component={Link}
+            to="/group/create"
+            leftSection={<IconPlus size={16} />}
+            variant="light"
           >
-            Leave Selected
+            Create
           </Button>
-          <TableSelection
-            data={groupRows}
-            columns={[
-              { key: 'name', header: 'Group Name' },
-              { key: 'members', header: 'Members' },
-              {
-                key: 'actions',
-                header: '',
-                render: (row) => (
-                  <Button
-                    component={Link}
-                    to={`/group/${row.id}`}
-                    variant="light"
-                    size="xs"
-                  >
-                    Open
-                  </Button>
-                ),
-              },
-            ]}
-            selection={selected}
-            onSelectionChange={setSelected}
+          <Button
+            component={Link}
+            to="/group/join"
+            leftSection={<IconLogin size={16} />}
+            variant="outline"
+          >
+            Join
+          </Button>
+        </Group>
+      </Flex>
+
+      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+        {groups.map((group, index) => (
+          <GroupCard
+            key={group._id}
+            group={group}
+            onLeaveGroup={handleLeaveGroup}
+            colorIndex={index}
           />
-        </>
-      )}
+        ))}
+      </SimpleGrid>
     </Container>
   );
-}
+};
+
+
+
+
+
+
+
+

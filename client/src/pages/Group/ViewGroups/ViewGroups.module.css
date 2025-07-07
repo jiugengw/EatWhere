@@ -1,36 +1,223 @@
 .container {
-  padding-top: var(--mantine-spacing-md);
+  padding: 3rem 0;
+  background-color: var(--mantine-color-body);
+  min-height: 100vh;
+  transition: background-color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .container {
+  background-color: var(--mantine-color-dark-7);
+}
+
+.header {
+  margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
 .title {
-  margin-bottom: var(--mantine-spacing-md);
+  color: var(--mantine-color-text);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .title {
+  color: var(--mantine-color-dark-0);
+}
+
+.createButton {
+  background-color: #FF8C42;
+  color: white;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.2);
+}
+
+.createButton:hover {
+  background-color: #e07b30;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .createButton:hover {
+  background-color: #ffa94d;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
+}
+
+.joinButton {
+  background-color: #4285f4;
+  color: white;
+  border: 1px solid #4285f4;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+}
+
+.joinButton:hover {
+  background-color: #3367d6;
+  border-color: #3367d6;
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .joinButton {
+  background-color: #5a94f7;
+  border-color: #5a94f7;
+}
+
+[data-mantine-color-scheme="dark"] .joinButton:hover {
+  background-color: #4285f4;
+  border-color: #4285f4;
+  box-shadow: 0 4px 12px rgba(90, 148, 247, 0.4);
+}
+
+.emptyState {
+  margin-bottom: 1rem;
+  padding: 2rem;
+  background-color: var(--mantine-color-gray-0);
+  border-radius: var(--mantine-radius-md);
+  border: 1px solid var(--mantine-color-gray-2);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .emptyState {
+  background-color: var(--mantine-color-dark-6);
+  border-color: var(--mantine-color-dark-4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.emptyState h3 {
+  color: var(--mantine-color-text);
+  margin-bottom: 0.5rem;
+}
+
+[data-mantine-color-scheme="dark"] .emptyState h3 {
+  color: var(--mantine-color-dark-0);
+}
+
+.emptyState p {
+  color: var(--mantine-color-dimmed);
+  margin-bottom: 1.5rem;
+}
+
+[data-mantine-color-scheme="dark"] .emptyState p {
+  color: var(--mantine-color-dark-2);
 }
 
 .groupCard {
-  border: 1px solid var(--mantine-color-gray-3);
-  padding: var(--mantine-spacing-md);
+  background-color: var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-gray-2);
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+  padding: 1rem;
   border-radius: var(--mantine-radius-md);
 }
 
-.groupInfo {
-  display: flex;
-  flex-direction: column;
+[data-mantine-color-scheme="dark"] .groupCard {
+  background-color: var(--mantine-color-dark-6);
+  border-color: var(--mantine-color-dark-4);
 }
 
-.viewButton {
-  font-size: 12px;
+.groupCard:hover {
+  border-color: #FF8C42;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.1);
+  transform: translateY(-2px);
 }
 
-.noGroupsContainer {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  text-align: center;
+[data-mantine-color-scheme="dark"] .groupCard:hover {
+  border-color: #FF8C42;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.2);
+  background-color: var(--mantine-color-dark-5);
+}
+
+.groupName {
+  color: var(--mantine-color-text);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+[data-mantine-color-scheme="dark"] .groupName {
+  color: var(--mantine-color-dark-0);
+}
+
+.groupMembers {
+  color: var(--mantine-color-dimmed);
+  font-size: 0.875rem;
+}
+
+[data-mantine-color-scheme="dark"] .groupMembers {
+  color: var(--mantine-color-dark-2);
 }
 
 .actionButtons {
   display: flex;
   gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.leaveButton {
+  background-color: #dc3545;
+  color: white;
+  border: 1px solid #dc3545;
+  transition: all 0.2s ease;
+}
+
+.leaveButton:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .leaveButton {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+[data-mantine-color-scheme="dark"] .leaveButton:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+.leaveButton:disabled {
+  background-color: var(--mantine-color-gray-4);
+  border-color: var(--mantine-color-gray-4);
+  color: var(--mantine-color-gray-6);
+  transform: none;
+  box-shadow: none;
+}
+
+[data-mantine-color-scheme="dark"] .leaveButton:disabled {
+  background-color: var(--mantine-color-dark-4);
+  border-color: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-2);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 0;
+  }
+  
+  .header {
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .actionButtons {
+    padding: 0 1rem;
+    gap: 0.75rem;
+  }
+  
+  .createButton,
+  .joinButton,
+  .leaveButton {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .emptyState {
+    margin: 0 1rem 1rem 1rem;
+    padding: 1.5rem;
+  }
 }

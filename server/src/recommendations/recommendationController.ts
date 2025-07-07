@@ -3,12 +3,14 @@ import { catchAsync } from '../common/utils/catchAsync.js';
 import { AppError } from '../common/utils/AppError.js';
 import {
     generateDiscoverRecommendations,
+    generateGroupDiscoverRecommendations,
+    generateGroupRecommendations,
     generateRecommendations,
     getUserFavourites,
     processRating,
     toggleUserFavourite
 } from './recommendationService.js'
-import { RecommendationRequest, CUISINES, CuisineType } from './types.js';
+import { RecommendationRequest, CUISINES, CuisineType, type GroupRecommendationRequest } from './types.js';
 
 export const getRecommendations = catchAsync(async (req, res, next) => {
     if (!req.user) {
@@ -112,6 +114,48 @@ export const discoverRecommendations = catchAsync(async (req, res, next) => {
   };
 
   const recommendations = await generateDiscoverRecommendations(request);
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    data: recommendations
+  });
+});
+
+export const getGroupRecommendations = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const { groupId } = req.params;
+  const { limit } = req.query;
+
+  const request: GroupRecommendationRequest = {
+    groupId,
+    limit: limit ? parseInt(limit as string, 10) : 5
+  };
+
+  const recommendations = await generateGroupRecommendations(request);
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    data: recommendations
+  });
+});
+
+export const getGroupDiscoverRecommendations = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const { groupId } = req.params;
+  const { limit } = req.query;
+
+  const request: GroupRecommendationRequest = {
+    groupId,
+    limit: limit ? parseInt(limit as string, 10) : 4
+  };
+
+  const recommendations = await generateGroupDiscoverRecommendations(request);
 
   res.status(StatusCodes.OK).json({
     status: 'success',

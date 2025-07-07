@@ -1,28 +1,20 @@
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
 import { IconMoon, IconSun } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
 import classes from './ColorSchemeToggle.module.css';
 
 export const ColorSchemeToggle = () => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-  }, [darkMode]);
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
 
   return (
     <ActionIcon
-      variant="transparent"
-      size="lg"
+      onClick={() => setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')}
+      variant="default"
+      size="xl"
+      aria-label="Toggle color scheme"
       className={classes.iconButton}
-      onClick={() => setDarkMode(!darkMode)}
-      title="Toggle theme"
     >
-      {darkMode ? <IconSun size={22} /> : <IconMoon size={22} />}
+      {computedColorScheme === 'light' ? <IconMoon size={20} /> : <IconSun size={20} />}
     </ActionIcon>
   );
 };

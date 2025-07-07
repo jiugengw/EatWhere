@@ -52,7 +52,11 @@ export const joinGroupByCode = async (
 
     if (!user) throw new AppError('User not found', StatusCodes.NOT_FOUND);
 
-    group.users.push({ user: new Types.ObjectId(userId), role: 'member' });
+    group.users.push({
+      user: new Types.ObjectId(userId),
+      role: 'member',
+      joinedAt: new Date()
+    });
     user.groups.push(group._id);
 
     await group.save();
@@ -67,66 +71,56 @@ export const joinGroupByCode = async (
   };
 };
 
-export const leaveGroupsByIds = async (
-  groupIds: string[],
+export const leaveGroupById = async (
+  groupId: string,
   userId: string
 ): Promise<{
-  leftGroupNames: string[];
-  failedGroups: { id: string; name: string; reason: string }[];
-  userId: string;
+  leftGroupName?: string;
+  error?: string;
 }> => {
   const user = await User.findById(userId);
   if (!user) {
-    throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    return { error: 'User not found' };
   }
 
-  const leftGroupNames: string[] = [];
-  const failedGroups: { id: string; name: string; reason: string }[] = [];
-
-  for (const groupId of groupIds) {
-    const group = await Group.findById(groupId);
-    if (!group) continue;
-
-    const userEntry = group.users.find((entry: any) =>
-      entry.user.equals(userId)
-    );
-    if (!userEntry) continue;
-
-    const isOnlyUser = group.users.length === 1;
-
-    const isOnlyAdmin =
-      userEntry.role === 'admin' &&
-      group.users.filter((entry: any) => entry.role === 'admin').length === 1;
-
-    if (isOnlyAdmin && !isOnlyUser) {
-      failedGroups.push({
-        id: group._id.toString(),
-        name: group.name,
-        reason: 'You are the only admin. Please promote another member before leaving.',
-      });
-      continue;
-    }
-
-    group.users = group.users.filter((entry: any) => !entry.user.equals(userId));
-    if (group.userCount === 0) {
-      group.active = false;
-    }
-
-    await group.save();
-
-    user.groups = user.groups.filter(
-      (gId: Types.ObjectId) => gId.toString() !== groupId
-    );
-    leftGroupNames.push(group.name);
+  const group = await Group.findById(groupId);
+  if (!group) {
+    return { error: 'Group not found' };
   }
 
+  const userEntry = group.users.find((entry: any) =>
+    entry.user.equals(userId)
+  );
+  
+  if (!userEntry) {
+    return { error: 'You are not a member of this group' };
+  }
+
+  const isOnlyUser = group.users.length === 1;
+  const isOnlyAdmin =
+    userEntry.role === 'admin' &&
+    group.users.filter((entry: any) => entry.role === 'admin').length === 1;
+
+  if (isOnlyAdmin && !isOnlyUser) {
+    return { 
+      error: 'You are the only admin. Please promote another member before leaving.' 
+    };
+  }
+
+  group.users = group.users.filter((entry: any) => !entry.user.equals(userId));
+  
+  if (group.users.length === 0) {
+    group.active = false;
+  }
+
+  await group.save();
+
+  user.groups = user.groups.filter(
+    (gId: Types.ObjectId) => gId.toString() !== groupId
+  );
   await user.save();
 
-  return {
-    leftGroupNames,
-    failedGroups,
-    userId,
-  };
+  return { leftGroupName: group.name };
 };
 
 type CreateGroupData = CreateGroupInput & {
@@ -134,6 +128,7 @@ type CreateGroupData = CreateGroupInput & {
   users: {
     user: string;
     role: 'admin' | 'member';
+    joinedAt: Date
   }[];
 };
 
@@ -148,6 +143,7 @@ export const createGroupForUser = async (
       {
         user: userId,
         role: 'admin',
+        joinedAt: new Date(),
       },
     ],
   };

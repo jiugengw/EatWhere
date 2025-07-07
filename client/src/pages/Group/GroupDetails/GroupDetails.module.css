@@ -1,13 +1,31 @@
 .container {
   padding-top: 1rem;
+  background-color: var(--mantine-color-body);
+  min-height: 100vh;
+  transition: background-color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .container {
+  background-color: var(--mantine-color-dark-7);
 }
 
 .title {
   margin-bottom: 0.5rem;
+  color: var(--mantine-color-text);
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .title {
+  color: var(--mantine-color-dark-0);
 }
 
 .members {
   color: gray;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .members {
+  color: var(--mantine-color-dark-2);
 }
 
 .actions {
@@ -20,32 +38,177 @@
 .promote {
   background-color: #12bd62;
   color: white;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(18, 189, 98, 0.2);
+}
+
+.promote:hover:not(:disabled) {
+  background-color: #0ea558;
+  box-shadow: 0 4px 12px rgba(18, 189, 98, 0.3);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .promote:hover:not(:disabled) {
+  background-color: #20d474;
+  box-shadow: 0 4px 12px rgba(18, 189, 98, 0.4);
 }
 
 .promote:disabled {
   background-color: #a0d8bb; 
   color: #f0f0f0;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+[data-mantine-color-scheme="dark"] .promote:disabled {
+  background-color: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-2);
 }
 
 .demote {
   background-color: #fc9f47;
   color: white;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(252, 159, 71, 0.2);
+}
+
+.demote:hover:not(:disabled) {
+  background-color: #fb8c2a;
+  box-shadow: 0 4px 12px rgba(252, 159, 71, 0.3);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .demote:hover:not(:disabled) {
+  background-color: #fdb164;
+  box-shadow: 0 4px 12px rgba(252, 159, 71, 0.4);
 }
 
 .demote:disabled {
   background-color: #fcd5a4;
   color: #f0f0f0;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+[data-mantine-color-scheme="dark"] .demote:disabled {
+  background-color: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-2);
 }
 
 .remove {
   background-color: #db1212;
   color: white;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(219, 18, 18, 0.2);
+}
+
+.remove:hover:not(:disabled) {
+  background-color: #c30e0e;
+  box-shadow: 0 4px 12px rgba(219, 18, 18, 0.3);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .remove:hover:not(:disabled) {
+  background-color: #e74c3c;
+  box-shadow: 0 4px 12px rgba(219, 18, 18, 0.4);
 }
 
 .remove:disabled {
   background-color: #f5aaaa; 
   color: #f0f0f0;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+[data-mantine-color-scheme="dark"] .remove:disabled {
+  background-color: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-2);
+}
+
+[data-mantine-color-scheme="dark"] .container table {
+  background-color: var(--mantine-color-dark-6);
+  border: 1px solid var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .container table th {
+  background-color: var(--mantine-color-dark-5);
+  color: var(--mantine-color-dark-0);
+  border-bottom: 1px solid var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .container table td {
+  color: var(--mantine-color-dark-1);
+  border-bottom: 1px solid var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .container table tr:hover {
+  background-color: var(--mantine-color-dark-5);
+}
+
+@media (max-width: 768px) {
+  .actions {
+    gap: 0.5rem;
+  }
+  
+  .promote,
+  .demote,
+  .remove {
+    flex: 1;
+    min-width: 80px;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+}
+
+.promote:focus,
+.demote:focus,
+.remove:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+[data-mantine-color-scheme="dark"] .promote:focus,
+[data-mantine-color-scheme="dark"] .demote:focus,
+[data-mantine-color-scheme="dark"] .remove:focus {
+  outline: 2px solid var(--mantine-color-dark-0);
+}
+
+.promote[data-loading="true"],
+.demote[data-loading="true"],
+.remove[data-loading="true"] {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.promote,
+.demote,
+.remove {
+  font-weight: 500;
+  border-radius: var(--mantine-radius-md);
+}
+
+.actions > * {
+  position: relative;
+  overflow: hidden;
+}
+
+.actions > *:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.promote:disabled,
+.demote:disabled,
+.remove:disabled {
+  opacity: 0.6;
+  filter: grayscale(30%);
 }
