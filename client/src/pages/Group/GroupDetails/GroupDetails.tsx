@@ -101,7 +101,7 @@ export const GroupDetailPage = () => {
             </Group>
           </div>
 
-          <Paper withBorder p="sm" radius="md" style={{ backgroundColor: '#f8f9fa' }}>
+          <Paper withBorder p="sm" radius="md">
             <Group gap="xs" align="center">
               <Text size="sm" fw={500}>Group Code:</Text>
               <Code>{showCode ? group.code : '******'}</Code>
