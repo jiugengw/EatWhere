@@ -8,18 +8,23 @@ import { ModalsProvider } from '@mantine/modals';
 import "@mantine/notifications/styles.css";
 import "@mantine/core/styles.css";
 
+
 import { AuthProvider } from "./context/auth-context";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import { useAuth } from "./hooks/auth/useAuth";
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+// const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: undefined!, 
+});
 
 const queryClient = new QueryClient();
 
 const theme = createTheme({
-  colorScheme: 'auto', 
   colors: {
     primary: [
       '#fff4e6',
@@ -27,7 +32,7 @@ const theme = createTheme({
       '#ffd8a8',
       '#ffc078',
       '#ffa94d',
-      '#ff922b', 
+      '#ff922b',
       '#fd7e14',
       '#f76707',
       '#e8590c',
@@ -42,6 +47,8 @@ const theme = createTheme({
   },
 });
 
+
+
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
   interface Register {
@@ -49,22 +56,35 @@ declare module "@tanstack/react-router" {
   }
 }
 
-// Render the app
-const rootElement = document.getElementById("root")!;
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
+function App() {
+  return (
     <StrictMode>
       <MantineProvider theme={theme}>
         <Notifications position="top-right" />
         <ModalsProvider>
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
-              <RouterProvider router={router} />
+              <InnerApp />
             </AuthProvider>
           </QueryClientProvider>
         </ModalsProvider>
       </MantineProvider>
     </StrictMode>
   );
+}
+
+function InnerApp() {
+  const auth = useAuth(); 
+  return (
+    <RouterProvider 
+      router={router} 
+      context={{ auth }} 
+    />
+  );
+}
+
+const rootElement = document.getElementById("root")!;
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(<App />);
 }

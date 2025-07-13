@@ -1,16 +1,100 @@
-/* tabs.module.css */
+.tabContainer {
+  padding: var(--mantine-spacing-md);
+}
+
+.tabTitle {
+  color: var(--mantine-color-default-color);
+  font-weight: 600;
+}
+
+.tabIcon {
+  color: var(--mantine-color-primary-6);
+}
+
+.inputWrapper {
+  margin-bottom: var(--mantine-spacing-xs);
+}
 
 .label {
-  color: #222222;
+  color: var(--mantine-color-default-color);
   font-weight: 500;
+  margin-bottom: var(--mantine-spacing-xs);
 }
 
 .input {
-  background-color: #f9f9f9;
+  background-color: var(--mantine-color-body);
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  font-size: var(--mantine-font-size-sm);
+  transition: all 200ms ease;
 }
 
-.button {
-  background-color: #FF8C42;
-  color: white;
+.input:focus {
+  border-color: var(--mantine-color-primary-6);
+  box-shadow: 0 0 0 2px var(--mantine-color-primary-1);
+}
+
+.input::placeholder {
+  color: var(--mantine-color-placeholder);
+}
+
+[data-mantine-color-scheme='dark'] .input {
+  background-color: var(--mantine-color-dark-6);
+  border-color: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-0);
+}
+
+[data-mantine-color-scheme='dark'] .input:focus {
+  border-color: var(--mantine-color-primary-4);
+  box-shadow: 0 0 0 2px var(--mantine-color-primary-9);
+}
+
+.submitButton {
+  background: var(--mantine-color-primary-filled);
+  color: var(--mantine-color-white);
   font-weight: 600;
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-xl);
+  transition: all 200ms ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--mantine-color-primary-filled-hover);
+  box-shadow: var(--mantine-shadow-md);
+}
+
+.submitButton:disabled {
+  background: var(--mantine-color-gray-4);
+  color: var(--mantine-color-gray-6);
+}
+
+.alert {
+  background: var(--mantine-color-blue-0);
+  border: 1px solid var(--mantine-color-blue-2);
+}
+
+[data-mantine-color-scheme='dark'] .alert {
+  background: var(--mantine-color-blue-9);
+  border-color: var(--mantine-color-blue-7);
+}
+
+.preferencesCard {
+  background: var(--mantine-color-gray-0);
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: var(--mantine-radius-md);
+}
+
+[data-mantine-color-scheme='dark'] .preferencesCard {
+  background: var(--mantine-color-dark-6);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .tabContainer {
+    padding: var(--mantine-spacing-sm);
+  }
+  
+  .submitButton {
+    width: 100%;
+  }
 }

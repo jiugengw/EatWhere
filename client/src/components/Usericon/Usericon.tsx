@@ -1,14 +1,24 @@
+// Usericon.tsx
 import {
   Avatar,
   Popover,
   Text,
   Box,
-  Container,
   Divider,
   Paper,
   Button,
+  SimpleGrid,
+  Group,
+  Stack,
+  UnstyledButton,
 } from '@mantine/core';
-import { IconUserCircle } from '@tabler/icons-react';
+import {
+  IconUserCircle,
+  IconUser,
+  IconSettings,
+  IconHeart,
+  IconPalette,
+} from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { LogoutButton } from '../ LogoutButton/LogoutButton';
@@ -19,10 +29,37 @@ export function Usericon() {
   const loggedIn = !!auth.token;
   const fullName: string = loggedIn ? (auth.fullName as string) : '';
 
+  const menuItems = [
+    {
+      icon: IconUser,
+      label: 'Profile',
+      to: '/profile',
+      color: 'blue'
+    },
+    {
+      icon: IconSettings,
+      label: 'Settings',
+      to: '/settings',
+      color: 'gray'
+    },
+    {
+      icon: IconPalette,
+      label: 'Preferences',
+      to: '/preferences',
+      color: 'orange'
+    },
+    {
+      icon: IconHeart,
+      label: 'Favourites',
+      to: '/favourites',
+      color: 'red'
+    }
+  ];
+
   return (
     <Popover
-      width={220}
-      position="bottom"
+      width={200}
+      position="bottom-end"
       withArrow
       shadow="lg"
       transitionProps={{ transition: 'pop', duration: 150 }}
@@ -30,7 +67,7 @@ export function Usericon() {
       <Popover.Target>
         <Box className={classes.avatarbox}>
           {loggedIn ? (
-            <Avatar name={fullName} color="initials">
+            <Avatar name={fullName} color="initials" className={classes.avatar}>
               {fullName
                 ?.split(' ')
                 .map((n) => n[0])
@@ -42,42 +79,60 @@ export function Usericon() {
         </Box>
       </Popover.Target>
 
-      <Popover.Dropdown className={classes.dropdown}>
-        <Paper radius="md" p="sm" withBorder shadow="sm">
+      <Popover.Dropdown className={classes.dropdown} p={0}>
+        <Paper radius="md" shadow="sm">
           {loggedIn ? (
-            <Container className={classes.containerCenter}>
-              <Text size="md" fw={500}>
-                {fullName}
-              </Text>
-              <Text size="xs" c="dimmed">
-                There will be a bunch more stuff here next time
-              </Text>
-              <Divider my="sm" />
-              <Button
-                component={Link}
-                to="/profile"
-                variant="subtle"
-                fullWidth
-                radius="md"
-              >
-                View my profile
-              </Button>
-              <br />
+            <Box p="sm">
+              <Group mb="sm" gap="xs">
+                <Avatar name={fullName} color="initials" size="sm">
+                  {fullName
+                    ?.split(' ')
+                    .map((n) => n[0])
+                    .join('')}
+                </Avatar>
+                <Stack gap={1}>
+                  <Text size="xs" fw={500} lineClamp={1}>
+                    {fullName}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Manage account
+                  </Text>
+                </Stack>
+              </Group>
+
+              <Divider mb="sm" />
+
+              <SimpleGrid cols={2} spacing={0} className={classes.gridContainer}>
+                {menuItems.map((item) => (
+                  <UnstyledButton
+                    key={item.label}
+                    className={classes.gridItem}
+                    component={Link}
+                    to={item.to}
+                  >
+                    <item.icon size={24} color={`var(--mantine-color-${item.color}-6)`} />
+                    <Text size="xs" mt={4}>
+                      {item.label}
+                    </Text>
+                  </UnstyledButton>
+                ))}
+              </SimpleGrid>
+
               <LogoutButton />
-            </Container>
+            </Box>
           ) : (
-            <Container className={classes.loginPrompt}>
+            <Box p="sm">
               <Button
                 component={Link}
                 to="/login"
-                variant="subtle"
-                size="sm"
+                variant="light"
+                size="xs"
                 radius="md"
                 fullWidth
               >
-                Log in to access the full features
+                Log in to your account
               </Button>
-            </Container>
+            </Box>
           )}
         </Paper>
       </Popover.Dropdown>

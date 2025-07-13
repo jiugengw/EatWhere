@@ -15,6 +15,8 @@ interface AuthData {
 export interface AuthContextType {
   auth: AuthData;
   setAuth: Dispatch<SetStateAction<AuthData>>;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -43,7 +45,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (isInitialised) {
       sessionStorage.setItem("auth", JSON.stringify(auth));
     }
-  }, [auth]);
+  }, [auth, isInitialised]);
 
   const setAuth: Dispatch<SetStateAction<AuthData>> = (newAuth) => {
     setAuthState((prev) => {
@@ -52,8 +54,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
   };
 
+  const isAuthenticated = !!auth?.token;
+  const isLoading = !isInitialised;
+
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={{
+      auth,
+      setAuth,
+      isAuthenticated,
+      isLoading
+    }}>
       {children}
     </AuthContext.Provider>
   );
