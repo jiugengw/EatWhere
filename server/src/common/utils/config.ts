@@ -26,6 +26,7 @@ const envSchema = z.object({
     .string()
     .regex(/^\d+$/, 'Must be a number')
     .default('90'),
+  GOOGLE_API_KEY: z.string().min(1, 'GOOGLE_API_KEY is required'),
 });
 
 const result = envSchema.safeParse(process.env);
