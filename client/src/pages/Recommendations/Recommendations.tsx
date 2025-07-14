@@ -38,7 +38,7 @@ export const RecommendationsPage = () => {
 
     const handleModeChange = (newType: 'personal' | 'group') => {
         setSwitching(true);
-        
+
         navigate({
             to: '/recommendations',
             search: {
@@ -88,7 +88,13 @@ export const RecommendationsPage = () => {
     const isLoading = isTopLoading || isDiscoverLoading;
 
     const handleShowDetails = (cuisineName: string) => {
-        console.log('Show details for:', cuisineName);
+        navigate({
+            to: '/recommendations/cuisine',
+            search: {
+                cuisine: cuisineName,
+                limit: '10' 
+            }
+        });
     };
 
     const handleLikeCuisine = (cuisineName: string) => {
@@ -163,7 +169,7 @@ export const RecommendationsPage = () => {
     const topRecommendations = topData?.data?.recommendations || [];
     const discoverRecommendations = discoverData?.data?.recommendations || [];
     const userInfo = topData?.data || discoverData?.data;
-    
+
     const allRecommendations = [
         ...topRecommendations.map((item: any) => ({ ...item, type: 'top' })),
         ...discoverRecommendations.map((item: any) => ({ ...item, type: 'discover' }))
@@ -288,7 +294,7 @@ export const RecommendationsPage = () => {
                                 onKeyDown={(event) => {
                                     if (event.key === 'Enter') {
                                         const input = event.target as HTMLInputElement;
-                                        const matchedGroup = userGroups?.find(g => 
+                                        const matchedGroup = userGroups?.find(g =>
                                             g.name.toLowerCase().includes(input.value.toLowerCase())
                                         );
                                         if (matchedGroup) {
