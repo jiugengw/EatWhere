@@ -103,7 +103,14 @@ export const RecommendationsPage = () => {
     });
 
     const handleShowDetails = (cuisineName: string) => {
-        console.log('Show details for:', cuisineName);
+        // Navigate to the cuisine page with the selected cuisine as a query parameter
+        navigate({
+            to: '/recommendations/cuisine',
+            search: {
+                cuisine: cuisineName,
+                limit: '10' // Optional: set a default limit for restaurants
+            }
+        });
     };
 
     const handleLikeCuisine = (cuisineName: string) => {

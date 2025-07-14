@@ -15,6 +15,7 @@ import {
 import { IconUser } from "@tabler/icons-react";
 import type { JSX } from "react";
 import { useAuth } from "@/hooks/auth/useAuth";
+import { useNavigate } from "@tanstack/react-router";
 
 interface RecommendedItem {
   title: string;
@@ -28,6 +29,7 @@ interface UserReview {
 
 export const HomePage = (): JSX.Element => {
   console.log(useAuth());
+  const navigate = useNavigate();
   const recommendedPlaces: RecommendedItem[] = [
     {
       title: "Sushi Place",
@@ -70,6 +72,7 @@ export const HomePage = (): JSX.Element => {
             size="lg"
             radius="xl"
             style={{ backgroundColor: "#FF8C42", color: "white" }}
+            onClick={()=>{navigate({to:"/recommendations/explore"})}}
           >
             Explore Now
           </Button>
