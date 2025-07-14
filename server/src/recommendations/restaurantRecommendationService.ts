@@ -210,130 +210,138 @@ export const generateRestaurantRecommendations = async (
 
   // Filter for cuisines with score >= 3.5
   const MIN_CUISINE_SCORE = 3.5;
-  let eligibleCuisines = Array.from(cuisineScores.entries())
+  const eligibleCuisines = Array.from(cuisineScores.entries())
     .filter(([_, score]) => score >= MIN_CUISINE_SCORE)
     .map(([cuisine]) => cuisine);
 
-  // Fetch nearby restaurants first to get an idea of available restaurants
-  const placesData = await searchNearbyPlaces({
-    lat,
-    lng,
-    radius: 5000, // 5km radius
-    type: 'restaurant'
-  });
+  if (eligibleCuisines.length === 0) {
+    // If no cuisines meet the threshold, use top 3 cuisines
+    const topCuisines = Array.from(cuisineScores.entries())
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([cuisine]) => cuisine);
+    eligibleCuisines.push(...topCuisines);
+  }
 
-  // Process all restaurants to see how many we can get from eligible cuisines
-  let restaurantRecommendations: RestaurantRecommendation[] = [];
+  // Limit to top 4 eligible cuisines to control API calls
+  const topEligibleCuisines = eligibleCuisines
+    .map(cuisine => ({ cuisine, score: cuisineScores.get(cuisine) || 0 }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map(item => item.cuisine);
 
-  // First pass: try with high-score cuisines
-  for (const restaurant of placesData.results) {
-    const cuisine = identifyRestaurantCuisine(restaurant);
+  console.log(`🎯 Making API calls for top ${topEligibleCuisines.length} cuisines:`, topEligibleCuisines);
+
+  // Define cuisine-specific search terms for better results
+  const cuisineSearchTerms: { [key: string]: string } = {
+    'Chinese': 'Chinese restaurant',
+    'Japanese': 'Japanese restaurant',
+    'Korean': 'Korean restaurant',
+    'Italian': 'Italian restaurant',
+    'Mexican': 'Mexican restaurant',
+    'Indian': 'Indian restaurant',
+    'Thai': 'Thai restaurant',
+    'French': 'French restaurant',
+    'Muslim': 'halal restaurant',
+    'Vietnamese': 'Vietnamese restaurant',
+    'Western': 'Western restaurant',
+    'Fast Food': 'fast food'
+  };
+
+  // Make targeted API calls for each top eligible cuisine
+  const restaurantRecommendations: RestaurantRecommendation[] = [];
+  const seenPlaceIds = new Set<string>(); // Avoid duplicates
+
+  for (let i = 0; i < topEligibleCuisines.length; i++) {
+    const cuisine = topEligibleCuisines[i];
+    const searchTerm = cuisineSearchTerms[cuisine] || `${cuisine} restaurant`;
     const cuisineScore = cuisineScores.get(cuisine) || 2.5;
 
-    // Filter by eligible cuisines (high scores)
-    if (eligibleCuisines.includes(cuisine)) {
-      const distance = calculateDistance(
-        lat, lng,
-        restaurant.geometry.location.lat,
-        restaurant.geometry.location.lng
-      );
-
-      const googleRating = restaurant.rating || 3.0;
-      const distanceFactor = getDistanceFactor(distance);
-      const combinedScore = googleRating * cuisineScore * distanceFactor;
-
-      const reasoning = generateRestaurantReasoning(cuisine, cuisineScore, googleRating, distance);
-
-      restaurantRecommendations.push({
-        place_id: restaurant.place_id,
-        name: restaurant.name,
-        vicinity: restaurant.vicinity || '',
-        rating: restaurant.rating,
-        price_level: restaurant.price_level,
-        geometry: restaurant.geometry,
-        photos: restaurant.photos,
-        types: restaurant.types,
-        cuisine,
-        cuisineScore,
-        combinedScore,
-        reasoning,
-        distance
+    try {
+      console.log(`🔍 API Call ${i + 1}/${topEligibleCuisines.length}: Searching for "${searchTerm}"`);
+      
+      const placesData = await searchNearbyPlaces({
+        lat,
+        lng,
+        keyword: searchTerm,
+        radius: 3000,
+        type: 'restaurant'
       });
-    }
-  }
 
-  // Sort what we have so far by combined score
-  restaurantRecommendations.sort((a, b) => b.combinedScore - a.combinedScore);
+      console.log(`📍 Found ${placesData.results.length} results for "${searchTerm}"`);
 
-  // If we don't have enough restaurants, expand to include more cuisines
-  if (restaurantRecommendations.length < limit) {
-    console.log(`Only found ${restaurantRecommendations.length} restaurants with high-score cuisines, need ${limit}. Expanding cuisine selection...`);
-    
-    // Get all cuisines sorted by score, excluding ones we already used
-    const additionalCuisines = Array.from(cuisineScores.entries())
-      .filter(([cuisine, _]) => !eligibleCuisines.includes(cuisine))
-      .sort(([,a], [,b]) => b - a)
-      .map(([cuisine]) => cuisine);
-
-    // Add restaurants from additional cuisines until we have enough
-    const usedRestaurantIds = new Set(restaurantRecommendations.map(r => r.place_id));
-    
-    for (const additionalCuisine of additionalCuisines) {
-      if (restaurantRecommendations.length >= limit) break;
-
+      // Process restaurants from this search
       for (const restaurant of placesData.results) {
-        if (restaurantRecommendations.length >= limit) break;
-        if (usedRestaurantIds.has(restaurant.place_id)) continue;
-
-        const cuisine = identifyRestaurantCuisine(restaurant);
-        
-        if (cuisine === additionalCuisine) {
-          const cuisineScore = cuisineScores.get(cuisine) || 2.5;
-          const distance = calculateDistance(
-            lat, lng,
-            restaurant.geometry.location.lat,
-            restaurant.geometry.location.lng
-          );
-
-          const googleRating = restaurant.rating || 3.0;
-          const distanceFactor = getDistanceFactor(distance);
-          const combinedScore = googleRating * cuisineScore * distanceFactor;
-
-          const reasoning = generateRestaurantReasoning(cuisine, cuisineScore, googleRating, distance);
-
-          restaurantRecommendations.push({
-            place_id: restaurant.place_id,
-            name: restaurant.name,
-            vicinity: restaurant.vicinity || '',
-            rating: restaurant.rating,
-            price_level: restaurant.price_level,
-            geometry: restaurant.geometry,
-            photos: restaurant.photos,
-            types: restaurant.types,
-            cuisine,
-            cuisineScore,
-            combinedScore,
-            reasoning,
-            distance
-          });
-
-          usedRestaurantIds.add(restaurant.place_id);
+        // Skip if we've already processed this restaurant
+        if (seenPlaceIds.has(restaurant.place_id)) {
+          continue;
         }
-      }
-    }
+        seenPlaceIds.add(restaurant.place_id);
 
-    // Update eligible cuisines to include all cuisines we actually used
-    const usedCuisines = Array.from(new Set(restaurantRecommendations.map(r => r.cuisine)));
-    eligibleCuisines = usedCuisines;
-    
-    // Re-sort with all restaurants included
-    restaurantRecommendations.sort((a, b) => b.combinedScore - a.combinedScore);
+        // Since we searched specifically for this cuisine, we can be more confident about the cuisine type
+        let identifiedCuisine = identifyRestaurantCuisine(restaurant);
+        
+        // If identification fails or gives Western as default, use the searched cuisine
+        if (identifiedCuisine === 'Western' && cuisine !== 'Western') {
+          identifiedCuisine = cuisine as CuisineType;
+          console.log(`🎯 Overriding cuisine identification: ${restaurant.name} → ${cuisine}`);
+        }
+
+        // Calculate distance
+        const distance = calculateDistance(
+          lat, lng,
+          restaurant.geometry.location.lat,
+          restaurant.geometry.location.lng
+        );
+
+        // Calculate combined score using the cuisine we searched for
+        const googleRating = restaurant.rating || 3.0;
+        const distanceFactor = getDistanceFactor(distance);
+        const combinedScore = googleRating * cuisineScore * distanceFactor;
+
+        // Generate reasoning
+        const reasoning = generateRestaurantReasoning(
+          identifiedCuisine, 
+          cuisineScore, 
+          googleRating, 
+          distance
+        );
+
+        restaurantRecommendations.push({
+          place_id: restaurant.place_id,
+          name: restaurant.name,
+          vicinity: restaurant.vicinity || '',
+          rating: restaurant.rating,
+          price_level: restaurant.price_level,
+          geometry: restaurant.geometry,
+          photos: restaurant.photos,
+          types: restaurant.types,
+          cuisine: identifiedCuisine,
+          cuisineScore: cuisineScore,
+          combinedScore,
+          reasoning,
+          distance
+        });
+      }
+
+    } catch (error) {
+      console.error(`❌ Error searching for ${searchTerm}:`, error);
+      // Continue with next cuisine
+    }
   }
 
-  // Take only the requested number of restaurants
-  const topRestaurants = restaurantRecommendations.slice(0, limit);
+  console.log(`📊 Total unique restaurants found: ${restaurantRecommendations.length}`);
+  console.log(`🍽️ Cuisine distribution:`, 
+    restaurantRecommendations.reduce((acc, r) => {
+      acc[r.cuisine] = (acc[r.cuisine] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>)
+  );
 
-  console.log(`Final result: ${topRestaurants.length} restaurants from cuisines: ${Array.from(new Set(topRestaurants.map(r => r.cuisine))).join(', ')}`);
+  // Sort by combined score and take top N
+  const topRestaurants = restaurantRecommendations
+    .sort((a, b) => b.combinedScore - a.combinedScore)
+    .slice(0, limit);
 
   return {
     restaurants: topRestaurants,
@@ -341,7 +349,7 @@ export const generateRestaurantRecommendations = async (
     totalRatings: hiddenData.totalRatings,
     filterCriteria: {
       minCuisineScore: MIN_CUISINE_SCORE,
-      eligibleCuisines
+      eligibleCuisines: topEligibleCuisines
     },
     generatedAt: new Date()
   };

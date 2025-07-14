@@ -73,7 +73,7 @@ export const searchNearbyPlaces = async (
     // console.log(url,searchParams);
     // console.log('searchparams',searchParams);
     const response = await axios.get<GooglePlacesResponse>(`${url}?${searchParams}`);
-    console.log(response.data);
+    // console.log(response.data);
     if (response.data.status !== 'OK' && response.data.status !== 'ZERO_RESULTS') {
       throw new AppError(
         `Google Places API error: ${response.data.status}`,
