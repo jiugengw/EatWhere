@@ -30,7 +30,7 @@ import { useLeaveGroup } from '@/hooks/groups/useLeaveGroup';
 export const GroupDetailPage = () => {
   const { auth } = useAuth();
   const currentUserId = auth?.id;
-  const { id } = useParams({ from: '/group/$id/' });
+  const { id } = useParams({ from: '/_protected/group/$id/' });
   const { data, isLoading } = useGroupDetails(id);
   const [showCode, setShowCode] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);

@@ -31,41 +31,19 @@ export const RecommendationsPage = () => {
     const searchParams = new URLSearchParams(location.search);
 
     const type = searchParams.get('type') || 'personal';
-    const urlMode = searchParams.get('mode') || 'top';
-    const mode = `${type}-${urlMode}`;
-
-    const [selectedGroupId, setSelectedGroupId] = useState<string>(() => {
-        return searchParams.get('groupId') || '';
-    });
+    const selectedGroupId = searchParams.get('groupId') || '';
 
     const [switching, setSwitching] = useState(false);
     const navigate = useNavigate();
 
-    const handleMainModeChange = (mainMode: 'personal' | 'group') => {
+    const handleModeChange = (newType: 'personal' | 'group') => {
         setSwitching(true);
-        const subMode = urlMode;
-
+        
         navigate({
             to: '/recommendations',
             search: {
-                type: mainMode,
-                mode: subMode,
-                ...(selectedGroupId && { groupId: selectedGroupId })
-            }
-        });
-
-        setTimeout(() => setSwitching(false), 100);
-    };
-
-    const handleSubModeChange = (subMode: 'top' | 'discover') => {
-        setSwitching(true);
-
-        navigate({
-            to: '/recommendations',
-            search: {
-                type: type,
-                mode: subMode,
-                ...(selectedGroupId && { groupId: selectedGroupId })
+                type: newType,
+                ...(selectedGroupId && newType === 'group' && { groupId: selectedGroupId })
             }
         });
 
@@ -81,40 +59,45 @@ export const RecommendationsPage = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
-    const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ['recommendations', mode, selectedGroupId],
+    const { data: topData, isLoading: isTopLoading, refetch: refetchTop } = useQuery({
+        queryKey: ['recommendations-top', type, selectedGroupId],
         queryFn: async () => {
-            let endpoint = '/recommendations';
-
-            if (mode === 'personal-top') {
-                endpoint = '/recommendations?limit=4';
-            } else if (mode === 'personal-discover') {
-                endpoint = '/recommendations/discover?limit=4';
-            } else if (mode === 'group-top' && selectedGroupId) {
+            let endpoint = '/recommendations?limit=4';
+            if (type === 'group' && selectedGroupId) {
                 endpoint = `/recommendations/group/${selectedGroupId}?limit=4`;
-            } else if (mode === 'group-discover' && selectedGroupId) {
-                endpoint = `/recommendations/group/${selectedGroupId}/discover?limit=4`;
             }
-
             const res = await axiosPrivate.get(endpoint);
             return res.data;
         },
-        enabled: mode.startsWith('group') ? !!selectedGroupId : true,
+        enabled: type === 'personal' || (type === 'group' && !!selectedGroupId),
     });
 
-    const handleShowDetails = (cuisineName: string) => {
-        // Navigate to the cuisine page with the selected cuisine as a query parameter
-        navigate({
-            to: '/recommendations/cuisine',
-            search: {
-                cuisine: cuisineName,
-                limit: '10' // Optional: set a default limit for restaurants
+    const { data: discoverData, isLoading: isDiscoverLoading, refetch: refetchDiscover } = useQuery({
+        queryKey: ['recommendations-discover', type, selectedGroupId],
+        queryFn: async () => {
+            let endpoint = '/recommendations/discover?limit=4';
+            if (type === 'group' && selectedGroupId) {
+                endpoint = `/recommendations/group/${selectedGroupId}/discover?limit=4`;
             }
-        });
+            const res = await axiosPrivate.get(endpoint);
+            return res.data;
+        },
+        enabled: type === 'personal' || (type === 'group' && !!selectedGroupId),
+    });
+
+    const isLoading = isTopLoading || isDiscoverLoading;
+
+    const handleShowDetails = (cuisineName: string) => {
+        console.log('Show details for:', cuisineName);
     };
 
     const handleLikeCuisine = (cuisineName: string) => {
         toggleFavourite(cuisineName);
+    };
+
+    const refetchAll = () => {
+        refetchTop();
+        refetchDiscover();
     };
 
     const getRecommendationAccuracyExplanation = (totalRatings: number) => {
@@ -177,23 +160,34 @@ export const RecommendationsPage = () => {
 
 
 
-    if (error) {
-        return (
-            <Container my="md">
-                <Alert icon={<IconInfoCircle size={16} />} title="Error" color="red">
-                    Failed to load recommendations. Please try again.
-                </Alert>
-            </Container>
-        );
-    }
+    const topRecommendations = topData?.data?.recommendations || [];
+    const discoverRecommendations = discoverData?.data?.recommendations || [];
+    const userInfo = topData?.data || discoverData?.data;
+    
+    const allRecommendations = [
+        ...topRecommendations.map((item: any) => ({ ...item, type: 'top' })),
+        ...discoverRecommendations.map((item: any) => ({ ...item, type: 'discover' }))
+    ];
 
-    const recommendations = data?.data?.recommendations || [];
-    const userInfo = data?.data;
+    const shuffledRecommendations = allRecommendations
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 8);
+
     const accuracyInfo = userInfo ?
-        (mode.startsWith('group') && selectedGroupId
+        (type === 'group' && selectedGroupId
             ? getGroupAccuracyExplanation(userGroups.find(g => g._id === selectedGroupId)?.userCount || 0, userInfo.totalRatings)
             : getRecommendationAccuracyExplanation(userInfo.totalRatings)
         ) : null;
+
+    const getReasoningLabel = (item: any) => {
+        if (item.type === 'top') {
+            if (item.confidenceLevel >= 0.8) return 'Based on your preferences';
+            if (item.confidenceLevel >= 0.5) return 'Popular with similar users';
+            return 'You might also like';
+        } else {
+            return 'Try something new';
+        }
+    };
 
     const renderSkeletonGrid = () => {
         return (
@@ -201,7 +195,7 @@ export const RecommendationsPage = () => {
                 cols={{ base: 1, sm: 2, md: 2, lg: 4 }}
                 spacing="md"
             >
-                {Array.from({ length: 4 }).map((_, index) => (
+                {Array.from({ length: 8 }).map((_, index) => (
                     <Skeleton key={index} height={300} radius="md" animate />
                 ))}
             </SimpleGrid>
@@ -209,7 +203,7 @@ export const RecommendationsPage = () => {
     };
 
     const renderCuisineGrid = () => {
-        if (mode.startsWith('group') && !selectedGroupId) {
+        if (type === 'group' && !selectedGroupId) {
             return (
                 <Alert icon={<IconInfoCircle size={16} />} title="Select a group" color="blue">
                     Please select a group to see recommendations.
@@ -218,7 +212,7 @@ export const RecommendationsPage = () => {
             );
         }
 
-        if (recommendations.length === 0) {
+        if (shuffledRecommendations.length === 0) {
             return (
                 <Alert icon={<IconInfoCircle size={16} />} title="No recommendations" color="blue">
                     No recommendations available at the moment.
@@ -226,27 +220,25 @@ export const RecommendationsPage = () => {
             );
         }
 
-        const top4 = recommendations.slice(0, 4);
-
         return (
             <SimpleGrid
                 cols={{ base: 1, sm: 2, md: 2, lg: 4 }}
                 spacing="md"
                 className={`${classes.cuisineGrid} ${switching ? classes.switching : ''}`}
             >
-                {top4.map((item: any, index: number) => (
+                {shuffledRecommendations.map((item: any, index: number) => (
                     <CuisineCard
-                        key={`${item.cuisineName}-${index}`}
+                        key={`${item.cuisineName}-${item.type}-${index}`}
                         cuisineName={item.cuisineName}
                         score={item.score}
-                        reasoning={item.reasoning}
-                        confidenceLevel={mode.endsWith('top') ? item.confidenceLevel : undefined}
-                        discoveryLevel={mode.endsWith('discover') ? item.discoveryLevel : undefined}
+                        reasoning={getReasoningLabel(item)}
+                        confidenceLevel={item.type === 'top' ? item.confidenceLevel : undefined}
+                        discoveryLevel={item.type === 'discover' ? item.discoveryLevel : undefined}
                         onShowDetails={() => handleShowDetails(item.cuisineName)}
                         onLike={() => handleLikeCuisine(item.cuisineName)}
                         variant="compact"
                         isLiked={favourites.includes(item.cuisineName)}
-                        isDiscoverMode={mode.endsWith('discover')}
+                        isDiscoverMode={item.type === 'discover'}
                     />
                 ))}
             </SimpleGrid>
@@ -259,10 +251,7 @@ export const RecommendationsPage = () => {
                 <Group justify="space-between" align="center">
                     <div>
                         <Text size="xl" fw={600} mb="xs">
-                            {mode.endsWith('top')
-                                ? "Your best matches based on preferences and dining history"
-                                : "Enhanced scores for exploration to discover new flavours!"
-                            }
+                            Your personalized food recommendations
                         </Text>
                         <Group gap="xs" mb="md">
                             {userInfo && (
@@ -283,35 +272,60 @@ export const RecommendationsPage = () => {
                             )}
                         </Group>
                         <Text size="sm" c="dimmed">
-                            Your top recommendations based on preferences and dining history
+                            Curated suggestions combining your preferences with discovery opportunities
                         </Text>
+                        {type === 'group' && (
+                            <Select
+                                placeholder="Select a group"
+                                value={selectedGroupId}
+                                onChange={(value) => {
+                                    const newGroupId = value || '';
+                                    navigate({
+                                        to: '/recommendations',
+                                        search: { type: 'group', ...(newGroupId && { groupId: newGroupId }) }
+                                    });
+                                }}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter') {
+                                        const input = event.target as HTMLInputElement;
+                                        const matchedGroup = userGroups?.find(g => 
+                                            g.name.toLowerCase().includes(input.value.toLowerCase())
+                                        );
+                                        if (matchedGroup) {
+                                            navigate({
+                                                to: '/recommendations',
+                                                search: { type: 'group', groupId: matchedGroup._id }
+                                            });
+                                        }
+                                    }
+                                }}
+                                data={[
+                                    { value: '', label: 'No group selected' },
+                                    ...userGroups?.map(g => ({
+                                        value: g._id,
+                                        label: g.name,
+                                    })) || []
+                                ]}
+                                mt="md"
+                                clearable
+                                searchable
+                                w={300}
+                            />
+                        )}
                     </div>
                     <Group>
-                        <Stack gap="md">
-                            <SegmentedControl
-                                value={mode.startsWith('group') ? 'group' : 'personal'}
-                                onChange={(value) => handleMainModeChange(value as 'personal' | 'group')}
-                                data={[
-                                    { label: 'Personal', value: 'personal' },
-                                    { label: 'Group', value: 'group' }
-                                ]}
-                                fullWidth
-                            />
-
-                            <SegmentedControl
-                                value={mode.endsWith('discover') ? 'discover' : 'top'}
-                                onChange={(value) => handleSubModeChange(value as 'top' | 'discover')}
-                                data={[
-                                    { label: 'Top Picks', value: 'top' },
-                                    { label: 'Discover', value: 'discover' }
-                                ]}
-                                fullWidth
-                            />
-                        </Stack>
+                        <SegmentedControl
+                            value={type}
+                            onChange={(value) => handleModeChange(value as 'personal' | 'group')}
+                            data={[
+                                { label: 'Personal', value: 'personal' },
+                                { label: 'Group', value: 'group' }
+                            ]}
+                        />
                         <ActionIcon
                             variant="light"
                             size="lg"
-                            onClick={() => refetch()}
+                            onClick={refetchAll}
                             disabled={isLoading}
                             title="Refresh recommendations"
                         >
@@ -320,31 +334,14 @@ export const RecommendationsPage = () => {
                     </Group>
                 </Group>
             </Paper>
-            {mode.startsWith('group') && (
-                <Select
-                    placeholder="Select a group"
-                    value={selectedGroupId}
-                    onChange={(value) => setSelectedGroupId(value || '')}
-                    data={[
-                        { value: '', label: 'No group selected' },
-                        ...userGroups?.map(g => ({
-                            value: g._id,
-                            label: g.name,
-                            disabled: g._id === selectedGroupId
-                        })) || []
-                    ]}
-                    mb="md"
-                    clearable
-                />
-            )}
 
-            {mode.endsWith('top') && accuracyInfo && (
+            {accuracyInfo && (
                 <Paper withBorder p="md" radius="md" mb="xl">
                     <Stack gap="sm">
                         <Group gap="xs">
                             <IconInfoCircle size={16} color={accuracyInfo.color} />
                             <Text size="sm" fw={500} c={accuracyInfo.color}>
-                                {mode.startsWith('group')
+                                {type === 'group'
                                     ? `Group recommendation accuracy is ${accuracyInfo.level}`
                                     : `Your recommendation accuracy is ${accuracyInfo.level}`
                                 }
@@ -352,9 +349,6 @@ export const RecommendationsPage = () => {
                         </Group>
                         <Text size="sm" c="dimmed">
                             This is because {accuracyInfo.reason}
-                        </Text>
-                        <Text size="xs" c="dimmed" fs="italic">
-                            Note: Individual cuisines may still show different confidence levels based on how certain we are about that specific cuisine {mode.startsWith('group') ? 'for your group' : 'for you'}.
                         </Text>
                         {accuracyInfo.level !== 'strong' && (
                             <Group gap="md" mt="xs">
@@ -378,7 +372,7 @@ export const RecommendationsPage = () => {
 
             {isLoading ? renderSkeletonGrid() : renderCuisineGrid()}
 
-            {recommendations.length > 0 && (
+            {shuffledRecommendations.length > 0 && (
                 <Paper withBorder p="md" radius="md" mt="xl" className={classes.info}>
                     <Text size="sm" c="dimmed" ta="center">
                         Recommendations improve as you rate more food experiences.

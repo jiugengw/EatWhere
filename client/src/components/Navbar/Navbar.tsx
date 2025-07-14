@@ -11,20 +11,8 @@ export default function Navbar() {
     {
       name: "Recommendations",
       links: [
-        {
-          name: "Personal",
-          links: [
-            { name: "Top Picks", path: "/recommendations?type=personal&mode=top" },
-            { name: "Discover", path: "/recommendations?type=personal&mode=discover" },
-          ],
-        },
-        {
-          name: "Group",
-          links: [
-            { name: "Top Picks", path: "/recommendations?type=group&mode=top" },
-            { name: "Discover", path: "/recommendations?type=group&mode=discover" },
-          ],
-        },
+        { name: "Personal", path: "/recommendations?type=personal" },
+        { name: "Group", path: "/recommendations?type=group" },
       ],
     },
     {
@@ -38,41 +26,7 @@ export default function Navbar() {
   ];
 
   const renderMenuItem = (link: any) => {
-    if (link.links && link.links[0]?.links) {
-      return (
-        <Menu
-          key={link.name}
-          trigger="hover"
-          transitionProps={{ exitDuration: 0 }}
-          withinPortal
-          position="bottom-start"
-        >
-          <Menu.Target>
-            <span className={classes.navLink} style={{ cursor: "pointer" }}>
-              {link.name} <IconChevronDown size={14} style={{ marginLeft: 4 }} />
-            </span>
-          </Menu.Target>
-          <Menu.Dropdown>
-            {link.links.map((sublink: any) => (
-              <div key={sublink.name}>
-                <Menu.Label>{sublink.name}</Menu.Label>
-                {sublink.links.map((nestedLink: any) => (
-                  <Menu.Item
-                    key={nestedLink.name}
-                    component={Link}
-                    to={nestedLink.path}
-                    pl="xl"
-                  >
-                    {nestedLink.name}
-                  </Menu.Item>
-                ))}
-              </div>
-            ))}
-          </Menu.Dropdown>
-        </Menu>
-      );
-    }
-    else if (link.links) {
+    if (link.links) {
       return (
         <Menu
           key={link.name}
@@ -98,8 +52,7 @@ export default function Navbar() {
           </Menu.Dropdown>
         </Menu>
       );
-    }
-    else {
+    } else {
       return (
         <Link
           key={link.name}
