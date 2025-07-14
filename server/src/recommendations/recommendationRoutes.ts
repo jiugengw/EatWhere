@@ -7,6 +7,7 @@ import {
     getRecommendations,
     submitRating,
     toggleFavourite,
+    getRestaurantRecommendations,
 } from './recommendationController.js'
 import { protect } from '../auth/authController.js';
 
@@ -25,5 +26,7 @@ router.get('/discover', discoverRecommendations);
 
 router.get('/group/:groupId', getGroupRecommendations);
 router.get('/group/:groupId/discover', getGroupDiscoverRecommendations);
+
+router.get('/restaurants', getRestaurantRecommendations);
 
 export default router;

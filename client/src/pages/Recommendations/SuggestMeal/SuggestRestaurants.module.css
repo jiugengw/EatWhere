@@ -1,0 +1,450 @@
+.container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  background-color: var(--mantine-color-body);
+  min-height: 100vh;
+  transition: background-color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .container {
+  background-color: var(--mantine-color-dark-7);
+}
+
+.header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+[data-mantine-color-scheme="dark"] .header {
+  background: linear-gradient(135deg, var(--mantine-color-dark-6) 0%, var(--mantine-color-dark-5) 100%);
+  border: 1px solid var(--mantine-color-dark-4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.header:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-mantine-color-scheme="dark"] .header:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.title {
+  color: var(--mantine-color-text);
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .title {
+  color: var(--mantine-color-dark-0);
+}
+
+.subtitle {
+  color: var(--mantine-color-dimmed);
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .subtitle {
+  color: var(--mantine-color-dark-2);
+}
+
+.backButton {
+  border: 2px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-white);
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+[data-mantine-color-scheme="dark"] .backButton {
+  border: 2px solid var(--mantine-color-dark-4);
+  background: var(--mantine-color-dark-5);
+}
+
+.backButton:hover {
+  border-color: #FF8C42;
+  background: rgba(255, 140, 66, 0.1);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .backButton:hover {
+  border-color: #FF8C42;
+  background: rgba(255, 140, 66, 0.15);
+}
+
+.refreshButton {
+  background: rgba(255, 140, 66, 0.1);
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  color: #FF8C42;
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .refreshButton {
+  background: rgba(255, 140, 66, 0.15);
+  border: 1px solid rgba(255, 140, 66, 0.4);
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: rgba(255, 140, 66, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+}
+
+[data-mantine-color-scheme="dark"] .refreshButton:hover:not(:disabled) {
+  background: rgba(255, 140, 66, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.4);
+}
+
+.setupCard {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid #e9ecef;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+[data-mantine-color-scheme="dark"] .setupCard {
+  background: linear-gradient(135deg, var(--mantine-color-dark-6) 0%, var(--mantine-color-dark-5) 100%);
+  border: 1px solid var(--mantine-color-dark-4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.setupCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+[data-mantine-color-scheme="dark"] .setupCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, var(--mantine-color-dark-5) 0%, var(--mantine-color-dark-4) 100%);
+}
+
+.sliderSection {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.sliderLabel {
+  color: var(--mantine-color-text);
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .sliderLabel {
+  color: var(--mantine-color-dark-0);
+}
+
+.sliderContainer {
+  padding: 2rem 1rem;
+  background: var(--mantine-color-gray-0);
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-gray-2);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .sliderContainer {
+  background: var(--mantine-color-dark-5);
+  border: 1px solid var(--mantine-color-dark-3);
+}
+
+.slider {
+  margin: 1rem 0;
+}
+
+.slider .mantine-Slider-track {
+  background-color: var(--mantine-color-gray-2);
+  height: 8px;
+}
+
+[data-mantine-color-scheme="dark"] .slider .mantine-Slider-track {
+  background-color: var(--mantine-color-dark-4);
+}
+
+.slider .mantine-Slider-bar {
+  background: linear-gradient(135deg, #FF8C42 0%, #e07b30 100%);
+  height: 8px;
+}
+
+.slider .mantine-Slider-thumb {
+  background: white;
+  border: 3px solid #FF8C42;
+  width: 24px;
+  height: 24px;
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+  transition: all 0.2s ease;
+}
+
+.slider .mantine-Slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
+}
+
+.countBadge {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 140, 66, 0.1);
+  color: #FF8C42;
+  border: 1px solid rgba(255, 140, 66, 0.3);
+}
+
+[data-mantine-color-scheme="dark"] .countBadge {
+  background: rgba(255, 140, 66, 0.15);
+  border: 1px solid rgba(255, 140, 66, 0.4);
+}
+
+.generateButton {
+  background: linear-gradient(135deg, #FF8C42 0%, #e07b30 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+}
+
+.generateButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e07b30 0%, #d16b20 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 140, 66, 0.4);
+}
+
+[data-mantine-color-scheme="dark"] .generateButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffa94d 0%, #FF8C42 100%);
+  box-shadow: 0 8px 20px rgba(255, 140, 66, 0.5);
+}
+
+.generateButton:disabled {
+  background: var(--mantine-color-gray-4);
+  color: var(--mantine-color-gray-6);
+  transform: none;
+  box-shadow: none;
+}
+
+[data-mantine-color-scheme="dark"] .generateButton:disabled {
+  background: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-2);
+}
+
+.resultsHeader {
+  background: var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-gray-2);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .resultsHeader {
+  background: var(--mantine-color-dark-6);
+  border: 1px solid var(--mantine-color-dark-4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.resultsTitle {
+  color: var(--mantine-color-text);
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .resultsTitle {
+  color: var(--mantine-color-dark-0);
+}
+
+.newSuggestionsButton {
+  background: rgba(255, 140, 66, 0.1);
+  color: #FF8C42;
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .newSuggestionsButton {
+  background: rgba(255, 140, 66, 0.15);
+  border: 1px solid rgba(255, 140, 66, 0.4);
+}
+
+.newSuggestionsButton:hover {
+  background: rgba(255, 140, 66, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.2);
+}
+
+[data-mantine-color-scheme="dark"] .newSuggestionsButton:hover {
+  background: rgba(255, 140, 66, 0.25);
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+}
+
+.restaurantCardWrapper {
+  position: relative;
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.suggestionBadges {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  pointer-events: none;
+}
+
+.suggestionBadges .mantine-Badge-root {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .suggestionBadges .mantine-Badge-root {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 140, 66, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.reasoningOverlay {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 140, 66, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+[data-mantine-color-scheme="dark"] .reasoningOverlay {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 140, 66, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.restaurantCardWrapper:hover .suggestionBadges .mantine-Badge-root {
+  background: rgba(255, 140, 66, 0.9);
+  color: white;
+  transform: scale(1.05);
+}
+
+[data-mantine-color-scheme="dark"] .restaurantCardWrapper:hover .suggestionBadges .mantine-Badge-root {
+  background: rgba(255, 140, 66, 0.9);
+  color: white;
+}
+
+.restaurantCardWrapper:hover .reasoningOverlay {
+  background: rgba(255, 140, 66, 0.95);
+  border-color: #FF8C42;
+  transform: translateY(-2px);
+}
+
+[data-mantine-color-scheme="dark"] .restaurantCardWrapper:hover .reasoningOverlay {
+  background: rgba(255, 140, 66, 0.9);
+}
+
+.restaurantCardWrapper:hover .reasoningOverlay * {
+  color: white !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .setupCard {
+    padding: 1.5rem;
+  }
+
+  .sliderContainer {
+    padding: 1rem;
+  }
+
+  .generateButton {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .suggestionBadges {
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .reasoningOverlay {
+    bottom: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sliderSection {
+    max-width: 100%;
+  }
+
+  .countBadge {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .generateButton {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .suggestionBadges .mantine-Badge-root {
+    font-size: 0.7rem;
+  }
+}
+
+/* Focus states for accessibility */
+.backButton:focus,
+.refreshButton:focus,
+.generateButton:focus,
+.newSuggestionsButton:focus {
+  outline: 2px solid #FF8C42;
+  outline-offset: 2px;
+}
+
+[data-mantine-color-scheme="dark"] .backButton:focus,
+[data-mantine-color-scheme="dark"] .refreshButton:focus,
+[data-mantine-color-scheme="dark"] .generateButton:focus,
+[data-mantine-color-scheme="dark"] .newSuggestionsButton:focus {
+  outline: 2px solid #ffa94d;
+}
+
+/* Enhanced hover effects */
+.header:hover,
+.setupCard:hover,
+.resultsHeader:hover {
+  border-color: rgba(255, 140, 66, 0.3);
+}
+
+[data-mantine-color-scheme="dark"] .header:hover,
+[data-mantine-color-scheme="dark"] .setupCard:hover,
+[data-mantine-color-scheme="dark"] .resultsHeader:hover {
+  border-color: rgba(255, 140, 66, 0.4);
+}

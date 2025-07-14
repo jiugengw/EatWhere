@@ -1,27 +1,27 @@
 // client/src/pages/CuisinePage.tsx
 import React from 'react';
 import { useLocation, useNavigate } from '@tanstack/react-router';
-import { 
-  Container, 
-  Title, 
-  Text, 
-  Button, 
-  Group, 
-  Stack, 
-  Paper, 
-  SimpleGrid, 
-  Loader, 
+import {
+  Container,
+  Title,
+  Text,
+  Button,
+  Group,
+  Stack,
+  Paper,
+  SimpleGrid,
+  Loader,
   Alert,
   ActionIcon,
   Flex
 } from '@mantine/core';
-import { 
-  IconArrowLeft, 
-  IconRefresh, 
-  IconInfoCircle, 
-  IconMapPin 
+import {
+  IconArrowLeft,
+  IconRefresh,
+  IconInfoCircle,
+  IconMapPin
 } from '@tabler/icons-react';
-import { useCuisineRecommendations } from '@/hooks/recommendations/useCuisineRecommendation';
+import { useCuisineRecommendations } from '@/hooks/recommendations/useCuisineRecommendations';
 import { type CuisineType, CUISINES } from '@/types/recommendations';
 import { LocationRequester } from '@/components/LocationRequester/LocationRequester';
 import { RestaurantCard } from '@/components/RestaurantCard/RestaurantCard';
@@ -29,21 +29,21 @@ import { RestaurantCard } from '@/components/RestaurantCard/RestaurantCard';
 const CuisinePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Extract search params from TanStack Router location
   const searchParams = new URLSearchParams(location.search);
   const cuisine = searchParams.get('cuisine') as CuisineType;
   const limit = parseInt(searchParams.get('limit') || '10', 10);
 
-  const { 
-    restaurants, 
-    loading, 
-    error, 
-    refetch, 
+  const {
+    restaurants,
+    loading,
+    error,
+    refetch,
     locationUsed,
     locationLoading,
     locationError,
-    requestLocation 
+    requestLocation
   } = useCuisineRecommendations({
     cuisine,
     limit,
@@ -52,12 +52,12 @@ const CuisinePage: React.FC = () => {
 
   const getLocationDisplay = () => {
     if (!locationUsed) return 'Unknown location';
-    
+
     // Check if it's the default Singapore location
     if (locationUsed.lat === 1.3521 && locationUsed.lng === 103.8198) {
       return 'Singapore (default)';
     }
-    
+
     return `${locationUsed.lat.toFixed(4)}, ${locationUsed.lng.toFixed(4)}`;
   };
 
@@ -139,7 +139,7 @@ const CuisinePage: React.FC = () => {
                 </Text>
               </Stack>
             </Group>
-            
+
             <ActionIcon
               variant="light"
               size="lg"
@@ -156,7 +156,7 @@ const CuisinePage: React.FC = () => {
               <IconMapPin size={20} />
               <Title order={3}>Search Location</Title>
             </Group>
-            <LocationRequester 
+            <LocationRequester
               variant="card"
               showCoordinates={true}
             />
@@ -169,7 +169,7 @@ const CuisinePage: React.FC = () => {
               spacing="lg"
             >
               {restaurants.map((restaurant) => (
-                <RestaurantCard 
+                <RestaurantCard
                   key={restaurant.place_id}
                   restaurant={restaurant}
                 />

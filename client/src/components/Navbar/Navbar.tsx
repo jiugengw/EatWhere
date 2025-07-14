@@ -13,6 +13,7 @@ export default function Navbar() {
       links: [
         { name: "Personal", path: "/recommendations?type=personal" },
         { name: "Group", path: "/recommendations?type=group" },
+        { name: "Find Meals", path: "/recommendations/find-meal" },
       ],
     },
     {

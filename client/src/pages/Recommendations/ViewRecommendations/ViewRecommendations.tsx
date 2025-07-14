@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { IconRefresh, IconInfoCircle } from '@tabler/icons-react';
 import { CuisineCard } from '@/components/CuisineCard/CuisineCard';
-import classes from './recommendations.module.css';
+import classes from './ViewRecommendations.module.css';
 import { useToggleFavourite } from '@/hooks/recommendations/useToggleFavourite';
 import { useFavourites } from '@/hooks/recommendations/useFavourites';
 import { Link } from '@tanstack/react-router';
@@ -26,7 +26,7 @@ import { useAxiosPrivate } from '@/hooks/auth/useAxiosPrivate';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from '@tanstack/react-router';
 
-export const RecommendationsPage = () => {
+export const ViewRecommendationsPage = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
@@ -59,12 +59,13 @@ export const RecommendationsPage = () => {
 
     const axiosPrivate = useAxiosPrivate();
 
-    const { data: topData, isLoading: isTopLoading, refetch: refetchTop } = useQuery({
-        queryKey: ['recommendations-top', type, selectedGroupId],
+    // Single query for recommendations
+    const { data: recommendationsData, isLoading, refetch } = useQuery({
+        queryKey: ['recommendations', type, selectedGroupId],
         queryFn: async () => {
-            let endpoint = '/recommendations?limit=4';
+            let endpoint = '/recommendations?limit=8'; // Get more to ensure variety
             if (type === 'group' && selectedGroupId) {
-                endpoint = `/recommendations/group/${selectedGroupId}?limit=4`;
+                endpoint = `/recommendations/group/${selectedGroupId}?limit=8`;
             }
             const res = await axiosPrivate.get(endpoint);
             return res.data;
@@ -72,6 +73,7 @@ export const RecommendationsPage = () => {
         enabled: type === 'personal' || (type === 'group' && !!selectedGroupId),
     });
 
+    // Get discover recommendations separately if you want to mix them
     const { data: discoverData, isLoading: isDiscoverLoading, refetch: refetchDiscover } = useQuery({
         queryKey: ['recommendations-discover', type, selectedGroupId],
         queryFn: async () => {
@@ -84,8 +86,6 @@ export const RecommendationsPage = () => {
         },
         enabled: type === 'personal' || (type === 'group' && !!selectedGroupId),
     });
-
-    const isLoading = isTopLoading || isDiscoverLoading;
 
     const handleShowDetails = (cuisineName: string) => {
         navigate({
@@ -102,7 +102,7 @@ export const RecommendationsPage = () => {
     };
 
     const refetchAll = () => {
-        refetchTop();
+        refetch();
         refetchDiscover();
     };
 
@@ -164,20 +164,47 @@ export const RecommendationsPage = () => {
         }
     };
 
+    // Process recommendations to avoid duplicates
+    const processRecommendations = () => {
+        const mainRecommendations = recommendationsData?.data?.recommendations || [];
+        const discoverRecommendations = discoverData?.data?.recommendations || [];
+        
+        // Create a Set to track cuisine names and avoid duplicates
+        const seenCuisines = new Set<string>();
+        const finalRecommendations = [];
 
+        // Add main recommendations first
+        for (const item of mainRecommendations) {
+            if (!seenCuisines.has(item.cuisineName)) {
+                seenCuisines.add(item.cuisineName);
+                finalRecommendations.push({
+                    ...item,
+                    type: 'main',
+                    isDiscoverMode: false
+                });
+            }
+        }
 
-    const topRecommendations = topData?.data?.recommendations || [];
-    const discoverRecommendations = discoverData?.data?.recommendations || [];
-    const userInfo = topData?.data || discoverData?.data;
+        // Add discover recommendations that aren't already included
+        for (const item of discoverRecommendations) {
+            if (!seenCuisines.has(item.cuisineName) && finalRecommendations.length < 8) {
+                seenCuisines.add(item.cuisineName);
+                finalRecommendations.push({
+                    ...item,
+                    type: 'discover',
+                    isDiscoverMode: true
+                });
+            }
+        }
 
-    const allRecommendations = [
-        ...topRecommendations.map((item: any) => ({ ...item, type: 'top' })),
-        ...discoverRecommendations.map((item: any) => ({ ...item, type: 'discover' }))
-    ];
+        // Shuffle the final array to mix main and discover recommendations
+        return finalRecommendations
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 8);
+    };
 
-    const shuffledRecommendations = allRecommendations
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 8);
+    const finalRecommendations = processRecommendations();
+    const userInfo = recommendationsData?.data || discoverData?.data;
 
     const accuracyInfo = userInfo ?
         (type === 'group' && selectedGroupId
@@ -186,7 +213,7 @@ export const RecommendationsPage = () => {
         ) : null;
 
     const getReasoningLabel = (item: any) => {
-        if (item.type === 'top') {
+        if (item.type === 'main') {
             if (item.confidenceLevel >= 0.8) return 'Based on your preferences';
             if (item.confidenceLevel >= 0.5) return 'Popular with similar users';
             return 'You might also like';
@@ -218,7 +245,7 @@ export const RecommendationsPage = () => {
             );
         }
 
-        if (shuffledRecommendations.length === 0) {
+        if (finalRecommendations.length === 0) {
             return (
                 <Alert icon={<IconInfoCircle size={16} />} title="No recommendations" color="blue">
                     No recommendations available at the moment.
@@ -232,24 +259,26 @@ export const RecommendationsPage = () => {
                 spacing="md"
                 className={`${classes.cuisineGrid} ${switching ? classes.switching : ''}`}
             >
-                {shuffledRecommendations.map((item: any, index: number) => (
+                {finalRecommendations.map((item: any, index: number) => (
                     <CuisineCard
                         key={`${item.cuisineName}-${item.type}-${index}`}
                         cuisineName={item.cuisineName}
                         score={item.score}
                         reasoning={getReasoningLabel(item)}
-                        confidenceLevel={item.type === 'top' ? item.confidenceLevel : undefined}
+                        confidenceLevel={item.type === 'main' ? item.confidenceLevel : undefined}
                         discoveryLevel={item.type === 'discover' ? item.discoveryLevel : undefined}
                         onShowDetails={() => handleShowDetails(item.cuisineName)}
                         onLike={() => handleLikeCuisine(item.cuisineName)}
                         variant="compact"
                         isLiked={favourites.includes(item.cuisineName)}
-                        isDiscoverMode={item.type === 'discover'}
+                        isDiscoverMode={item.isDiscoverMode}
                     />
                 ))}
             </SimpleGrid>
         );
     };
+
+    const totalLoading = isLoading || isDiscoverLoading;
 
     return (
         <Container my="md" className={classes.container}>
@@ -332,7 +361,7 @@ export const RecommendationsPage = () => {
                             variant="light"
                             size="lg"
                             onClick={refetchAll}
-                            disabled={isLoading}
+                            disabled={totalLoading}
                             title="Refresh recommendations"
                         >
                             <IconRefresh size={18} />
@@ -376,9 +405,9 @@ export const RecommendationsPage = () => {
                 </Paper>
             )}
 
-            {isLoading ? renderSkeletonGrid() : renderCuisineGrid()}
+            {totalLoading ? renderSkeletonGrid() : renderCuisineGrid()}
 
-            {shuffledRecommendations.length > 0 && (
+            {finalRecommendations.length > 0 && (
                 <Paper withBorder p="md" radius="md" mt="xl" className={classes.info}>
                     <Text size="sm" c="dimmed" ta="center">
                         Recommendations improve as you rate more food experiences.

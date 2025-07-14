@@ -1,0 +1,539 @@
+.card {
+  transition: all 0.3s ease;
+  background-color: var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-gray-3);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+[data-mantine-color-scheme="dark"] .card {
+  background-color: var(--mantine-color-dark-6);
+  border: 1px solid var(--mantine-color-dark-4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #FF8C42;
+}
+
+[data-mantine-color-scheme="dark"] .card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border-color: #FF8C42;
+  background-color: var(--mantine-color-dark-5);
+}
+
+.imageSection {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.imageContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.restaurantImage {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .restaurantImage {
+  transform: scale(1.05);
+}
+
+.imageSkeleton {
+  width: 100%;
+}
+
+.noImage {
+  height: 200px;
+  background: linear-gradient(135deg, var(--mantine-color-gray-1) 0%, var(--mantine-color-gray-2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .noImage {
+  background: linear-gradient(135deg, var(--mantine-color-dark-5) 0%, var(--mantine-color-dark-4) 100%);
+}
+
+.statusBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.statusBadge:hover {
+  transform: scale(1.05);
+}
+
+.statusBadgeNoPhoto {
+  align-self: flex-start;
+}
+
+.cardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.restaurantHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.restaurantName {
+  color: var(--mantine-color-text);
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .restaurantName {
+  color: var(--mantine-color-dark-0);
+}
+
+.ratingGroup {
+  flex-shrink: 0;
+  background: rgba(255, 215, 0, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .ratingGroup {
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.ratingGroup:hover {
+  background: rgba(255, 215, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.starIcon {
+  color: #ffd43b;
+  fill: #ffd43b;
+}
+
+.ratingText {
+  color: var(--mantine-color-text);
+  font-weight: 600;
+}
+
+[data-mantine-color-scheme="dark"] .ratingText {
+  color: var(--mantine-color-dark-0);
+}
+
+.address {
+  transition: color 0.2s ease;
+  font-style: italic;
+}
+
+[data-mantine-color-scheme="dark"] .address {
+  color: var(--mantine-color-dark-2);
+}
+
+.priceSection {
+  min-height: 20px;
+}
+
+.priceText {
+  color: #28a745;
+  font-weight: 600;
+  background: rgba(40, 167, 69, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .priceText {
+  background: rgba(40, 167, 69, 0.15);
+  border: 1px solid rgba(40, 167, 69, 0.4);
+}
+
+.priceText:hover {
+  background: rgba(40, 167, 69, 0.2);
+  transform: scale(1.05);
+}
+
+.cuisineTags {
+  min-height: 24px;
+}
+
+.cuisineBadge {
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+  border-color: var(--mantine-color-gray-4);
+  color: var(--mantine-color-gray-7);
+}
+
+[data-mantine-color-scheme="dark"] .cuisineBadge {
+  border-color: var(--mantine-color-dark-3);
+  color: var(--mantine-color-dark-1);
+}
+
+.cuisineBadge:hover {
+  border-color: #FF8C42;
+  color: #FF8C42;
+  transform: scale(1.05);
+}
+
+.actionButtons {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--mantine-color-gray-2);
+  transition: border-color 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .actionButtons {
+  border-top: 1px solid var(--mantine-color-dark-4);
+}
+
+.eatingButton {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.eatingButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838 0%, #1a9f8a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+[data-mantine-color-scheme="dark"] .eatingButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #34ce57 0%, #26d0ce 100%);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.5);
+}
+
+.mapButton {
+  border: 2px solid var(--mantine-color-gray-4);
+  color: var(--mantine-color-gray-7);
+  background: var(--mantine-color-white);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .mapButton {
+  border: 2px solid var(--mantine-color-dark-3);
+  color: var(--mantine-color-dark-1);
+  background: var(--mantine-color-dark-5);
+}
+
+.mapButton:hover:not(:disabled) {
+  border-color: #FF8C42;
+  color: #FF8C42;
+  background: rgba(255, 140, 66, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.2);
+}
+
+[data-mantine-color-scheme="dark"] .mapButton:hover:not(:disabled) {
+  background: rgba(255, 140, 66, 0.15);
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+}
+
+/* Modal Styles */
+.ratingModal {
+  /* Ensure modal appears above other elements */
+}
+
+.modalTitle {
+  color: var(--mantine-color-text);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+[data-mantine-color-scheme="dark"] .modalTitle {
+  color: var(--mantine-color-dark-0);
+}
+
+.modalContent {
+  padding: 0.5rem 0;
+}
+
+.modalDescription {
+  font-style: italic;
+  text-align: center;
+}
+
+[data-mantine-color-scheme="dark"] .modalDescription {
+  color: var(--mantine-color-dark-2);
+}
+
+.cuisineSection {
+  background: var(--mantine-color-gray-0);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-gray-2);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .cuisineSection {
+  background: var(--mantine-color-dark-5);
+  border: 1px solid var(--mantine-color-dark-3);
+}
+
+.cuisineSelect {
+  transition: all 0.2s ease;
+}
+
+.cuisineSelect input {
+  border: 2px solid var(--mantine-color-gray-3);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .cuisineSelect input {
+  border: 2px solid var(--mantine-color-dark-4);
+  background: var(--mantine-color-dark-5);
+  color: var(--mantine-color-dark-0);
+}
+
+.cuisineSelect input:focus {
+  border-color: #FF8C42;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+}
+
+[data-mantine-color-scheme="dark"] .cuisineSelect input:focus {
+  border-color: #FF8C42;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
+  background: var(--mantine-color-dark-4);
+}
+
+.ratingSection {
+  text-align: center;
+  padding: 1rem;
+  background: var(--mantine-color-gray-0);
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-gray-2);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .ratingSection {
+  background: var(--mantine-color-dark-5);
+  border: 1px solid var(--mantine-color-dark-3);
+}
+
+.ratingInput {
+  margin: 0.5rem 0;
+}
+
+.ratingInput .mantine-Rating-symbolBody {
+  transition: all 0.2s ease;
+}
+
+.ratingInput .mantine-Rating-symbolBody:hover {
+  transform: scale(1.1);
+}
+
+.reviewTextarea {
+  transition: all 0.2s ease;
+}
+
+.reviewTextarea textarea {
+  border: 2px solid var(--mantine-color-gray-3);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .reviewTextarea textarea {
+  border: 2px solid var(--mantine-color-dark-4);
+  background: var(--mantine-color-dark-5);
+  color: var(--mantine-color-dark-0);
+}
+
+.reviewTextarea textarea:focus {
+  border-color: #FF8C42;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+}
+
+[data-mantine-color-scheme="dark"] .reviewTextarea textarea:focus {
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
+}
+
+.modalActions {
+  padding-top: 1rem;
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+[data-mantine-color-scheme="dark"] .modalActions {
+  border-top: 1px solid var(--mantine-color-dark-4);
+}
+
+.cancelButton {
+  background: var(--mantine-color-gray-1);
+  color: var(--mantine-color-gray-7);
+  border: 1px solid var(--mantine-color-gray-3);
+  transition: all 0.2s ease;
+}
+
+[data-mantine-color-scheme="dark"] .cancelButton {
+  background: var(--mantine-color-dark-5);
+  color: var(--mantine-color-dark-1);
+  border: 1px solid var(--mantine-color-dark-3);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--mantine-color-gray-2);
+  transform: translateY(-1px);
+}
+
+[data-mantine-color-scheme="dark"] .cancelButton:hover:not(:disabled) {
+  background: var(--mantine-color-dark-4);
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #FF8C42 0%, #e07b30 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e07b30 0%, #d16b20 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
+}
+
+[data-mantine-color-scheme="dark"] .submitButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffa94d 0%, #FF8C42 100%);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.5);
+}
+
+.submitButton:disabled {
+  background: var(--mantine-color-gray-4);
+  color: var(--mantine-color-gray-6);
+  transform: none;
+  box-shadow: none;
+}
+
+[data-mantine-color-scheme="dark"] .submitButton:disabled {
+  background: var(--mantine-color-dark-4);
+  color: var(--mantine-color-dark-2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .actionButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .eatingButton,
+  .mapButton {
+    width: 100%;
+    font-size: 0.875rem;
+  }
+
+  .restaurantHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .ratingGroup {
+    align-self: flex-start;
+  }
+
+  .modalContent {
+    padding: 0;
+  }
+
+  .ratingSection {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    margin: 0.5rem 0;
+  }
+
+  .restaurantName {
+    font-size: 1rem;
+  }
+
+  .eatingButton,
+  .mapButton {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .cuisineBadge {
+    font-size: 0.7rem;
+  }
+
+  .modalTitle {
+    font-size: 1.1rem;
+  }
+}
+
+/* Animation enhancements */
+.card {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states for accessibility */
+.eatingButton:focus,
+.mapButton:focus,
+.submitButton:focus,
+.cancelButton:focus {
+  outline: 2px solid #FF8C42;
+  outline-offset: 2px;
+}
+
+[data-mantine-color-scheme="dark"] .eatingButton:focus,
+[data-mantine-color-scheme="dark"] .mapButton:focus,
+[data-mantine-color-scheme="dark"] .submitButton:focus,
+[data-mantine-color-scheme="dark"] .cancelButton:focus {
+  outline: 2px solid #ffa94d;
+}
+
+/* Loading states */
+.eatingButton[data-loading="true"],
+.submitButton[data-loading="true"] {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* Enhanced hover effects */
+.card:hover .actionButtons {
+  border-color: rgba(255, 140, 66, 0.3);
+}
+
+[data-mantine-color-scheme="dark"] .card:hover .actionButtons {
+  border-color: rgba(255, 140, 66, 0.4);
+}
