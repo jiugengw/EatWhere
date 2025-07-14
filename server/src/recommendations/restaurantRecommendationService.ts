@@ -210,20 +210,11 @@ export const generateRestaurantRecommendations = async (
 
   // Filter for cuisines with score >= 3.5
   const MIN_CUISINE_SCORE = 3.5;
-  const eligibleCuisines = Array.from(cuisineScores.entries())
+  let eligibleCuisines = Array.from(cuisineScores.entries())
     .filter(([_, score]) => score >= MIN_CUISINE_SCORE)
     .map(([cuisine]) => cuisine);
 
-  if (eligibleCuisines.length === 0) {
-    // If no cuisines meet the threshold, use top 3 cuisines
-    const topCuisines = Array.from(cuisineScores.entries())
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 3)
-      .map(([cuisine]) => cuisine);
-    eligibleCuisines.push(...topCuisines);
-  }
-
-  // Fetch nearby restaurants
+  // Fetch nearby restaurants first to get an idea of available restaurants
   const placesData = await searchNearbyPlaces({
     lat,
     lng,
@@ -231,55 +222,118 @@ export const generateRestaurantRecommendations = async (
     type: 'restaurant'
   });
 
-  // Process and filter restaurants
-  const restaurantRecommendations: RestaurantRecommendation[] = [];
+  // Process all restaurants to see how many we can get from eligible cuisines
+  let restaurantRecommendations: RestaurantRecommendation[] = [];
 
+  // First pass: try with high-score cuisines
   for (const restaurant of placesData.results) {
-    // Identify cuisine type
     const cuisine = identifyRestaurantCuisine(restaurant);
     const cuisineScore = cuisineScores.get(cuisine) || 2.5;
 
-    // Filter by eligible cuisines
-    if (!eligibleCuisines.includes(cuisine)) {
-      continue;
+    // Filter by eligible cuisines (high scores)
+    if (eligibleCuisines.includes(cuisine)) {
+      const distance = calculateDistance(
+        lat, lng,
+        restaurant.geometry.location.lat,
+        restaurant.geometry.location.lng
+      );
+
+      const googleRating = restaurant.rating || 3.0;
+      const distanceFactor = getDistanceFactor(distance);
+      const combinedScore = googleRating * cuisineScore * distanceFactor;
+
+      const reasoning = generateRestaurantReasoning(cuisine, cuisineScore, googleRating, distance);
+
+      restaurantRecommendations.push({
+        place_id: restaurant.place_id,
+        name: restaurant.name,
+        vicinity: restaurant.vicinity || '',
+        rating: restaurant.rating,
+        price_level: restaurant.price_level,
+        geometry: restaurant.geometry,
+        photos: restaurant.photos,
+        types: restaurant.types,
+        cuisine,
+        cuisineScore,
+        combinedScore,
+        reasoning,
+        distance
+      });
     }
-
-    // Calculate distance
-    const distance = calculateDistance(
-      lat, lng,
-      restaurant.geometry.location.lat,
-      restaurant.geometry.location.lng
-    );
-
-    // Calculate combined score
-    const googleRating = restaurant.rating || 3.0;
-    const distanceFactor = getDistanceFactor(distance);
-    const combinedScore = googleRating * cuisineScore * distanceFactor;
-
-    // Generate reasoning
-    const reasoning = generateRestaurantReasoning(cuisine, cuisineScore, googleRating, distance);
-
-    restaurantRecommendations.push({
-      place_id: restaurant.place_id,
-      name: restaurant.name,
-      vicinity: restaurant.vicinity || '',
-      rating: restaurant.rating,
-      price_level: restaurant.price_level,
-      geometry: restaurant.geometry,
-      photos: restaurant.photos,
-      types: restaurant.types,
-      cuisine,
-      cuisineScore,
-      combinedScore,
-      reasoning,
-      distance
-    });
   }
 
-  // Sort by combined score and take top N
-  const topRestaurants = restaurantRecommendations
-    .sort((a, b) => b.combinedScore - a.combinedScore)
-    .slice(0, limit);
+  // Sort what we have so far by combined score
+  restaurantRecommendations.sort((a, b) => b.combinedScore - a.combinedScore);
+
+  // If we don't have enough restaurants, expand to include more cuisines
+  if (restaurantRecommendations.length < limit) {
+    console.log(`Only found ${restaurantRecommendations.length} restaurants with high-score cuisines, need ${limit}. Expanding cuisine selection...`);
+    
+    // Get all cuisines sorted by score, excluding ones we already used
+    const additionalCuisines = Array.from(cuisineScores.entries())
+      .filter(([cuisine, _]) => !eligibleCuisines.includes(cuisine))
+      .sort(([,a], [,b]) => b - a)
+      .map(([cuisine]) => cuisine);
+
+    // Add restaurants from additional cuisines until we have enough
+    const usedRestaurantIds = new Set(restaurantRecommendations.map(r => r.place_id));
+    
+    for (const additionalCuisine of additionalCuisines) {
+      if (restaurantRecommendations.length >= limit) break;
+
+      for (const restaurant of placesData.results) {
+        if (restaurantRecommendations.length >= limit) break;
+        if (usedRestaurantIds.has(restaurant.place_id)) continue;
+
+        const cuisine = identifyRestaurantCuisine(restaurant);
+        
+        if (cuisine === additionalCuisine) {
+          const cuisineScore = cuisineScores.get(cuisine) || 2.5;
+          const distance = calculateDistance(
+            lat, lng,
+            restaurant.geometry.location.lat,
+            restaurant.geometry.location.lng
+          );
+
+          const googleRating = restaurant.rating || 3.0;
+          const distanceFactor = getDistanceFactor(distance);
+          const combinedScore = googleRating * cuisineScore * distanceFactor;
+
+          const reasoning = generateRestaurantReasoning(cuisine, cuisineScore, googleRating, distance);
+
+          restaurantRecommendations.push({
+            place_id: restaurant.place_id,
+            name: restaurant.name,
+            vicinity: restaurant.vicinity || '',
+            rating: restaurant.rating,
+            price_level: restaurant.price_level,
+            geometry: restaurant.geometry,
+            photos: restaurant.photos,
+            types: restaurant.types,
+            cuisine,
+            cuisineScore,
+            combinedScore,
+            reasoning,
+            distance
+          });
+
+          usedRestaurantIds.add(restaurant.place_id);
+        }
+      }
+    }
+
+    // Update eligible cuisines to include all cuisines we actually used
+    const usedCuisines = Array.from(new Set(restaurantRecommendations.map(r => r.cuisine)));
+    eligibleCuisines = usedCuisines;
+    
+    // Re-sort with all restaurants included
+    restaurantRecommendations.sort((a, b) => b.combinedScore - a.combinedScore);
+  }
+
+  // Take only the requested number of restaurants
+  const topRestaurants = restaurantRecommendations.slice(0, limit);
+
+  console.log(`Final result: ${topRestaurants.length} restaurants from cuisines: ${Array.from(new Set(topRestaurants.map(r => r.cuisine))).join(', ')}`);
 
   return {
     restaurants: topRestaurants,
