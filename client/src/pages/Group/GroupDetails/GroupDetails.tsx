@@ -219,7 +219,7 @@ export const GroupDetailPage = () => {
                   </Text>
                   <Button
                     component={Link}
-                    to={`/recommendations?type=group&groupId=${group._id}`}
+                    to={`/discover?type=group&groupId=${group._id}`}
                     fullWidth
                     style={{ backgroundColor: '#FF8C42' }}
                   >

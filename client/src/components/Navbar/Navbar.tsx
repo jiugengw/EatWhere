@@ -3,21 +3,20 @@ import { Link } from "@tanstack/react-router";
 import { IconChevronDown } from "@tabler/icons-react";
 import { Usericon } from "../Usericon/Usericon";
 import classes from "./Navbar.module.css";
-import { ColorSchemeToggle } from "../ColorSchemeToggle/ColorSchemeToggle";
 
 export default function Navbar() {
   const links = [
     { name: "Home", path: "/" },
     {
-      name: "Recommendations",
+      name: "Discover",
       links: [
-        { name: "Personal", path: "/recommendations?type=personal" },
-        { name: "Group", path: "/recommendations?type=group" },
-        { name: "Find Meals", path: "/recommendations/find-meal" },
+        { name: "Personal", path: "/discover" },
+        { name: "Group", path: "/discover?type=group" },
       ],
     },
+    { name: "Search", path: "/search" },
     {
-      name: "Group",
+      name: "Groups",
       links: [
         { name: "View Groups", path: "/group" },
         { name: "Create Group", path: "/group/create" },
@@ -77,7 +76,6 @@ export default function Navbar() {
             {links.map((link) => renderMenuItem(link))}
           </Group>
           <Group gap="sm">
-            <ColorSchemeToggle />
             <Usericon />
           </Group>
         </Flex>

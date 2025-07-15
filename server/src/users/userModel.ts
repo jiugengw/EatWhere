@@ -15,6 +15,7 @@ interface IUser {
   passwordConfirm?: string;
   passwordChangedAt?: Date;
   preferences: Map<string, number>;
+  cuisineWeights: Map<string, number>;
   groups: Types.ObjectId[];
   active?: boolean;
   id?: string;
@@ -63,18 +64,37 @@ const userSchema = new Schema<IUser>(
       of: Number,
       default: () =>
         new Map([
-          ['Chinese', 0],
-          ['Korean', 0],
-          ['Japanese', 0],
-          ['Italian', 0],
-          ['Mexican', 0],
-          ['Indian', 0],
-          ['Thai', 0],
-          ['French', 0],
-          ['Muslim', 0],
-          ['Vietnamese', 0],
-          ['Western', 0],
-          ['Fast Food', 0],
+          ['Chinese', 1],
+          ['Korean', 1],
+          ['Japanese', 1],
+          ['Italian', 1],
+          ['Mexican', 1],
+          ['Indian', 1],
+          ['Thai', 1],
+          ['French', 1],
+          ['Muslim', 1],
+          ['Vietnamese', 1],
+          ['Western', 1],
+          ['Fast Food', 1],
+        ]),
+    },
+    cuisineWeights: { 
+      type: Map,
+      of: Number,
+      default: () =>
+        new Map([
+          ['Chinese', 1.0],
+          ['Korean', 1.0],
+          ['Japanese', 1.0],
+          ['Italian', 1.0],
+          ['Mexican', 1.0],
+          ['Indian', 1.0],
+          ['Thai', 1.0],
+          ['French', 1.0],
+          ['Muslim', 1.0],
+          ['Vietnamese', 1.0],
+          ['Western', 1.0],
+          ['Fast Food', 1.0],
         ]),
     },
     groups: {

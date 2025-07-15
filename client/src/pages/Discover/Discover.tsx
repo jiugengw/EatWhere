@@ -15,16 +15,14 @@ import {
   Skeleton,
   Alert,
 } from '@mantine/core';
-import { IconArrowLeft, IconRefresh, IconStar, IconInfoCircle } from '@tabler/icons-react';
-import { useNavigate } from '@tanstack/react-router';
+import { IconRefresh, IconStar, IconInfoCircle } from '@tabler/icons-react';
 import { useLocation } from '@/hooks/useLocation';
 import { useRestaurantRecommendations } from '@/hooks/recommendations/useRestaurantRecommendations';
 import { RestaurantCard } from '@/components/RestaurantCard/RestaurantCard';
 import { type RestaurantResult } from '@/hooks/recommendations/useCuisineRecommendations';
-import classes from './SuggestRestaurants.module.css';
+import classes from './Discover.module.css'
 
-export function SuggestRestaurantsPage() {
-  const navigate = useNavigate();
+export function DiscoverPage() {
   const [restaurantCount, setRestaurantCount] = useState(5);
   const [hasGenerated, setHasGenerated] = useState(false);
 
@@ -42,10 +40,6 @@ export function SuggestRestaurantsPage() {
     limit: restaurantCount,
     enabled: hasGenerated
   });
-
-  const handleBack = () => {
-    navigate({ to: '/recommendations/find-meal' });
-  };
 
   const handleGenerateRestaurants = () => {
     if (!location && !locationError) {
@@ -91,14 +85,6 @@ export function SuggestRestaurantsPage() {
         <Paper withBorder p="lg" radius="md" className={classes.header}>
           <Group justify="space-between" align="center">
             <Group gap="sm">
-              <ActionIcon
-                variant="subtle"
-                size="lg"
-                onClick={handleBack}
-                className={classes.backButton}
-              >
-                <IconArrowLeft size={20} />
-              </ActionIcon>
               <div>
                 <Title order={2} className={classes.title}>
                   Restaurant Suggestions

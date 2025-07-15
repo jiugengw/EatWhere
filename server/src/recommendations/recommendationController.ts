@@ -1,224 +1,315 @@
+// server/src/recommendations/recommendationController.ts
+
 import { StatusCodes } from 'http-status-codes';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { AppError } from '../common/utils/AppError.js';
-import {
-    generateDiscoverRecommendations,
-    generateGroupDiscoverRecommendations,
-    generateGroupRecommendations,
-    generateRecommendations,
-    getUserFavourites,
-    processRating,
-    toggleUserFavourite
-} from './recommendationService.js'
-import { RecommendationRequest, CUISINES, CuisineType, type GroupRecommendationRequest } from './types.js';
-import { generateRestaurantRecommendations } from './restaurantRecommendationService.js';
+import { 
+  predictMultipleRestaurants,
+  predictRestaurantRating,
+  updateWeightsAfterRating
+} from './recommendationService.js';
+import { CUISINES, CuisineType } from './types.js';
 
+// 1. GET RESTAURANT RECOMMENDATIONS (for /discover page)
 export const getRecommendations = catchAsync(async (req, res, next) => {
-    if (!req.user) {
-        return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-    }
-
-    const { limit } = req.query;
-
-    const request: RecommendationRequest = {
-        userId: req.user.id,  // ← Use authenticated user
-        limit: limit ? parseInt(limit as string, 10) : 5
-    };
-
-    const recommendations = await generateRecommendations(request);
-
-    res.status(StatusCodes.OK).json({
-        status: 'success',
-        data: recommendations
-    });
-});
-
-export const submitRating = catchAsync(async (req, res, next) => {
-    if (!req.user) {
-        return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-    }
-
-    const { cuisineName, rating } = req.body; 
-
-    if (!cuisineName || rating === undefined) {
-        return next(new AppError('Cuisine name and rating are required', StatusCodes.BAD_REQUEST));
-    }
-
-    if (rating < 1 || rating > 5) {
-        return next(new AppError('Rating must be between 1 and 5', StatusCodes.BAD_REQUEST));
-    }
-
-    if (!CUISINES.includes(cuisineName as CuisineType)) {
-        return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
-    }
-
-    await processRating(req.user.id, cuisineName, rating);  
-
-    res.status(StatusCodes.OK).json({
-        status: 'success',
-        message: 'Rating submitted successfully'
-    });
-});
-
-export const toggleFavourite = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
 
-  const { cuisineName } = req.body;
+  const { lat, lng, limit = 10 } = req.query;
 
-  if (!cuisineName) {
-    return next(new AppError('Cuisine name is required', StatusCodes.BAD_REQUEST));
+  // Validate location parameters
+  if (!lat || !lng) {
+    return next(new AppError('Latitude and longitude are required', StatusCodes.BAD_REQUEST));
   }
 
-  if (!CUISINES.includes(cuisineName as CuisineType)) {
+  const latitude = parseFloat(lat as string);
+  const longitude = parseFloat(lng as string);
+
+  if (isNaN(latitude) || isNaN(longitude)) {
+    return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
+  }
+
+  try {
+    // Import searchNearbyPlaces function
+    const { searchNearbyPlaces } = await import('../api/apiService.js');
+    
+    // Get nearby restaurants from Google Places
+    const placesData = await searchNearbyPlaces({
+      lat: latitude,
+      lng: longitude,
+      radius: 2000, // 2km radius
+      type: 'restaurant'
+    });
+
+    if (placesData.results.length === 0) {
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        data: {
+          recommendations: [],
+          message: 'No restaurants found in your area',
+          generatedAt: new Date()
+        }
+      });
+    }
+
+    // Convert Google Places results to our restaurant format and predict ratings
+    const restaurantsWithCuisine = placesData.results.map(place => ({
+      id: place.place_id,
+      name: place.name,
+      cuisine: identifyRestaurantCuisine(place),
+      googleRating: place.rating,
+      priceLevel: place.price_level,
+      // Keep original place data for frontend
+      place_id: place.place_id,
+      vicinity: place.vicinity,
+      geometry: place.geometry,
+      photos: place.photos,
+      types: place.types
+    }));
+
+    // Get predictions for all restaurants
+    const predictions = await predictMultipleRestaurants(req.user.id, restaurantsWithCuisine);
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: {
+        recommendations: predictions.slice(0, parseInt(limit as string)),
+        userAdaptationLevel: 'learning',
+        totalRatings: 0,
+        generatedAt: new Date()
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error fetching recommendations:', error);
+    return next(new AppError('Failed to fetch restaurant recommendations', StatusCodes.INTERNAL_SERVER_ERROR));
+  }
+});
+
+// 2. PREDICT RATING FOR A RESTAURANT (optional endpoint)
+export const predictRating = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const { restaurantId, restaurantName, cuisine, googleRating, priceLevel } = req.query;
+
+  if (!restaurantId || !cuisine) {
+    return next(new AppError('Restaurant ID and cuisine are required', StatusCodes.BAD_REQUEST));
+  }
+
+  if (!CUISINES.includes(cuisine as CuisineType)) {
     return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
   }
 
-  const result = await toggleUserFavourite(req.user.id, cuisineName);
-
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    message: result.isFavourited ? 'Added to favourites' : 'Removed from favourites',
-    data: {
-      cuisineName,
-      isFavourited: result.isFavourited
-    }
-  });
-});
-
-export const getFavourites = catchAsync(async (req, res, next) => {
-  if (!req.user) {
-    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-  }
-
-  const favourites = await getUserFavourites(req.user.id);
-
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    data: {
-      favourites
-    }
-  });
-});
-
-export const discoverRecommendations = catchAsync(async (req, res, next) => {
-  if (!req.user) {
-    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-  }
-
-  const { limit } = req.query;
-
-  const request: RecommendationRequest = {
-    userId: req.user.id,
-    limit: limit ? parseInt(limit as string, 10) : 4
+  const restaurant = {
+    id: restaurantId as string,
+    name: (restaurantName as string) || 'Unknown Restaurant',
+    cuisine: cuisine as CuisineType,
+    googleRating: googleRating ? parseFloat(googleRating as string) : undefined,
+    priceLevel: priceLevel ? parseInt(priceLevel as string) : undefined
   };
 
-  const recommendations = await generateDiscoverRecommendations(request);
+  const prediction = await predictRestaurantRating(req.user.id, restaurant);
 
   res.status(StatusCodes.OK).json({
     status: 'success',
-    data: recommendations
+    data: {
+      restaurantId,
+      predictedRating: Number(prediction.toFixed(1)),
+      formula: 'Cuisine Score (1-5 × weight) × 0.7 + Restaurant Rating × 0.3'
+    }
   });
 });
 
+// 3. SUBMIT RESTAURANT RATING & UPDATE WEIGHTS
+export const submitRating = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const { restaurantId, restaurantName, cuisine, rating, googleRating, priceLevel } = req.body;
+
+  // Validate inputs
+  if (!restaurantId || !cuisine || rating === undefined) {
+    return next(new AppError('Restaurant ID, cuisine, and rating are required', StatusCodes.BAD_REQUEST));
+  }
+
+  if (rating < 1 || rating > 5) {
+    return next(new AppError('Rating must be between 1 and 5', StatusCodes.BAD_REQUEST));
+  }
+
+  if (!CUISINES.includes(cuisine as CuisineType)) {
+    return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
+  }
+
+  // Create restaurant object
+  const restaurant = {
+    id: restaurantId,
+    name: restaurantName || 'Unknown Restaurant',
+    cuisine: cuisine as CuisineType,
+    googleRating: googleRating || undefined,
+    priceLevel: priceLevel || undefined
+  };
+
+  // Update weights based on this rating
+  await updateWeightsAfterRating(req.user.id, restaurant, rating);
+
+  res.status(StatusCodes.OK).json({
+    status: 'success',
+    message: 'Rating submitted and weights updated',
+    data: {
+      restaurantId,
+      rating,
+      cuisine
+    }
+  });
+});
+
+// 4. GET GROUP RECOMMENDATIONS (with Google API)
 export const getGroupRecommendations = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
 
   const { groupId } = req.params;
-  const { limit } = req.query;
+  const { lat, lng, limit = 10 } = req.query;
 
-  const request: GroupRecommendationRequest = {
-    groupId,
-    limit: limit ? parseInt(limit as string, 10) : 5
-  };
-
-  const recommendations = await generateGroupRecommendations(request);
-
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    data: recommendations
-  });
-});
-
-export const getGroupDiscoverRecommendations = catchAsync(async (req, res, next) => {
-  if (!req.user) {
-    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  // Validate location parameters
+  if (!lat || !lng) {
+    return next(new AppError('Latitude and longitude are required', StatusCodes.BAD_REQUEST));
   }
 
-  const { groupId } = req.params;
-  const { limit } = req.query;
+  const latitude = parseFloat(lat as string);
+  const longitude = parseFloat(lng as string);
 
-  const request: GroupRecommendationRequest = {
-    groupId,
-    limit: limit ? parseInt(limit as string, 10) : 4
+  if (isNaN(latitude) || isNaN(longitude)) {
+    return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
+  }
+
+  try {
+    // Import searchNearbyPlaces function
+    const { searchNearbyPlaces } = await import('../api/apiService.js');
+    
+    // Get nearby restaurants from Google Places
+    const placesData = await searchNearbyPlaces({
+      lat: latitude,
+      lng: longitude,
+      radius: 2000, // 2km radius
+      type: 'restaurant'
+    });
+
+    if (placesData.results.length === 0) {
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        data: {
+          recommendations: [],
+          message: 'No restaurants found for group',
+          generatedAt: new Date()
+        }
+      });
+    }
+
+    // Convert Google Places results to our restaurant format
+    const restaurantsWithCuisine = placesData.results.map(place => ({
+      id: place.place_id,
+      name: place.name,
+      cuisine: identifyRestaurantCuisine(place),
+      googleRating: place.rating,
+      priceLevel: place.price_level,
+      // Keep original place data for frontend
+      place_id: place.place_id,
+      vicinity: place.vicinity,
+      geometry: place.geometry,
+      photos: place.photos,
+      types: place.types
+    }));
+
+    // TODO: Implement group prediction logic
+    // For now, use personal predictions
+    const predictions = await predictMultipleRestaurants(req.user.id, restaurantsWithCuisine);
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: {
+        recommendations: predictions.slice(0, parseInt(limit as string)),
+        userAdaptationLevel: 'group',
+        totalRatings: 0,
+        generatedAt: new Date()
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error fetching group recommendations:', error);
+    return next(new AppError('Failed to fetch group restaurant recommendations', StatusCodes.INTERNAL_SERVER_ERROR));
+  }
+});
+
+// Add cuisine identification function (reuse from existing code)
+const identifyRestaurantCuisine = (restaurant: any): CuisineType => {
+  // Map Google Places types to our cuisine types
+  const GOOGLE_TYPE_TO_CUISINE: { [key: string]: CuisineType } = {
+    'chinese_restaurant': 'Chinese',
+    'japanese_restaurant': 'Japanese', 
+    'korean_restaurant': 'Korean',
+    'italian_restaurant': 'Italian',
+    'mexican_restaurant': 'Mexican',
+    'indian_restaurant': 'Indian',
+    'thai_restaurant': 'Thai',
+    'french_restaurant': 'French',
+    'vietnamese_restaurant': 'Vietnamese',
+    'american_restaurant': 'Western',
+    'fast_food': 'Fast Food',
+    'restaurant': 'Western', // Default fallback
+    'food': 'Western',
+    'establishment': 'Western'
   };
 
-  const recommendations = await generateGroupDiscoverRecommendations(request);
+  // Keywords to help identify cuisine types from restaurant names
+  const CUISINE_KEYWORDS: { [key: string]: CuisineType } = {
+    'sushi': 'Japanese',
+    'ramen': 'Japanese',
+    'pizza': 'Italian',
+    'pasta': 'Italian', 
+    'burger': 'Fast Food',
+    'mcdonald': 'Fast Food',
+    'kfc': 'Fast Food',
+    'subway': 'Fast Food',
+    'chinese': 'Chinese',
+    'dim sum': 'Chinese',
+    'thai': 'Thai',
+    'indian': 'Indian',
+    'curry': 'Indian',
+    'korean': 'Korean',
+    'bbq': 'Korean',
+    'mexican': 'Mexican',
+    'taco': 'Mexican',
+    'french': 'French',
+    'vietnamese': 'Vietnamese',
+    'pho': 'Vietnamese',
+    'halal': 'Muslim',
+    'muslim': 'Muslim'
+  };
 
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    data: recommendations
-  });
-});
-
-
-export const getRestaurantRecommendations = catchAsync(async (req, res, next) => {
-    if (!req.user) {
-        return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  // First, check Google Places types
+  for (const type of restaurant.types || []) {
+    if (GOOGLE_TYPE_TO_CUISINE[type]) {
+      return GOOGLE_TYPE_TO_CUISINE[type];
     }
+  }
 
-    const { lat, lng, limit } = req.query;
+  // Then, check restaurant name for cuisine keywords
+  const name = restaurant.name?.toLowerCase() || '';
+  const vicinity = restaurant.vicinity?.toLowerCase() || '';
+  const searchText = `${name} ${vicinity}`;
 
-    // Validate required parameters
-    if (!lat || !lng) {
-        return next(new AppError('Latitude and longitude are required', StatusCodes.BAD_REQUEST));
+  for (const [keyword, cuisine] of Object.entries(CUISINE_KEYWORDS)) {
+    if (searchText.includes(keyword)) {
+      return cuisine;
     }
+  }
 
-    const latitude = parseFloat(lat as string);
-    const longitude = parseFloat(lng as string);
-
-    if (isNaN(latitude) || isNaN(longitude)) {
-        return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
-    }
-
-    // Validate coordinate ranges
-    if (latitude < -90 || latitude > 90) {
-        return next(new AppError('Latitude must be between -90 and 90', StatusCodes.BAD_REQUEST));
-    }
-
-    if (longitude < -180 || longitude > 180) {
-        return next(new AppError('Longitude must be between -180 and 180', StatusCodes.BAD_REQUEST));
-    }
-
-    // Validate and parse limit
-    let restaurantLimit = 5; // Default
-    if (limit) {
-        const parsedLimit = parseInt(limit as string, 10);
-        if (isNaN(parsedLimit) || parsedLimit < 1 || parsedLimit > 10) {
-            return next(new AppError('Limit must be between 1 and 10', StatusCodes.BAD_REQUEST));
-        }
-        restaurantLimit = parsedLimit;
-    }
-
-    try {
-        const recommendations = await generateRestaurantRecommendations({
-            userId: req.user.id,
-            lat: latitude,
-            lng: longitude,
-            limit: restaurantLimit
-        });
-
-        res.status(StatusCodes.OK).json({
-            status: 'success',
-            data: recommendations
-        });
-    } catch (error) {
-        if (error instanceof Error) {
-            return next(new AppError(error.message, StatusCodes.INTERNAL_SERVER_ERROR));
-        }
-        return next(new AppError('Failed to generate restaurant recommendations', StatusCodes.INTERNAL_SERVER_ERROR));
-    }
-});
+  // Default fallback
+  return 'Western';
+};

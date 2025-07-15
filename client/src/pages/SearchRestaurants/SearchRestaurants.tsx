@@ -146,7 +146,7 @@ export const SearchRestaurantsPage: React.FC = () => {
       // Update URL with search term
       if (searchFilters.keyword) {
         navigate({
-          to: '/recommendations/find-meal/search',
+          to: '/search',
           search: { q: searchFilters.keyword },
           replace: true
         });

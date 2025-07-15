@@ -252,11 +252,6 @@
   box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
 }
 
-/* Modal Styles */
-.ratingModal {
-  /* Ensure modal appears above other elements */
-}
-
 .modalTitle {
   color: var(--mantine-color-text);
   font-weight: 600;
