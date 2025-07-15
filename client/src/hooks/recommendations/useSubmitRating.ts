@@ -7,10 +7,22 @@ export const useSubmitRating = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ cuisineName, rating }: { cuisineName: string; rating: number }) => {
+    mutationFn: async ({
+      cuisineName,
+      rating,
+      restaurantId,
+      googleRating,
+    }: {
+      cuisineName: string;
+      rating: number;
+      restaurantId: string;
+      googleRating: number;
+    }) => {
       const res = await axiosPrivate.post("/recommendations/ratings", {
-        cuisineName,
-        rating
+        restaurantId,
+        cuisine: cuisineName,
+        rating,
+        googleRating,
       });
       return res.data;
     },
@@ -31,3 +43,4 @@ export const useSubmitRating = () => {
     },
   });
 };
+

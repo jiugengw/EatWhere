@@ -13,9 +13,3 @@ export interface RecommendationResponse {
   generatedAt: Date;
 }
 
-export const CUISINES = [
-  'Chinese', 'Korean', 'Japanese', 'Italian', 'Mexican', 
-  'Indian', 'Thai', 'French', 'Muslim', 'Vietnamese', 'Western', 'Fast Food'
-] as const;
-
-export type CuisineType = typeof CUISINES[number];

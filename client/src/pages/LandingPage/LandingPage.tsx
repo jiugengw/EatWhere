@@ -3,7 +3,6 @@ import {
   Title,
   Text,
   Button,
-  Card,
   SimpleGrid,
   Badge,
   Center,
@@ -13,8 +12,6 @@ import {
   Overlay,
 } from "@mantine/core";
 import {
-  IconChefHat,
-  IconUsers,
   IconStar,
   IconSparkles,
   IconTrendingUp,
@@ -85,106 +82,6 @@ export function LandingPage() {
           </div>
         </div>
       </div>
-
-      <div className={classes.featuresSection}>
-        <Container size="lg">
-          <Stack align="center" className={classes.sectionHeader}>
-            <Title order={2} className={classes.sectionTitle}>
-              Why Use Our App?
-            </Title>
-            <Text
-              size="xl"
-              c="dimmed"
-              ta="center"
-              className={classes.sectionDescription}
-            >
-              Our intelligent recommendation system learns your personal
-              preferences to deliver perfectly tailored food suggestions.
-            </Text>
-          </Stack>
-
-          <SimpleGrid cols={{ base: 1, md: 3 }} spacing="xl">
-            <Card
-              shadow="md"
-              padding="xl"
-              radius="lg"
-              withBorder
-              className={classes.featureCard}
-            >
-              <ThemeIcon
-                size={60}
-                radius="xl"
-                variant="gradient"
-                gradient={{ from: "orange", to: "red" }}
-                mb="md"
-              >
-                <IconChefHat size={32} />
-              </ThemeIcon>
-              <Title order={3} size="xl" mb="sm">
-                Personal AI Chef
-              </Title>
-              <Text c="dimmed">
-                Our system learns from your ratings and preferences, adapting to
-                your taste profile over time. The more you use it, the better it
-                gets at predicting what you'll love.
-              </Text>
-            </Card>
-
-            <Card
-              shadow="md"
-              padding="xl"
-              radius="lg"
-              withBorder
-              className={classes.featureCard}
-            >
-              <ThemeIcon
-                size={60}
-                radius="xl"
-                variant="gradient"
-                gradient={{ from: "blue", to: "indigo" }}
-                mb="md"
-              >
-                <IconUsers size={32} />
-              </ThemeIcon>
-              <Title order={3} size="xl" mb="sm">
-                Group Harmony
-              </Title>
-              <Text c="dimmed">
-                Planning dinner with friends? We consider everyone's preferences
-                and dietary restrictions to find restaurants that satisfy the
-                entire group, making group dining decisions effortless.
-              </Text>
-            </Card>
-
-            <Card
-              shadow="md"
-              padding="xl"
-              radius="lg"
-              withBorder
-              className={classes.featureCard}
-            >
-              <ThemeIcon
-                size={60}
-                radius="xl"
-                variant="gradient"
-                gradient={{ from: "purple", to: "pink" }}
-                mb="md"
-              >
-                <IconSparkles size={32} />
-              </ThemeIcon>
-              <Title order={3} size="xl" mb="sm">
-                Smart Discovery
-              </Title>
-              <Text c="dimmed">
-                Step out of your comfort zone and discover hidden gems. Our
-                explore feature suggests new restaurants and cuisines tailored
-                to your adventurous side.
-              </Text>
-            </Card>
-          </SimpleGrid>
-        </Container>
-      </div>
-
       <div className={classes.howItWorksSection}>
         <Container size="lg">
           <Stack align="center" className={classes.sectionHeader}>
@@ -216,7 +113,7 @@ export function LandingPage() {
                 Rate & Learn
               </Title>
               <Text c="dimmed">
-                Rate cuisines you've tried. Our AI learns your preferences and
+                Rate cuisines you've tried. Our app learns your preferences and
                 builds your unique taste profile.
               </Text>
             </Stack>
@@ -268,7 +165,7 @@ export function LandingPage() {
             </Title>
             <Text size="xl" className={classes.ctaDescription}>
               Join thousands of food lovers who've discovered their perfect
-              meals with our AI-powered recommendations.
+              meals with our recommendations.
             </Text>
 
             <Button

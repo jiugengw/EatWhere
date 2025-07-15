@@ -7,7 +7,6 @@ import {
   Container,
   Button,
   Stack,
-  Checkbox,
 } from '@mantine/core';
 import type { JSX } from 'react';
 import classes from './Login.module.css';
@@ -80,8 +79,6 @@ export const LoginPage = (): JSX.Element => {
                 }}
               />
 
-              <Checkbox label="Remember me" className={classes.checkboxLabel} />
-
               <Button
                 type="submit"
                 fullWidth
@@ -91,10 +88,6 @@ export const LoginPage = (): JSX.Element => {
               >
                 Log In
               </Button>
-
-              <Link to="/forget-password" className={classes.forgetPassword}>
-                Forgot Password?
-              </Link>
             </Stack>
           </form>
         </Paper>

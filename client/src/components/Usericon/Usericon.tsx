@@ -15,8 +15,6 @@ import {
 import {
   IconUserCircle,
   IconUser,
-  IconSettings,
-  IconHeart,
   IconPalette,
 } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
@@ -37,23 +35,11 @@ export function Usericon() {
       color: 'blue'
     },
     {
-      icon: IconSettings,
-      label: 'Settings',
-      to: '/settings',
-      color: 'gray'
-    },
-    {
       icon: IconPalette,
       label: 'Preferences',
       to: '/preferences',
       color: 'orange'
     },
-    {
-      icon: IconHeart,
-      label: 'Favourites',
-      to: '/favourites',
-      color: 'red'
-    }
   ];
 
   return (

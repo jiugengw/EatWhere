@@ -36,8 +36,8 @@ import { useAxiosPrivate } from '@/hooks/auth/useAxiosPrivate';
 import { useLocation } from '@/hooks/useLocation';
 import { RestaurantCard } from '@/components/RestaurantCard/RestaurantCard';
 import { LocationRequester } from '@/components/LocationRequester/LocationRequester';
-import { type RestaurantResult } from '@/hooks/recommendations/useCuisineRecommendations';
 import classes from './SearchRestaurants.module.css';
+import type { AIRestaurantResult } from '@/types/restaurant';
 
 interface SearchFilters {
   keyword: string;
@@ -81,7 +81,7 @@ export const SearchRestaurantsPage: React.FC = () => {
     sortBy: 'relevance'
   });
   
-  const [restaurants, setRestaurants] = useState<RestaurantResult[]>([]);
+  const [restaurants, setRestaurants] = useState<AIRestaurantResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -163,7 +163,7 @@ export const SearchRestaurantsPage: React.FC = () => {
   };
 
   // Apply client-side filters and sorting
-  const applyFilters = (results: RestaurantResult[], searchFilters: SearchFilters) => {
+  const applyFilters = (results: AIRestaurantResult[], searchFilters: SearchFilters) => {
     let filtered = results.filter(restaurant => {
       // Rating filter
       if (searchFilters.minRating > 0 && (!restaurant.rating || restaurant.rating < searchFilters.minRating)) {

@@ -4,23 +4,59 @@ import { StatusCodes } from 'http-status-codes';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { AppError } from '../common/utils/AppError.js';
 import { 
-  predictMultipleRestaurants,
-  predictRestaurantRating,
-  updateWeightsAfterRating
+  getPersonalRestaurantRecommendations,
+  getGroupRestaurantRecommendations,
+  calculatePersonalizedScore,
+  getPersonalTopCuisines,
+  getGroupTopCuisines
 } from './recommendationService.js';
+import { searchNearbyPlaces } from '../api/apiService.js';
 import { CUISINES, CuisineType } from './types.js';
 
-// 1. GET RESTAURANT RECOMMENDATIONS (for /discover page)
-export const getRecommendations = catchAsync(async (req, res, next) => {
+// GET TOP CUISINES FOR USER/GROUP (for smart algorithm)
+export const getTopCuisines = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
 
-  const { lat, lng, limit = 10 } = req.query;
+  const { groupId } = req.query;
 
-  // Validate location parameters
-  if (!lat || !lng) {
-    return next(new AppError('Latitude and longitude are required', StatusCodes.BAD_REQUEST));
+  try {
+    let topCuisines;
+    
+    if (groupId) {
+      // Get group's top cuisines
+      topCuisines = await getGroupTopCuisines(groupId as string);
+    } else {
+      // Get personal top cuisines
+      topCuisines = await getPersonalTopCuisines(req.user.id);
+    }
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: {
+        topCuisines,
+        generatedAt: new Date()
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error fetching top cuisines:', error);
+    return next(new AppError('Failed to fetch top cuisines', StatusCodes.INTERNAL_SERVER_ERROR));
+  }
+});
+
+// GET PERSONAL RESTAURANT RECOMMENDATIONS (targeted cuisine calls)
+export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const { lat, lng, cuisine, radius = 2000, limit = 4 } = req.query;
+
+  // Validate required parameters
+  if (!lat || !lng || !cuisine) {
+    return next(new AppError('Latitude, longitude, and cuisine are required', StatusCodes.BAD_REQUEST));
   }
 
   const latitude = parseFloat(lat as string);
@@ -30,51 +66,49 @@ export const getRecommendations = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
   }
 
+  // Validate cuisine
+  if (!CUISINES.includes(cuisine as CuisineType)) {
+    return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
+  }
+
   try {
-    // Import searchNearbyPlaces function
-    const { searchNearbyPlaces } = await import('../api/apiService.js');
-    
-    // Get nearby restaurants from Google Places
-    const placesData = await searchNearbyPlaces({
+    // Make targeted search for specific cuisine
+    const searchParams = {
       lat: latitude,
       lng: longitude,
-      radius: 2000, // 2km radius
+      keyword: `${cuisine} restaurant`,
+      radius: parseInt(radius as string, 10),
       type: 'restaurant'
-    });
+    };
+
+    const placesData = await searchNearbyPlaces(searchParams);
 
     if (placesData.results.length === 0) {
       return res.status(StatusCodes.OK).json({
         status: 'success',
         data: {
-          recommendations: [],
-          message: 'No restaurants found in your area',
+          restaurants: [],
+          cuisine: cuisine,
+          userAdaptationLevel: 'learning',
+          totalRatings: 0,
           generatedAt: new Date()
         }
       });
     }
 
-    // Convert Google Places results to our restaurant format and predict ratings
-    const restaurantsWithCuisine = placesData.results.map(place => ({
-      id: place.place_id,
-      name: place.name,
-      cuisine: identifyRestaurantCuisine(place),
-      googleRating: place.rating,
-      priceLevel: place.price_level,
-      // Keep original place data for frontend
-      place_id: place.place_id,
-      vicinity: place.vicinity,
-      geometry: place.geometry,
-      photos: place.photos,
-      types: place.types
-    }));
-
-    // Get predictions for all restaurants
-    const predictions = await predictMultipleRestaurants(req.user.id, restaurantsWithCuisine);
+    // Get personalized recommendations for this cuisine
+    const recommendations = await getPersonalRestaurantRecommendations(
+      req.user.id,
+      placesData.results,
+      cuisine as CuisineType,
+      parseInt(limit as string, 10) || 4
+    );
 
     res.status(StatusCodes.OK).json({
       status: 'success',
       data: {
-        recommendations: predictions.slice(0, parseInt(limit as string)),
+        restaurants: recommendations,
+        cuisine: cuisine,
         userAdaptationLevel: 'learning',
         totalRatings: 0,
         generatedAt: new Date()
@@ -82,54 +116,141 @@ export const getRecommendations = catchAsync(async (req, res, next) => {
     });
 
   } catch (error: any) {
-    console.error('Error fetching recommendations:', error);
+    console.error('Error fetching personal recommendations:', error);
     return next(new AppError('Failed to fetch restaurant recommendations', StatusCodes.INTERNAL_SERVER_ERROR));
   }
 });
 
-// 2. PREDICT RATING FOR A RESTAURANT (optional endpoint)
-export const predictRating = catchAsync(async (req, res, next) => {
+// GET GROUP RESTAURANT RECOMMENDATIONS (targeted cuisine calls)
+export const getGroupRecommendations = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
 
-  const { restaurantId, restaurantName, cuisine, googleRating, priceLevel } = req.query;
+  const { groupId } = req.params;
+  const { lat, lng, cuisine, radius = 2000, limit = 4 } = req.query;
 
-  if (!restaurantId || !cuisine) {
-    return next(new AppError('Restaurant ID and cuisine are required', StatusCodes.BAD_REQUEST));
+  // Validate required parameters
+  if (!lat || !lng || !cuisine) {
+    return next(new AppError('Latitude, longitude, and cuisine are required', StatusCodes.BAD_REQUEST));
   }
 
+  const latitude = parseFloat(lat as string);
+  const longitude = parseFloat(lng as string);
+
+  if (isNaN(latitude) || isNaN(longitude)) {
+    return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
+  }
+
+  // Validate cuisine
   if (!CUISINES.includes(cuisine as CuisineType)) {
     return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
   }
 
-  const restaurant = {
-    id: restaurantId as string,
-    name: (restaurantName as string) || 'Unknown Restaurant',
-    cuisine: cuisine as CuisineType,
-    googleRating: googleRating ? parseFloat(googleRating as string) : undefined,
-    priceLevel: priceLevel ? parseInt(priceLevel as string) : undefined
-  };
+  try {
+    // Make targeted search for specific cuisine
+    const searchParams = {
+      lat: latitude,
+      lng: longitude,
+      keyword: `${cuisine} restaurant`,
+      radius: parseInt(radius as string, 10),
+      type: 'restaurant'
+    };
 
-  const prediction = await predictRestaurantRating(req.user.id, restaurant);
+    const placesData = await searchNearbyPlaces(searchParams);
 
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    data: {
-      restaurantId,
-      predictedRating: Number(prediction.toFixed(1)),
-      formula: 'Cuisine Score (1-5 × weight) × 0.7 + Restaurant Rating × 0.3'
+    if (placesData.results.length === 0) {
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        data: {
+          restaurants: [],
+          cuisine: cuisine,
+          groupId: groupId,
+          userAdaptationLevel: 'group',
+          totalRatings: 0,
+          generatedAt: new Date()
+        }
+      });
     }
-  });
+
+    // Get group recommendations for this cuisine
+    const recommendations = await getGroupRestaurantRecommendations(
+      groupId,
+      placesData.results,
+      cuisine as CuisineType,
+      parseInt(limit as string, 10) || 4
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: {
+        restaurants: recommendations,
+        cuisine: cuisine,
+        groupId: groupId,
+        userAdaptationLevel: 'group',
+        totalRatings: 0,
+        generatedAt: new Date()
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error fetching group recommendations:', error);
+    return next(new AppError('Failed to fetch group restaurant recommendations', StatusCodes.INTERNAL_SERVER_ERROR));
+  }
 });
 
-// 3. SUBMIT RESTAURANT RATING & UPDATE WEIGHTS
+// PREDICT SINGLE RESTAURANT SCORE
+export const predictRestaurantScore = catchAsync(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
+  }
+
+  const { place_id, name, rating, cuisine } = req.query;
+
+  if (!place_id || !name || !cuisine) {
+    return next(new AppError('place_id, name, and cuisine are required', StatusCodes.BAD_REQUEST));
+  }
+
+  // Validate cuisine
+  if (!CUISINES.includes(cuisine as CuisineType)) {
+    return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
+  }
+
+  try {
+    const googleRating = rating ? parseFloat(rating as string) : 3.0;
+    
+    // Calculate personalized score
+    const score = await calculatePersonalizedScore(
+      req.user.id,
+      cuisine as CuisineType,
+      googleRating
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: {
+        place_id,
+        name,
+        cuisine,
+        google_rating: googleRating,
+        personalized_score: Number(score.toFixed(2)),
+        formula: 'Google Rating × 0.3 + (Manual Preference × Weight) × 0.7'
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error predicting restaurant score:', error);
+    return next(new AppError('Failed to predict restaurant score', StatusCodes.INTERNAL_SERVER_ERROR));
+  }
+});
+
+// SUBMIT RATING AND UPDATE WEIGHTS
 export const submitRating = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
 
-  const { restaurantId, restaurantName, cuisine, rating, googleRating, priceLevel } = req.body;
+  const { restaurantId, cuisine, rating, googleRating } = req.body;
 
   // Validate inputs
   if (!restaurantId || !cuisine || rating === undefined) {
@@ -144,172 +265,31 @@ export const submitRating = catchAsync(async (req, res, next) => {
     return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
   }
 
-  // Create restaurant object
-  const restaurant = {
-    id: restaurantId,
-    name: restaurantName || 'Unknown Restaurant',
-    cuisine: cuisine as CuisineType,
-    googleRating: googleRating || undefined,
-    priceLevel: priceLevel || undefined
-  };
-
-  // Update weights based on this rating
-  await updateWeightsAfterRating(req.user.id, restaurant, rating);
-
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    message: 'Rating submitted and weights updated',
-    data: {
-      restaurantId,
-      rating,
-      cuisine
-    }
-  });
-});
-
-// 4. GET GROUP RECOMMENDATIONS (with Google API)
-export const getGroupRecommendations = catchAsync(async (req, res, next) => {
-  if (!req.user) {
-    return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
-  }
-
-  const { groupId } = req.params;
-  const { lat, lng, limit = 10 } = req.query;
-
-  // Validate location parameters
-  if (!lat || !lng) {
-    return next(new AppError('Latitude and longitude are required', StatusCodes.BAD_REQUEST));
-  }
-
-  const latitude = parseFloat(lat as string);
-  const longitude = parseFloat(lng as string);
-
-  if (isNaN(latitude) || isNaN(longitude)) {
-    return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
-  }
-
   try {
-    // Import searchNearbyPlaces function
-    const { searchNearbyPlaces } = await import('../api/apiService.js');
+    // Import the update function
+    const { updateWeightsAfterRating } = await import('./recommendationService.js');
     
-    // Get nearby restaurants from Google Places
-    const placesData = await searchNearbyPlaces({
-      lat: latitude,
-      lng: longitude,
-      radius: 2000, // 2km radius
-      type: 'restaurant'
-    });
-
-    if (placesData.results.length === 0) {
-      return res.status(StatusCodes.OK).json({
-        status: 'success',
-        data: {
-          recommendations: [],
-          message: 'No restaurants found for group',
-          generatedAt: new Date()
-        }
-      });
-    }
-
-    // Convert Google Places results to our restaurant format
-    const restaurantsWithCuisine = placesData.results.map(place => ({
-      id: place.place_id,
-      name: place.name,
-      cuisine: identifyRestaurantCuisine(place),
-      googleRating: place.rating,
-      priceLevel: place.price_level,
-      // Keep original place data for frontend
-      place_id: place.place_id,
-      vicinity: place.vicinity,
-      geometry: place.geometry,
-      photos: place.photos,
-      types: place.types
-    }));
-
-    // TODO: Implement group prediction logic
-    // For now, use personal predictions
-    const predictions = await predictMultipleRestaurants(req.user.id, restaurantsWithCuisine);
+    // Update weights based on this rating
+    await updateWeightsAfterRating(
+      req.user.id,
+      restaurantId,
+      cuisine as CuisineType,
+      rating,
+      googleRating || 3.0
+    );
 
     res.status(StatusCodes.OK).json({
       status: 'success',
+      message: 'Rating submitted and weights updated',
       data: {
-        recommendations: predictions.slice(0, parseInt(limit as string)),
-        userAdaptationLevel: 'group',
-        totalRatings: 0,
-        generatedAt: new Date()
+        restaurantId,
+        rating,
+        cuisine
       }
     });
 
   } catch (error: any) {
-    console.error('Error fetching group recommendations:', error);
-    return next(new AppError('Failed to fetch group restaurant recommendations', StatusCodes.INTERNAL_SERVER_ERROR));
+    console.error('Error submitting rating:', error);
+    return next(new AppError('Failed to submit rating', StatusCodes.INTERNAL_SERVER_ERROR));
   }
 });
-
-// Add cuisine identification function (reuse from existing code)
-const identifyRestaurantCuisine = (restaurant: any): CuisineType => {
-  // Map Google Places types to our cuisine types
-  const GOOGLE_TYPE_TO_CUISINE: { [key: string]: CuisineType } = {
-    'chinese_restaurant': 'Chinese',
-    'japanese_restaurant': 'Japanese', 
-    'korean_restaurant': 'Korean',
-    'italian_restaurant': 'Italian',
-    'mexican_restaurant': 'Mexican',
-    'indian_restaurant': 'Indian',
-    'thai_restaurant': 'Thai',
-    'french_restaurant': 'French',
-    'vietnamese_restaurant': 'Vietnamese',
-    'american_restaurant': 'Western',
-    'fast_food': 'Fast Food',
-    'restaurant': 'Western', // Default fallback
-    'food': 'Western',
-    'establishment': 'Western'
-  };
-
-  // Keywords to help identify cuisine types from restaurant names
-  const CUISINE_KEYWORDS: { [key: string]: CuisineType } = {
-    'sushi': 'Japanese',
-    'ramen': 'Japanese',
-    'pizza': 'Italian',
-    'pasta': 'Italian', 
-    'burger': 'Fast Food',
-    'mcdonald': 'Fast Food',
-    'kfc': 'Fast Food',
-    'subway': 'Fast Food',
-    'chinese': 'Chinese',
-    'dim sum': 'Chinese',
-    'thai': 'Thai',
-    'indian': 'Indian',
-    'curry': 'Indian',
-    'korean': 'Korean',
-    'bbq': 'Korean',
-    'mexican': 'Mexican',
-    'taco': 'Mexican',
-    'french': 'French',
-    'vietnamese': 'Vietnamese',
-    'pho': 'Vietnamese',
-    'halal': 'Muslim',
-    'muslim': 'Muslim'
-  };
-
-  // First, check Google Places types
-  for (const type of restaurant.types || []) {
-    if (GOOGLE_TYPE_TO_CUISINE[type]) {
-      return GOOGLE_TYPE_TO_CUISINE[type];
-    }
-  }
-
-  // Then, check restaurant name for cuisine keywords
-  const name = restaurant.name?.toLowerCase() || '';
-  const vicinity = restaurant.vicinity?.toLowerCase() || '';
-  const searchText = `${name} ${vicinity}`;
-
-  for (const [keyword, cuisine] of Object.entries(CUISINE_KEYWORDS)) {
-    if (searchText.includes(keyword)) {
-      return cuisine;
-    }
-  }
-
-  // Default fallback
-  return 'Western';
-};

@@ -14,7 +14,6 @@ import {
     IconUsers,
     IconDotsVertical,
     IconEye,
-    IconSettings,
     IconTrash
 } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
@@ -82,13 +81,6 @@ export const GroupCard = ({ group, onLeaveGroup, colorIndex }: GroupCardProps) =
                                 leftSection={<IconEye size={14} />}
                             >
                                 View Details
-                            </Menu.Item>
-                            <Menu.Item
-                                leftSection={<IconSettings size={14} />}
-                                component={Link}
-                                to={`/group/${group._id}/settings`}
-                            >
-                                Settings
                             </Menu.Item>
                             <Menu.Divider />
                             <Menu.Item

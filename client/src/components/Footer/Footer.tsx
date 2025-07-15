@@ -1,6 +1,5 @@
-import { Container, Flex, Text, Group } from '@mantine/core';
+import { Container, Flex, Text } from '@mantine/core';
 import classes from './Footer.module.css';
-import { Link } from '@tanstack/react-router';
 
 export default function Footer() {
   return (
@@ -11,15 +10,6 @@ export default function Footer() {
           <Text size="sm" className={classes.leftText}>
             © 2025 Where2Eat
           </Text>
-
-          {/* Right Side Links */}
-          <Group gap="md">
-            {['Privacy', 'Terms', 'Contact'].map((link) => (
-              <Link key={link} to="/" className={classes.link}>
-                {link}
-              </Link>
-            ))}
-          </Group>
         </Flex>
       </Container>
     </footer>

@@ -6,18 +6,15 @@ import {
   joinGroupByCode,
   leaveGroupById,
   removeMembers,
-  updateGroupById,
   updateGroupMemberRoles
 } from './groupService.js';
 import { RequestHandler } from 'express';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { getOne } from '../common/utils/getOne.js';
-import { UpdateGroupSchema } from '../shared/schemas/UpdateGroupSchema.js';
 import { CreateGroupSchema } from '../shared/schemas/CreateGroupSchema.js';
 import { JoinGroupSchema } from '../shared/schemas/JoinGroupSchema.js';
 import { RemoveGroupMembersSchema } from '../shared/schemas/RemoveMembersSchema.js';
-import { LeaveGroupsSchema } from '../shared/schemas/LeaveGroupsSchema.js';
 import { UpdateGroupRolesSchema } from '../shared/schemas/UpdateGroupRolesSchema.js';
 
 export const getGroup: RequestHandler = getOne(Group, {
@@ -25,27 +22,6 @@ export const getGroup: RequestHandler = getOne(Group, {
     path: 'users.user',
     select: 'username fullName firstName lastName email',
   },
-});
-
-export const updateGroup = catchAsync(async (req, res, next) => {
-  const parsed = UpdateGroupSchema.safeParse(req.body);
-  console.log(parsed);
-  if (!parsed.success) {
-    return next(
-      new AppError(
-        'Validation failed',
-        StatusCodes.BAD_REQUEST,
-        parsed.error.flatten().fieldErrors
-      )
-    );
-  }
-
-  const updatedGroup = await updateGroupById(req.params.id, parsed.data);
-
-  res.status(StatusCodes.OK).json({
-    status: 'success',
-    data: { group: updatedGroup, }
-  });
 });
 
 export const getGroupUsers: RequestHandler = getOne(Group, {

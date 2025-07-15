@@ -79,7 +79,6 @@ export const GroupDetailPage = () => {
     username: member.user.username,
     email: isAdmin ? member.user.email : maskEmail(member.user.email),
     role: member.role,
-    joinedAt: new Date(member.joinedAt).toLocaleDateString(),
   }));
 
   return (
@@ -185,9 +184,6 @@ export const GroupDetailPage = () => {
                           >
                             {row.role}
                           </Badge>
-                          <Badge variant="light" color="green" size="xs">
-                            Member since {new Date(row.joinedAt).toLocaleDateString()}
-                          </Badge>
                         </Stack>
                       )
                     },
@@ -234,12 +230,9 @@ export const GroupDetailPage = () => {
                 <Text fw={600}>Group Settings</Text>
               </Group>
               <Text size="sm" c="dimmed" mb="md">
-                Manage group information and preferences
+                Manage group information
               </Text>
               <Stack gap="xs">
-                <Button variant="light" fullWidth size="sm">
-                  Edit Group Details
-                </Button>
                 <Button
                   variant="light"
                   color="red"

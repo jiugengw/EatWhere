@@ -1,116 +1,302 @@
-import { User } from '../users/userModel.js';
-import { CUISINES, CuisineType } from './types.js';
-
-interface RestaurantData {
-  id: string;
-  name: string;
-  cuisine: CuisineType;
-  googleRating?: number;
-  priceLevel?: number;
-}
-
-// 1. GET USER'S CUISINE SCORE (manual preference × weight)
-const getCuisineScore = async (userId: string, cuisine: CuisineType): Promise<number> => {
+// CALCULATE PERSONALIZED SCORE: Google Rating × 0.3 + (Manual Preference × Weight) × 0.7
+export const calculatePersonalizedScore = async (
+  userId: string,
+  cuisine: CuisineType,
+  googleRating: number
+): Promise<number> => {
   const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
 
-  // Get manual preference (1-5 scale) - NEVER changes automatically
-  const manualPreference = user.preferences.get(cuisine) || 2.5;
+  // Get manual preference (1-5 scale from user settings)
+  const manualPreference = user.preferences.get(cuisine) || 3;
   
-  // Get learned weight based on past rating accuracy (default 1.0)
+  // Get learned weight (default 1.0, adjusted based on past ratings)
   const weight = user.cuisineWeights?.get(cuisine) || 1.0;
   
-  // Return true preference = manual preference × learned weight
-  return manualPreference * weight;
-};
-
-// 2. PREDICT RESTAURANT RATING
-export const predictRestaurantRating = async (userId: string, restaurant: RestaurantData): Promise<number> => {
-  // Get weighted cuisine score (manual preference × weight)
-  const cuisineScore = await getCuisineScore(userId, restaurant.cuisine);
+  // Calculate cuisine score (manual preference × weight)
+  const cuisineScore = manualPreference * weight;
   
-  // Get restaurant quality score
-  const restaurantScore = restaurant.googleRating || 3.0;
-  
-  // Combine: 70% cuisine score + 30% restaurant rating
-  const finalScore = (cuisineScore * 0.7) + (restaurantScore * 0.3);
+  // Combine: Google Rating × 0.3 + Cuisine Score × 0.7
+  const finalScore = (googleRating * 0.3) + (cuisineScore * 0.7);
   
   // Keep within 1-5 range
   return Math.max(1, Math.min(5, finalScore));
-};
+};// server/src/recommendations/recommendationService.ts
 
-// 3. PREDICT MULTIPLE RESTAURANTS (for discover page)
-export const predictMultipleRestaurants = async (
-  userId: string, 
-  restaurants: RestaurantData[]
-): Promise<{ restaurantId: string; predictedRating: number; restaurant: RestaurantData }[]> => {
-  const predictions = [];
-  
-  for (const restaurant of restaurants) {
-    const predictedRating = await predictRestaurantRating(userId, restaurant);
+import { User } from '../users/userModel.js';
+import { Group } from '../groups/groupModel.js';
+import { CUISINES, CuisineType } from './types.js';
+
+interface GooglePlace {
+  place_id: string;
+  name: string;
+  vicinity?: string;
+  rating?: number;
+  price_level?: number;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  photos?: Array<{
+    photo_reference: string;
+    height: number;
+    width: number;
+  }>;
+  types: string[];
+  business_status?: string;
+}
+
+interface RestaurantRecommendation {
+  place_id: string;
+  name: string;
+  vicinity: string;
+  rating?: number;
+  price_level?: number;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  photos?: Array<{
+    photo_reference: string;
+    height: number;
+    width: number;
+  }>;
+  types: string[];
+  cuisine: string;
+  cuisineScore: number;
+  combinedScore: number;
+  reasoning: string;
+}
+
+// GET PERSONAL TOP CUISINES (ranked by preference × weight)
+export const getPersonalTopCuisines = async (userId: string): Promise<Array<{cuisine: string, score: number}>> => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  const topCuisines: Array<{cuisine: string, score: number}> = [];
+
+  // Calculate score for each cuisine (preference × weight)
+  for (const cuisine of CUISINES) {
+    const preference = user.preferences.get(cuisine) || 3;
+    const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+    const score = preference * weight;
     
-    predictions.push({
-      restaurantId: restaurant.id,
-      predictedRating: Number(predictedRating.toFixed(1)),
-      restaurant
+    topCuisines.push({
+      cuisine,
+      score: Number(score.toFixed(2))
     });
   }
-  
-  // Sort by predicted rating (highest first)
-  return predictions.sort((a, b) => b.predictedRating - a.predictedRating);
+
+  // Sort by score (highest first) and return top cuisines
+  return topCuisines
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6); // Return top 6 for flexibility
 };
 
-// 4. UPDATE WEIGHTS AFTER RATING
+// GET GROUP TOP CUISINES (average of all members with influence weighting)
+export const getGroupTopCuisines = async (groupId: string): Promise<Array<{cuisine: string, score: number}>> => {
+  // Import the influence-aware function from group service
+  const { getGroupTopCuisinesWithInfluence } = await import('../groups/groupService.js');
+  return await getGroupTopCuisinesWithInfluence(groupId);
+};
+
+// GET PERSONAL RESTAURANT RECOMMENDATIONS (for specific cuisine)
+export const getPersonalRestaurantRecommendations = async (
+  userId: string,
+  googlePlaces: GooglePlace[],
+  cuisine: CuisineType,
+  limit: number = 4
+): Promise<RestaurantRecommendation[]> => {
+  const recommendations: RestaurantRecommendation[] = [];
+
+  // Get user data for reasoning
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  const manualPreference = user.preferences.get(cuisine) || 3;
+  const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+  const cuisineScore = manualPreference * weight;
+
+  for (const place of googlePlaces) {
+    try {
+      // Get Google rating (default to 3.0 if not available)
+      const googleRating = place.rating || 3.0;
+      
+      // Calculate personalized score
+      const combinedScore = await calculatePersonalizedScore(userId, cuisine, googleRating);
+      
+      // Create reasoning explanation
+      const reasoning = `Your ${cuisine} preference (${manualPreference.toFixed(1)}/5) × weight (${weight.toFixed(2)}) + restaurant rating (${googleRating.toFixed(1)}/5)`;
+
+      // Build recommendation object
+      const recommendation: RestaurantRecommendation = {
+        place_id: place.place_id,
+        name: place.name,
+        vicinity: place.vicinity || 'Location not available',
+        rating: place.rating,
+        price_level: place.price_level,
+        geometry: place.geometry,
+        photos: place.photos,
+        types: place.types,
+        cuisine,
+        cuisineScore: Number(cuisineScore.toFixed(2)),
+        combinedScore: Number(combinedScore.toFixed(2)),
+        reasoning
+      };
+
+      recommendations.push(recommendation);
+
+    } catch (error) {
+      console.error(`Error processing restaurant ${place.name}:`, error);
+      // Continue with other restaurants if one fails
+    }
+  }
+
+  // Sort by combined score (highest first) and return top results
+  const sortedRecommendations = recommendations
+    .sort((a, b) => b.combinedScore - a.combinedScore)
+    .slice(0, limit);
+
+  console.log(`Generated ${sortedRecommendations.length} personal recommendations for ${cuisine} cuisine`);
+  
+  return sortedRecommendations;
+};
+
+// GET GROUP RESTAURANT RECOMMENDATIONS (average group preferences for specific cuisine)
+export const getGroupRestaurantRecommendations = async (
+  groupId: string,
+  googlePlaces: GooglePlace[],
+  cuisine: CuisineType,
+  limit: number = 4
+): Promise<RestaurantRecommendation[]> => {
+  const recommendations: RestaurantRecommendation[] = [];
+
+  // Get group and populate users
+  const group = await Group.findById(groupId).populate('users.user');
+  if (!group) throw new Error('Group not found');
+
+  // Get all user IDs in the group
+  const userIds = group.users.map(member => member.user._id);
+  
+  // Get all users' preferences for this cuisine
+  const users = await User.find({ _id: { $in: userIds } });
+  
+  // Calculate group average preference and weight for this cuisine
+  let totalPreference = 0;
+  let totalWeight = 0;
+  let memberCount = 0;
+
+  for (const user of users) {
+    const preference = user.preferences.get(cuisine) || 3;
+    const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+    
+    totalPreference += preference;
+    totalWeight += weight;
+    memberCount++;
+  }
+
+  const avgPreference = memberCount > 0 ? totalPreference / memberCount : 3;
+  const avgWeight = memberCount > 0 ? totalWeight / memberCount : 1.0;
+  const groupCuisineScore = avgPreference * avgWeight;
+
+  for (const place of googlePlaces) {
+    try {
+      // Get Google rating (default to 3.0 if not available)
+      const googleRating = place.rating || 3.0;
+      
+      // Calculate group score: Google Rating × 0.3 + Group Cuisine Score × 0.7
+      const combinedScore = (googleRating * 0.3) + (groupCuisineScore * 0.7);
+      const finalScore = Math.max(1, Math.min(5, combinedScore));
+      
+      // Create reasoning explanation
+      const reasoning = `Group ${cuisine} preference (${avgPreference.toFixed(1)}/5 avg) × weight (${avgWeight.toFixed(2)} avg) + restaurant rating (${googleRating.toFixed(1)}/5)`;
+
+      // Build recommendation object
+      const recommendation: RestaurantRecommendation = {
+        place_id: place.place_id,
+        name: place.name,
+        vicinity: place.vicinity || 'Location not available',
+        rating: place.rating,
+        price_level: place.price_level,
+        geometry: place.geometry,
+        photos: place.photos,
+        types: place.types,
+        cuisine,
+        cuisineScore: Number(groupCuisineScore.toFixed(2)),
+        combinedScore: Number(finalScore.toFixed(2)),
+        reasoning
+      };
+
+      recommendations.push(recommendation);
+
+    } catch (error) {
+      console.error(`Error processing restaurant ${place.name}:`, error);
+      // Continue with other restaurants if one fails
+    }
+  }
+
+  // Sort by combined score (highest first) and return top results
+  const sortedRecommendations = recommendations
+    .sort((a, b) => b.combinedScore - a.combinedScore)
+    .slice(0, limit);
+
+  console.log(`Generated ${sortedRecommendations.length} group recommendations for ${cuisine} cuisine (${memberCount} members)`);
+  
+  return sortedRecommendations;
+};
+
+// UPDATE WEIGHTS AFTER USER RATES A RESTAURANT
 export const updateWeightsAfterRating = async (
-  userId: string, 
-  restaurant: RestaurantData, 
-  actualRating: number
+  userId: string,
+  restaurantId: string,
+  cuisine: CuisineType,
+  actualRating: number,
+  googleRating: number
 ): Promise<void> => {
   const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
 
   // Get what we predicted
-  const prediction = await predictRestaurantRating(userId, restaurant);
+  const predictedScore = await calculatePersonalizedScore(userId, cuisine, googleRating);
   
   // Calculate error (positive = they liked it more, negative = they liked it less)
-  const error = actualRating - prediction;
+  const error = actualRating - predictedScore;
   
   // Get current weight for this cuisine (default 1.0)
-  const currentWeight = user.cuisineWeights?.get(restaurant.cuisine) || 1.0;
+  const currentWeight = user.cuisineWeights?.get(cuisine) || 1.0;
   
   // Adjust weight based on error direction and magnitude
   let newWeight = currentWeight;
   
   if (error > 1.0) {
-    // They liked it way more than predicted - boost weight
-    // Their true preference is higher than manual preference
-    newWeight += 0.1;
+    // They liked it way more than predicted - boost weight significantly
+    newWeight += 0.15;
   } else if (error > 0.5) {
     // They liked it more than predicted - small boost
-    newWeight += 0.05;
+    newWeight += 0.08;
   } else if (error < -1.0) {
-    // They liked it way less than predicted - reduce weight
-    // Their true preference is lower than manual preference  
-    newWeight -= 0.1;
+    // They liked it way less than predicted - reduce weight significantly
+    newWeight -= 0.15;
   } else if (error < -0.5) {
     // They liked it less than predicted - small reduction
-    newWeight -= 0.05;
+    newWeight -= 0.08;
   }
   
-  // Keep weight within reasonable bounds
+  // Keep weight within reasonable bounds (0.5 to 1.5)
   newWeight = Math.max(0.5, Math.min(1.5, newWeight));
   
-  // Save updated weight (initialize cuisineWeights if needed)
+  // Initialize cuisineWeights if needed
   if (!user.cuisineWeights) {
     user.cuisineWeights = new Map();
   }
-  user.cuisineWeights.set(restaurant.cuisine, newWeight);
+  
+  // Save updated weight
+  user.cuisineWeights.set(cuisine, newWeight);
   await user.save();
   
-  console.log(`Updated ${restaurant.cuisine} weight for user ${userId}: ${currentWeight.toFixed(2)} → ${newWeight.toFixed(2)} (error: ${error.toFixed(2)})`);
+  console.log(`Updated ${cuisine} weight for user ${userId}: ${currentWeight.toFixed(3)} → ${newWeight.toFixed(3)} (error: ${error.toFixed(2)})`);
 };
-
-// USAGE:
-// For restaurant recommendations: predictMultipleRestaurants(userId, restaurants)
-// For single restaurant rating: predictRestaurantRating(userId, restaurant)
-// After user rates: updateWeightsAfterRating(userId, restaurant, rating)

@@ -7,7 +7,6 @@ import type { AxiosError } from 'axios';
 export const useJoinGroup = () => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
-
   return useMutation({
     mutationFn: async (code: string) => {
       const res = await axiosPrivate.patch(`/groups/${code}/join`);
