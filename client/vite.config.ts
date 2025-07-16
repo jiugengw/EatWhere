@@ -15,7 +15,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // 👈 This is needed for @ to work
+      '@': path.resolve(__dirname, './src'), 
     },
   },
+  base: process.env.VITE_BASE_PATH || "/Where2Eat"
 });
