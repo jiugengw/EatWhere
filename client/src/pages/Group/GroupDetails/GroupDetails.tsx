@@ -26,6 +26,7 @@ import { useRemoveGroupMembers } from '@/hooks/groups/useRemoveGroupMembers';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { Link } from '@tanstack/react-router';
 import { useLeaveGroup } from '@/hooks/groups/useLeaveGroup';
+import { notifications } from '@mantine/notifications';
 
 export const GroupDetailPage = () => {
   const { auth } = useAuth();
@@ -35,6 +36,12 @@ export const GroupDetailPage = () => {
   const [showCode, setShowCode] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const group = data?.data?.group;
+  if (!group) {
+    throw {
+      statusCode: 404,
+      message: 'Group not found',
+    };
+  }
   const { isAdmin } = useGroupRole(group?.users ?? []);
   const updateRoles = useUpdateGroupRoles(group?._id ?? '');
   const remove = useRemoveGroupMembers(group?._id ?? '');
@@ -56,6 +63,30 @@ export const GroupDetailPage = () => {
 
   const handleRemove = () => {
     remove.mutate(selected);
+  };
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(group.code);
+      notifications.show({
+        title: 'Copied!',
+        message: 'Group code copied to clipboard',
+        color: 'green',
+      });
+    } catch (err) {
+      const textArea = document.createElement('textarea');
+      textArea.value = group.code;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      notifications.show({
+        title: 'Copied!',
+        message: 'Group code copied to clipboard',
+        color: 'green',
+      });
+    }
   };
 
   const onLeaveClick = () => {
@@ -260,7 +291,11 @@ export const GroupDetailPage = () => {
                   style={{ flex: 1 }}
                   size="sm"
                 />
-                <Button size="sm" variant="light">
+                <Button
+                  size="sm"
+                  variant="light"
+                  onClick={handleCopyCode}
+                >
                   Copy
                 </Button>
               </Group>
