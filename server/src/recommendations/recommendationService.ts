@@ -1,28 +1,3 @@
-// CALCULATE PERSONALIZED SCORE: Google Rating × 0.3 + (Manual Preference × Weight) × 0.7
-export const calculatePersonalizedScore = async (
-  userId: string,
-  cuisine: CuisineType,
-  googleRating: number
-): Promise<number> => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error('User not found');
-
-  // Get manual preference (1-5 scale from user settings)
-  const manualPreference = user.preferences.get(cuisine) || 3;
-  
-  // Get learned weight (default 1.0, adjusted based on past ratings)
-  const weight = user.cuisineWeights?.get(cuisine) || 1.0;
-  
-  // Calculate cuisine score (manual preference × weight)
-  const cuisineScore = manualPreference * weight;
-  
-  // Combine: Google Rating × 0.3 + Cuisine Score × 0.7
-  const finalScore = (googleRating * 0.3) + (cuisineScore * 0.7);
-  
-  // Keep within 1-5 range
-  return Math.max(1, Math.min(5, finalScore));
-};// server/src/recommendations/recommendationService.ts
-
 import { User } from '../users/userModel.js';
 import { Group } from '../groups/groupModel.js';
 import { CUISINES, CuisineType } from './types.js';
@@ -72,6 +47,31 @@ interface RestaurantRecommendation {
   reasoning: string;
 }
 
+// CALCULATE PERSONALIZED SCORE: Google Rating × 0.3 + (Manual Preference × Weight) × 0.7
+export const calculatePersonalizedScore = async (
+  userId: string,
+  cuisine: CuisineType,
+  googleRating: number
+): Promise<number> => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  // Get manual preference (1-5 scale from user settings)
+  const manualPreference = user.preferences.get(cuisine) || 3;
+  
+  // Get learned weight (default 1.0, adjusted based on past ratings)
+  const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+  
+  // Calculate cuisine score (manual preference × weight)
+  const cuisineScore = manualPreference * weight;
+  
+  // Combine: Google Rating × 0.3 + Cuisine Score × 0.7
+  const finalScore = (googleRating * 0.3) + (cuisineScore * 0.7);
+  
+  // Keep within 1-5 range
+  return Math.max(1, Math.min(5, finalScore));
+};
+
 // GET PERSONAL TOP CUISINES (ranked by preference × weight)
 export const getPersonalTopCuisines = async (userId: string): Promise<Array<{cuisine: string, score: number}>> => {
   const user = await User.findById(userId);
@@ -97,11 +97,42 @@ export const getPersonalTopCuisines = async (userId: string): Promise<Array<{cui
     .slice(0, 6); // Return top 6 for flexibility
 };
 
-// GET GROUP TOP CUISINES (average of all members with influence weighting)
+// GET GROUP TOP CUISINES (simple average of all members)
 export const getGroupTopCuisines = async (groupId: string): Promise<Array<{cuisine: string, score: number}>> => {
-  // Import the influence-aware function from group service
-  const { getGroupTopCuisinesWithInfluence } = await import('../groups/groupService.js');
-  return await getGroupTopCuisinesWithInfluence(groupId);
+  const group = await Group.findById(groupId).populate('users.user');
+  if (!group) throw new Error('Group not found');
+
+  const userIds = group.users.map(member => member.user._id);
+  const users = await User.find({ _id: { $in: userIds } });
+
+  const topCuisines: Array<{cuisine: string, score: number}> = [];
+
+  // Simple average calculation
+  for (const cuisine of CUISINES) {
+    let totalScore = 0;
+    let memberCount = 0;
+
+    for (const user of users) {
+      const preference = user.preferences.get(cuisine) || 3;
+      const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+      const userScore = preference * weight;
+
+      totalScore += userScore;
+      memberCount++;
+    }
+
+    const avgScore = memberCount > 0 ? totalScore / memberCount : 3;
+
+    topCuisines.push({
+      cuisine,
+      score: Number(avgScore.toFixed(2))
+    });
+  }
+
+  // Sort by score (highest first)
+  return topCuisines
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6);
 };
 
 // GET PERSONAL RESTAURANT RECOMMENDATIONS (for specific cuisine)
@@ -166,7 +197,7 @@ export const getPersonalRestaurantRecommendations = async (
   return sortedRecommendations;
 };
 
-// GET GROUP RESTAURANT RECOMMENDATIONS (average group preferences for specific cuisine)
+// GET GROUP RESTAURANT RECOMMENDATIONS (simple average group preferences for specific cuisine)
 export const getGroupRestaurantRecommendations = async (
   groupId: string,
   googlePlaces: GooglePlace[],
@@ -179,13 +210,10 @@ export const getGroupRestaurantRecommendations = async (
   const group = await Group.findById(groupId).populate('users.user');
   if (!group) throw new Error('Group not found');
 
-  // Get all user IDs in the group
   const userIds = group.users.map(member => member.user._id);
-  
-  // Get all users' preferences for this cuisine
   const users = await User.find({ _id: { $in: userIds } });
-  
-  // Calculate group average preference and weight for this cuisine
+
+  // Calculate simple group average for this cuisine
   let totalPreference = 0;
   let totalWeight = 0;
   let memberCount = 0;

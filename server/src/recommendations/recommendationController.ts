@@ -89,8 +89,6 @@ export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
         data: {
           restaurants: [],
           cuisine: cuisine,
-          userAdaptationLevel: 'learning',
-          totalRatings: 0,
           generatedAt: new Date()
         }
       });
@@ -109,8 +107,6 @@ export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
       data: {
         restaurants: recommendations,
         cuisine: cuisine,
-        userAdaptationLevel: 'learning',
-        totalRatings: 0,
         generatedAt: new Date()
       }
     });
@@ -166,8 +162,6 @@ export const getGroupRecommendations = catchAsync(async (req, res, next) => {
           restaurants: [],
           cuisine: cuisine,
           groupId: groupId,
-          userAdaptationLevel: 'group',
-          totalRatings: 0,
           generatedAt: new Date()
         }
       });
@@ -187,8 +181,6 @@ export const getGroupRecommendations = catchAsync(async (req, res, next) => {
         restaurants: recommendations,
         cuisine: cuisine,
         groupId: groupId,
-        userAdaptationLevel: 'group',
-        totalRatings: 0,
         generatedAt: new Date()
       }
     });
