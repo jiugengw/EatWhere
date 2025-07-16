@@ -14,7 +14,6 @@ export default function Navbar() {
         { name: "Group", path: "/discover?type=group" },
       ],
     },
-    { name: "Search", path: "/search" },
     {
       name: "Groups",
       links: [

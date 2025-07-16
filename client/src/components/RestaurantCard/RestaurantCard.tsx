@@ -189,14 +189,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
                 </Text>
               )}
             </div>
-
-            <Button
-              size="sm"
-              leftSection={<IconMapPin size={16} />}
-              onClick={handleViewOnMap}
-            >
-              View on Map
-            </Button>
           </Flex>
 
           {/* Cuisine Tags */}
@@ -228,7 +220,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
               onClick={handleViewOnMap}
               variant="outline"
             >
-              View Map
+              View On Map
             </Button>
           </Group>
         </Stack>
