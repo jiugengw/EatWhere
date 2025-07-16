@@ -12,11 +12,6 @@ interface IGroup {
   users: {
     user: Types.ObjectId;
     role: 'admin' | 'member';
-    groupInfluence: {
-      currentInfluence: number;
-      lastChosenCuisines: string[];
-      satisfactionLevel: number;
-    };
   }[];
   active: boolean;
   userCount: number;
@@ -55,22 +50,6 @@ const groupSchema = new Schema<IGroup>(
             enum: ['admin', 'member'],
             default: 'member',
           },
-          groupInfluence: {
-            currentInfluence: {
-              type: Number,
-              default: 1.0,
-              min: 0.5,
-              max: 1.5
-            },
-            lastChosenCuisines: {
-              type: [String],
-              default: []
-            },
-            satisfactionLevel: {
-              type: Number,
-              default: 1.0
-            }
-          }
         },
       ],
       default: [],

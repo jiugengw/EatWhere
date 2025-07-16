@@ -2,7 +2,6 @@ import { StatusCodes } from 'http-status-codes';
 import { Group, GroupDoc } from './groupModel.js';
 import { Types } from 'mongoose';
 import { AppError } from '../common/utils/AppError.js';
-import { UpdateGroupInput } from '../shared/schemas/UpdateGroupSchema.js';
 import { User, type UserDoc } from '../users/userModel.js';
 import { CreateGroupInput } from '../shared/schemas/CreateGroupSchema.js';
 import { generateUniqueGroupCode } from './utils/generateUniqueGroupCode.js';
@@ -39,12 +38,7 @@ export const joinGroupByCode = async (
 
     group.users.push({
       user: new Types.ObjectId(userId),
-      role: 'member',
-      groupInfluence: {
-        currentInfluence: 1.0,
-        lastChosenCuisines: [],
-        satisfactionLevel: 1.0
-      }
+      role: 'member'
     });
     user.groups.push(group._id);
 
@@ -202,70 +196,14 @@ export const removeMembers = async (
   );
 };
 
-export const updateGroupInfluences = async (
-  groupId: string,
-  chosenCuisines: string[]
-): Promise<void> => {
+export const getGroupTopCuisines = async (
+  groupId: string
+): Promise<Array<{ cuisine: string, score: number }>> => {
   const group = await Group.findById(groupId).populate('users.user');
   if (!group) throw new Error('Group not found');
 
   const userIds = group.users.map(member => member.user._id);
   const users = await User.find({ _id: { $in: userIds } });
-
-  // Create a map for quick user lookup
-  const userMap = new Map(users.map(user => [user._id.toString(), user]));
-
-  for (const groupMember of group.users) {
-    const user = userMap.get(groupMember.user._id.toString());
-    if (!user) continue;
-
-    let newInfluence = groupMember.groupInfluence.currentInfluence;
-
-    for (const chosenCuisine of chosenCuisines) {
-      const userCuisineScore = calculateUserCuisineScore(user, chosenCuisine);
-
-      if (userCuisineScore >= 4.0) {
-        // High preference + this cuisine chosen = reduce influence
-        newInfluence -= 0.15;
-      } else if (userCuisineScore <= 2.5) {
-        // Low preference + this cuisine chosen = increase influence (they sacrificed)
-        newInfluence += 0.2;
-      }
-      // Medium preference (2.5-4.0) = neutral, no change
-    }
-
-    // Clamp influence between 0.5 and 1.5
-    newInfluence = Math.max(0.5, Math.min(1.5, newInfluence));
-
-    // Update group member's influence
-    groupMember.groupInfluence.currentInfluence = newInfluence;
-    groupMember.groupInfluence.lastChosenCuisines = [
-      ...chosenCuisines,
-      ...groupMember.groupInfluence.lastChosenCuisines
-    ].slice(0, 3); // Keep only last 3
-  }
-
-  await group.save();
-  console.log(`Updated influences for group ${groupId} after choosing: ${chosenCuisines.join(', ')}`);
-};
-
-// CALCULATE USER'S CUISINE SCORE
-function calculateUserCuisineScore(user: UserDoc, cuisine: string): number {
-  const preference = user.preferences.get(cuisine) || 3;
-  const weight = user.cuisineWeights?.get(cuisine) || 1.0;
-  return preference * weight;
-}
-
-// GET GROUP TOP CUISINES WITH INFLUENCE WEIGHTING
-export const getGroupTopCuisinesWithInfluence = async (groupId: string): Promise<Array<{ cuisine: string, score: number }>> => {
-  const group = await Group.findById(groupId).populate('users.user');
-  if (!group) throw new Error('Group not found');
-
-  const userIds = group.users.map(member => member.user._id);
-  const users = await User.find({ _id: { $in: userIds } });
-
-  // Create map for quick user lookup
-  const userMap = new Map(users.map(user => [user._id.toString(), user]));
 
   const CUISINES = [
     'Chinese', 'Korean', 'Japanese', 'Italian', 'Mexican',
@@ -274,27 +212,21 @@ export const getGroupTopCuisinesWithInfluence = async (groupId: string): Promise
 
   const topCuisines: Array<{ cuisine: string, score: number }> = [];
 
-  // Calculate influence-weighted score for each cuisine
+  // Simple average calculation - no influence weighting
   for (const cuisine of CUISINES) {
-    let weightedScoreSum = 0;
-    let totalInfluence = 0;
+    let totalScore = 0;
+    let memberCount = 0;
 
-    for (const groupMember of group.users) {
-      const user = userMap.get(groupMember.user._id.toString());
-      if (!user) continue;
-
+    for (const user of users) {
       const preference = user.preferences.get(cuisine) || 3;
-      const cuisineWeight = user.cuisineWeights?.get(cuisine) || 1.0;
-      const groupInfluence = groupMember.groupInfluence.currentInfluence;
+      const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+      const userScore = preference * weight;
 
-      const userScore = preference * cuisineWeight;
-      const influencedScore = userScore * groupInfluence;
-
-      weightedScoreSum += influencedScore;
-      totalInfluence += groupInfluence;
+      totalScore += userScore;
+      memberCount++;
     }
 
-    const avgScore = totalInfluence > 0 ? weightedScoreSum / totalInfluence : 3;
+    const avgScore = memberCount > 0 ? totalScore / memberCount : 3;
 
     topCuisines.push({
       cuisine,
@@ -302,8 +234,81 @@ export const getGroupTopCuisinesWithInfluence = async (groupId: string): Promise
     });
   }
 
-  // Sort by score (highest first) and return top cuisines
+  // Sort by score (highest first)
   return topCuisines
     .sort((a, b) => b.score - a.score)
-    .slice(0, 6); // Return top 6 for flexibility
+    .slice(0, 6);
+};
+
+// ==== SIMPLIFIED GROUP RESTAURANT RECOMMENDATIONS ====
+// PUT THIS IN: server/src/groups/groupService.ts
+
+export const getGroupRestaurantRecommendations = async (
+  groupId: string,
+  googlePlaces: any[],
+  cuisine: string,
+  limit: number = 4
+): Promise<any[]> => {
+  const recommendations: any[] = [];
+  
+  // Get group and populate users
+  const group = await Group.findById(groupId).populate('users.user');
+  if (!group) throw new Error('Group not found');
+
+  const userIds = group.users.map(member => member.user._id);
+  const users = await User.find({ _id: { $in: userIds } }); // Fixed: _id not id
+
+  // Calculate simple group average for this cuisine
+  let totalPreference = 0;
+  let totalWeight = 0;
+  let memberCount = 0;
+
+  for (const user of users) {
+    const preference = user.preferences.get(cuisine) || 3;
+    const weight = user.cuisineWeights?.get(cuisine) || 1.0;
+    
+    totalPreference += preference;
+    totalWeight += weight;
+    memberCount++;
+  }
+
+  const avgPreference = memberCount > 0 ? totalPreference / memberCount : 3;
+  const avgWeight = memberCount > 0 ? totalWeight / memberCount : 1.0;
+  const groupCuisineScore = avgPreference * avgWeight;
+
+  for (const place of googlePlaces) {
+    try {
+      const googleRating = place.rating || 3.0;
+      
+      // Simple formula: Google Rating × 0.3 + Group Cuisine Score × 0.7
+      const combinedScore = (googleRating * 0.3) + (groupCuisineScore * 0.7);
+      const finalScore = Math.max(1, Math.min(5, combinedScore));
+      
+      const reasoning = `Group ${cuisine} preference (${avgPreference.toFixed(1)}/5 avg) × weight (${avgWeight.toFixed(2)} avg) + restaurant rating (${googleRating.toFixed(1)}/5)`;
+
+      const recommendation = {
+        place_id: place.place_id,
+        name: place.name,
+        vicinity: place.vicinity || 'Location not available',
+        rating: place.rating,
+        price_level: place.price_level,
+        geometry: place.geometry,
+        photos: place.photos,
+        types: place.types,
+        cuisine,
+        cuisineScore: Number(groupCuisineScore.toFixed(2)),
+        combinedScore: Number(finalScore.toFixed(2)),
+        reasoning
+      };
+
+      recommendations.push(recommendation);
+    } catch (error) {
+      console.error(`Error processing restaurant ${place.name}:`, error);
+    }
+  }
+
+  // Sort by combined score and return top results
+  return recommendations
+    .sort((a, b) => b.combinedScore - a.combinedScore)
+    .slice(0, limit);
 };
