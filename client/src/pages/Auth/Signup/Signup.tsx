@@ -15,7 +15,7 @@ import { SignupSchema, type SignupInput } from '@/shared/schemas/SignupSchema';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { useSignup } from '@/hooks/auth/useSignup';
-import { Loader } from '@mantine/core';
+import { Loading } from '@/UIelements/loading';
 
 export const SignupPage = (): JSX.Element => {
   const form = useForm<SignupInput>({
@@ -41,7 +41,7 @@ export const SignupPage = (): JSX.Element => {
 
   return (
     <>
-    {signup.status === 'pending' && <Loader/>}
+    {signup.status === 'pending' && <Loading/>}
       <Container size="xs" my="xl">
         <Title order={2} className={classes.title}>
           Create an Account

@@ -21,9 +21,9 @@ export function Loading() {
       }}
     >
       <Text size={'40'} fw={700} c="dimmed" style={{ lineHeight: 1 }}>
-        Fuck this shit . . .
+        Hang on a moment . . .
       </Text>
-      <Loader size={50} color="indigo" />
+      <Loader size={50} color="orange" />
     </div>
   );
 }
