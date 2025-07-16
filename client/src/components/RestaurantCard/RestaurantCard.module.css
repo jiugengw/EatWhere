@@ -8,22 +8,10 @@
   overflow: hidden;
 }
 
-[data-mantine-color-scheme="dark"] .card {
-  background-color: var(--mantine-color-dark-6);
-  border: 1px solid var(--mantine-color-dark-4);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-color: #FF8C42;
-}
-
-[data-mantine-color-scheme="dark"] .card:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  border-color: #FF8C42;
-  background-color: var(--mantine-color-dark-5);
 }
 
 .imageSection {
@@ -60,10 +48,6 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .noImage {
-  background: linear-gradient(135deg, var(--mantine-color-dark-5) 0%, var(--mantine-color-dark-4) 100%);
 }
 
 .statusBadge {
@@ -103,10 +87,6 @@
   transition: color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .restaurantName {
-  color: var(--mantine-color-dark-0);
-}
-
 .ratingGroup {
   flex-shrink: 0;
   background: rgba(255, 215, 0, 0.1);
@@ -114,11 +94,6 @@
   border-radius: 8px;
   border: 1px solid rgba(255, 215, 0, 0.3);
   transition: all 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .ratingGroup {
-  background: rgba(255, 215, 0, 0.15);
-  border: 1px solid rgba(255, 215, 0, 0.4);
 }
 
 .ratingGroup:hover {
@@ -136,17 +111,9 @@
   font-weight: 600;
 }
 
-[data-mantine-color-scheme="dark"] .ratingText {
-  color: var(--mantine-color-dark-0);
-}
-
 .address {
   transition: color 0.2s ease;
   font-style: italic;
-}
-
-[data-mantine-color-scheme="dark"] .address {
-  color: var(--mantine-color-dark-2);
 }
 
 .priceSection {
@@ -161,11 +128,6 @@
   border-radius: 6px;
   border: 1px solid rgba(40, 167, 69, 0.3);
   transition: all 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .priceText {
-  background: rgba(40, 167, 69, 0.15);
-  border: 1px solid rgba(40, 167, 69, 0.4);
 }
 
 .priceText:hover {
@@ -184,11 +146,6 @@
   color: var(--mantine-color-gray-7);
 }
 
-[data-mantine-color-scheme="dark"] .cuisineBadge {
-  border-color: var(--mantine-color-dark-3);
-  color: var(--mantine-color-dark-1);
-}
-
 .cuisineBadge:hover {
   border-color: #FF8C42;
   color: #FF8C42;
@@ -200,10 +157,6 @@
   padding-top: 0.75rem;
   border-top: 1px solid var(--mantine-color-gray-2);
   transition: border-color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .actionButtons {
-  border-top: 1px solid var(--mantine-color-dark-4);
 }
 
 .eatingButton {
@@ -221,22 +174,11 @@
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
 }
 
-[data-mantine-color-scheme="dark"] .eatingButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #34ce57 0%, #26d0ce 100%);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.5);
-}
-
 .mapButton {
   border: 2px solid var(--mantine-color-gray-4);
   color: var(--mantine-color-gray-7);
   background: var(--mantine-color-white);
   transition: all 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .mapButton {
-  border: 2px solid var(--mantine-color-dark-3);
-  color: var(--mantine-color-dark-1);
-  background: var(--mantine-color-dark-5);
 }
 
 .mapButton:hover:not(:disabled) {
@@ -247,19 +189,10 @@
   box-shadow: 0 2px 8px rgba(255, 140, 66, 0.2);
 }
 
-[data-mantine-color-scheme="dark"] .mapButton:hover:not(:disabled) {
-  background: rgba(255, 140, 66, 0.15);
-  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
-}
-
 .modalTitle {
   color: var(--mantine-color-text);
   font-weight: 600;
   line-height: 1.3;
-}
-
-[data-mantine-color-scheme="dark"] .modalTitle {
-  color: var(--mantine-color-dark-0);
 }
 
 .modalContent {
@@ -271,21 +204,12 @@
   text-align: center;
 }
 
-[data-mantine-color-scheme="dark"] .modalDescription {
-  color: var(--mantine-color-dark-2);
-}
-
 .cuisineSection {
   background: var(--mantine-color-gray-0);
   padding: 1rem;
   border-radius: 12px;
   border: 1px solid var(--mantine-color-gray-2);
   transition: all 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .cuisineSection {
-  background: var(--mantine-color-dark-5);
-  border: 1px solid var(--mantine-color-dark-3);
 }
 
 .cuisineSelect {
@@ -298,21 +222,9 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .cuisineSelect input {
-  border: 2px solid var(--mantine-color-dark-4);
-  background: var(--mantine-color-dark-5);
-  color: var(--mantine-color-dark-0);
-}
-
 .cuisineSelect input:focus {
   border-color: #FF8C42;
   box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
-}
-
-[data-mantine-color-scheme="dark"] .cuisineSelect input:focus {
-  border-color: #FF8C42;
-  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
-  background: var(--mantine-color-dark-4);
 }
 
 .ratingSection {
@@ -322,11 +234,6 @@
   border-radius: 12px;
   border: 1px solid var(--mantine-color-gray-2);
   transition: all 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .ratingSection {
-  background: var(--mantine-color-dark-5);
-  border: 1px solid var(--mantine-color-dark-3);
 }
 
 .ratingInput {
@@ -351,28 +258,14 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .reviewTextarea textarea {
-  border: 2px solid var(--mantine-color-dark-4);
-  background: var(--mantine-color-dark-5);
-  color: var(--mantine-color-dark-0);
-}
-
 .reviewTextarea textarea:focus {
   border-color: #FF8C42;
   box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
 }
 
-[data-mantine-color-scheme="dark"] .reviewTextarea textarea:focus {
-  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
-}
-
 .modalActions {
   padding-top: 1rem;
   border-top: 1px solid var(--mantine-color-gray-2);
-}
-
-[data-mantine-color-scheme="dark"] .modalActions {
-  border-top: 1px solid var(--mantine-color-dark-4);
 }
 
 .cancelButton {
@@ -382,19 +275,9 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .cancelButton {
-  background: var(--mantine-color-dark-5);
-  color: var(--mantine-color-dark-1);
-  border: 1px solid var(--mantine-color-dark-3);
-}
-
 .cancelButton:hover:not(:disabled) {
   background: var(--mantine-color-gray-2);
   transform: translateY(-1px);
-}
-
-[data-mantine-color-scheme="dark"] .cancelButton:hover:not(:disabled) {
-  background: var(--mantine-color-dark-4);
 }
 
 .submitButton {
@@ -412,21 +295,11 @@
   box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
 }
 
-[data-mantine-color-scheme="dark"] .submitButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ffa94d 0%, #FF8C42 100%);
-  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.5);
-}
-
 .submitButton:disabled {
   background: var(--mantine-color-gray-4);
   color: var(--mantine-color-gray-6);
   transform: none;
   box-shadow: none;
-}
-
-[data-mantine-color-scheme="dark"] .submitButton:disabled {
-  background: var(--mantine-color-dark-4);
-  color: var(--mantine-color-dark-2);
 }
 
 /* Responsive Design */
@@ -510,13 +383,6 @@
   outline-offset: 2px;
 }
 
-[data-mantine-color-scheme="dark"] .eatingButton:focus,
-[data-mantine-color-scheme="dark"] .mapButton:focus,
-[data-mantine-color-scheme="dark"] .submitButton:focus,
-[data-mantine-color-scheme="dark"] .cancelButton:focus {
-  outline: 2px solid #ffa94d;
-}
-
 /* Loading states */
 .eatingButton[data-loading="true"],
 .submitButton[data-loading="true"] {
@@ -527,8 +393,4 @@
 /* Enhanced hover effects */
 .card:hover .actionButtons {
   border-color: rgba(255, 140, 66, 0.3);
-}
-
-[data-mantine-color-scheme="dark"] .card:hover .actionButtons {
-  border-color: rgba(255, 140, 66, 0.4);
 }

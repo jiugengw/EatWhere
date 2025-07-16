@@ -16,12 +16,6 @@
   border-color: var(--card-primary, #FF8C42);
 }
 
-[data-mantine-color-scheme="dark"] .groupCard:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  border-color: var(--card-primary, #FF8C42);
-  background-color: var(--mantine-color-dark-5);
-}
-
 .groupInfo {
   flex: 1;
 }
@@ -33,19 +27,10 @@
   transition: color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .groupName {
-  color: var(--mantine-color-dark-0);
-}
-
 .memberBadge {
   background-color: var(--card-secondary, var(--mantine-color-gray-1));
   color: var(--badge-color, var(--mantine-color-gray-7));
   transition: all 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .memberBadge {
-  background-color: var(--card-secondary, var(--mantine-color-dark-4));
-  color: var(--badge-color, var(--mantine-color-dark-1));
 }
 
 .menuButton {
@@ -53,17 +38,8 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .menuButton {
-  color: var(--mantine-color-dark-2);
-}
-
 .menuButton:hover {
   background-color: var(--card-secondary, var(--mantine-color-gray-1));
-  color: var(--card-primary, #FF8C42);
-}
-
-[data-mantine-color-scheme="dark"] .menuButton:hover {
-  background-color: var(--card-secondary, var(--mantine-color-dark-4));
   color: var(--card-primary, #FF8C42);
 }
 
@@ -73,18 +49,10 @@
   transition: border-color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .cardFooter {
-  border-top: 1px solid var(--mantine-color-dark-4);
-}
-
 .exploreText {
   color: #888;
   font-weight: 500;
   transition: color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .exploreText {
-  color: var(--mantine-color-dark-2);
 }
 
 .openButton {
@@ -103,20 +71,6 @@
   box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
 }
 
-[data-mantine-color-scheme="dark"] .openButton {
-  box-shadow: 0 2px 8px rgba(255, 140, 66, 0.3);
-}
-
-[data-mantine-color-scheme="dark"] .openButton:hover {
-  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
-  opacity: 1;
-  background-color: #ffa94d;
-}
-
-[data-mantine-color-scheme="dark"] .groupCard {
-  backdrop-filter: blur(10px);
-}
-
 .openButton:focus {
   outline: 2px solid var(--card-primary, #FF8C42);
   outline-offset: 2px;
@@ -131,17 +85,8 @@
   transform: translateY(-1px);
 }
 
-[data-mantine-color-scheme="dark"] .groupCard:hover .openButton {
-  background-color: #ffa94d;
-}
-
 :root {
   --card-primary: #FF8C42;
   --card-secondary: #f8f9fa;
   --badge-color: #6c757d;
-}
-
-[data-mantine-color-scheme="dark"] {
-  --card-secondary: var(--mantine-color-dark-4);
-  --badge-color: var(--mantine-color-dark-1);
 }

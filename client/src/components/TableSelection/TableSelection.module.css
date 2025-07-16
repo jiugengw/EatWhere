@@ -3,49 +3,9 @@
   transition: background-color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .rowSelected {
-  background-color: var(--mantine-color-blue-9);
-}
-
 .table {
   table-layout: fixed;
   width: 100%;
   background-color: var(--mantine-color-white);
   transition: background-color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .table {
-  background-color: var(--mantine-color-dark-6);
-}
-
-[data-mantine-color-scheme="dark"] .table th {
-  background-color: var(--mantine-color-dark-5);
-  color: var(--mantine-color-dark-0);
-  border-bottom: 1px solid var(--mantine-color-dark-4);
-}
-
-[data-mantine-color-scheme="dark"] .table td {
-  color: var(--mantine-color-dark-1);
-  border-bottom: 1px solid var(--mantine-color-dark-4);
-}
-
-[data-mantine-color-scheme="dark"] .table tr:hover {
-  background-color: var(--mantine-color-dark-5);
-}
-
-[data-mantine-color-scheme="dark"] .table .mantine-Checkbox-root {
-  --checkbox-color: var(--mantine-color-blue-6);
-}
-
-[data-mantine-color-scheme="dark"] .table .mantine-Checkbox-input:checked {
-  background-color: var(--mantine-color-blue-6);
-  border-color: var(--mantine-color-blue-6);
-}
-
-.table tr:hover:not(.rowSelected) {
-  background-color: var(--mantine-color-gray-0);
-}
-
-[data-mantine-color-scheme="dark"] .table tr:hover:not(.rowSelected) {
-  background-color: var(--mantine-color-dark-5);
 }

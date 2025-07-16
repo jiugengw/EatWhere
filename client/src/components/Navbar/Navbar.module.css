@@ -7,21 +7,12 @@
   backdrop-filter: blur(8px);
 }
 
-[data-mantine-color-scheme="dark"] .navbarWrapper {
-  background-color: var(--mantine-color-dark-7);
-  border-bottom-color: var(--mantine-color-dark-4);
-}
-
 .logo {
   font-weight: 700;
   font-size: 20px;
   text-decoration: none;
   color: var(--mantine-color-gray-9);
   transition: color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .logo {
-  color: var(--mantine-color-white);
 }
 
 .navLink {
@@ -33,16 +24,7 @@
   border-radius: var(--mantine-radius-sm);
 }
 
-[data-mantine-color-scheme="dark"] .navLink {
-  color: var(--mantine-color-gray-3);
-}
-
 .navLink:hover {
   color: var(--mantine-color-primary-6);
   background-color: var(--mantine-color-primary-0);
-}
-
-[data-mantine-color-scheme="dark"] .navLink:hover {
-  color: var(--mantine-color-primary-4);
-  background-color: var(--mantine-color-dark-5);
 }

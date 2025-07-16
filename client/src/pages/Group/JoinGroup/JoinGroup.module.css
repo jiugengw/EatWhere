@@ -6,10 +6,6 @@
   transition: background-color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .container {
-  background-color: var(--mantine-color-dark-7);
-}
-
 .iconWrapper {
   display: flex;
   align-items: center;
@@ -22,22 +18,12 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .iconWrapper {
-  background: linear-gradient(135deg, rgba(255, 140, 66, 0.15) 0%, rgba(255, 140, 66, 0.08) 100%);
-  border: 2px solid rgba(255, 140, 66, 0.3);
-  box-shadow: 0 4px 20px rgba(255, 140, 66, 0.1);
-}
-
 .mainTitle {
   color: var(--mantine-color-text);
   font-weight: 700;
   letter-spacing: -0.5px;
   margin: 0;
   transition: color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .mainTitle {
-  color: var(--mantine-color-dark-0);
 }
 
 .formCard {
@@ -47,20 +33,9 @@
   transition: all 0.3s ease;
 }
 
-[data-mantine-color-scheme="dark"] .formCard {
-  background: linear-gradient(135deg, var(--mantine-color-dark-6) 0%, var(--mantine-color-dark-5) 100%);
-  border: 1px solid var(--mantine-color-dark-4);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
 .formCard:hover {
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
-}
-
-[data-mantine-color-scheme="dark"] .formCard:hover {
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-  background: linear-gradient(135deg, var(--mantine-color-dark-5) 0%, var(--mantine-color-dark-4) 100%);
 }
 
 .label {
@@ -69,31 +44,15 @@
   transition: color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .label {
-  color: var(--mantine-color-dark-0);
-}
-
 .codeInput {
   background-color: #f8f9fa;
   border: 2px solid #dee2e6;
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .codeInput {
-  background-color: var(--mantine-color-dark-5);
-  border: 2px solid var(--mantine-color-dark-3);
-  color: var(--mantine-color-dark-0);
-}
-
 .codeInput:focus-within {
   border-color: #FF8C42;
   box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
-}
-
-[data-mantine-color-scheme="dark"] .codeInput:focus-within {
-  border-color: #FF8C42;
-  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
-  background-color: var(--mantine-color-dark-4);
 }
 
 .joinButton {
@@ -111,11 +70,6 @@
   transform: translateY(-1px);
 }
 
-[data-mantine-color-scheme="dark"] .joinButton:hover {
-  background: linear-gradient(135deg, #ffa94d 0%, #FF8C42 100%);
-  box-shadow: 0 6px 16px rgba(255, 140, 66, 0.5);
-}
-
 .joinButton:active {
   transform: translateY(0);
 }
@@ -126,32 +80,16 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .helpCard {
-  background-color: var(--mantine-color-dark-6);
-  border: 1px solid var(--mantine-color-dark-4);
-}
-
 .featureCard {
   background-color: #ffffff;
   border: 1px solid #e9ecef;
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .featureCard {
-  background-color: var(--mantine-color-dark-6);
-  border: 1px solid var(--mantine-color-dark-4);
-}
-
 .featureCard:hover {
   border-color: #FF8C42;
   box-shadow: 0 4px 12px rgba(255, 140, 66, 0.1);
   transform: translateY(-2px);
-}
-
-[data-mantine-color-scheme="dark"] .featureCard:hover {
-  border-color: #FF8C42;
-  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.2);
-  background-color: var(--mantine-color-dark-5);
 }
 
 @media (max-width: 768px) {
@@ -180,32 +118,4 @@
 
 .codeInput input:focus {
   background-color: #ffffff;
-}
-
-[data-mantine-color-scheme="dark"] .codeInput input {
-  background-color: var(--mantine-color-dark-5);
-  color: var(--mantine-color-dark-0);
-  border: none;
-}
-
-[data-mantine-color-scheme="dark"] .codeInput input:focus {
-  background-color: var(--mantine-color-dark-4);
-}
-
-.joinButton[data-loading="true"] {
-  background: linear-gradient(135deg, #ccc 0%, #aaa 100%);
-}
-
-[data-mantine-color-scheme="dark"] .joinButton[data-loading="true"] {
-  background: linear-gradient(135deg, var(--mantine-color-dark-4) 0%, var(--mantine-color-dark-5) 100%);
-}
-
-[data-mantine-color-scheme="dark"] .helpCard *,
-[data-mantine-color-scheme="dark"] .featureCard * {
-  color: var(--mantine-color-dark-1) !important;
-}
-
-[data-mantine-color-scheme="dark"] .helpCard,
-[data-mantine-color-scheme="dark"] .featureCard {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAxiosPrivate } from "../auth/useAxiosPrivate";
 import { showNotification } from "@mantine/notifications";
 import { AxiosError } from "axios";
@@ -6,6 +6,7 @@ import type { UpdatePreferencesInput } from "@/shared/schemas/UpdatePreferencesS
 
 export const useUpdateUserPreferences = () => {
   const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient(); 
 
   return useMutation({
     mutationFn: async (data: UpdatePreferencesInput) => {
@@ -19,6 +20,9 @@ export const useUpdateUserPreferences = () => {
         message: "Your preferences are successfully updated",
         color: "green",
       });
+
+      queryClient.invalidateQueries({ queryKey: ['smartRecommendations'] });
+      queryClient.invalidateQueries({ queryKey: ['userPreferences'] });
     },
     onError: (error: unknown) => {
       const err = error as AxiosError<{ message: string }>;

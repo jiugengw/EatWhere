@@ -7,20 +7,12 @@
   transition: color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .title {
-  color: var(--mantine-color-dark-0);
-}
-
 .subtitle {
   text-align: center;
   margin-bottom: 2rem;
   color: var(--mantine-color-dimmed);
   font-size: 0.9rem;
   transition: color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .subtitle {
-  color: var(--mantine-color-dark-2);
 }
 
 .link {
@@ -34,29 +26,16 @@
   color: #e07b30;
 }
 
-[data-mantine-color-scheme="dark"] .link:hover {
-  color: #ffa94d;
-}
-
 .formWrapper {
   background-color: var(--mantine-color-body);
   border-color: var(--mantine-color-default-border);
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .formWrapper {
-  background-color: var(--mantine-color-dark-6);
-  border-color: var(--mantine-color-dark-4);
-}
-
 .label {
   color: var(--mantine-color-text);
   font-weight: 500;
   transition: color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .label {
-  color: var(--mantine-color-dark-0);
 }
 
 .input {
@@ -66,30 +45,15 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .input {
-  background-color: var(--mantine-color-dark-5);
-  border-color: var(--mantine-color-dark-4);
-  color: var(--mantine-color-dark-0);
-}
-
 .input:focus {
   border-color: #ff8c42;
   box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.2);
-}
-
-[data-mantine-color-scheme="dark"] .input:focus {
-  border-color: #ffa94d;
-  box-shadow: 0 0 0 2px rgba(255, 169, 77, 0.3);
 }
 
 .checkboxLabel {
   color: var(--mantine-color-dimmed);
   font-size: 0.9rem;
   transition: color 0.2s ease;
-}
-
-[data-mantine-color-scheme="dark"] .checkboxLabel {
-  color: var(--mantine-color-dark-2);
 }
 
 .button {
@@ -104,11 +68,6 @@
   background-color: #e07b30;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
-}
-
-[data-mantine-color-scheme="dark"] .button:hover {
-  background-color: #ffa94d;
-  box-shadow: 0 4px 12px rgba(255, 169, 77, 0.4);
 }
 
 .button:active {
@@ -129,14 +88,6 @@
   color: #e07b30;
 }
 
-[data-mantine-color-scheme="dark"] .forgetPassword:hover {
-  color: #ffa94d;
-}
-
 .formWrapper:hover {
   box-shadow: var(--mantine-shadow-sm);
-}
-
-[data-mantine-color-scheme="dark"] .formWrapper:hover {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }

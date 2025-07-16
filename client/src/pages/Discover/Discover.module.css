@@ -18,33 +18,15 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .groupSelect input {
-  border: 2px solid var(--mantine-color-dark-4);
-  background: var(--mantine-color-dark-5);
-  color: var(--mantine-color-dark-0);
-}
-
 .groupSelect input:focus {
   border-color: #FF8C42;
   box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
-}
-
-[data-mantine-color-scheme="dark"] .groupSelect input:focus {
-  border-color: #FF8C42;
-  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
-  background: var(--mantine-color-dark-4);
 }
 
 .groupSelect .mantine-Select-dropdown {
   border: 2px solid var(--mantine-color-gray-3);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-[data-mantine-color-scheme="dark"] .groupSelect .mantine-Select-dropdown {
-  border: 2px solid var(--mantine-color-dark-4);
-  background: var(--mantine-color-dark-6);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .groupSelect .mantine-Select-option {

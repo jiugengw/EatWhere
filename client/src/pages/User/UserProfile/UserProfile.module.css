@@ -19,10 +19,6 @@
   border-right: 1px solid var(--mantine-color-default-border);
 }
 
-[data-mantine-color-scheme='dark'] .sidebar {
-  background: var(--mantine-color-dark-6);
-}
-
 .userSection {
   width: 100%;
   text-align: center;
@@ -31,10 +27,6 @@
 .avatar {
   border: 3px solid var(--mantine-color-primary-1);
   box-shadow: var(--mantine-shadow-sm);
-}
-
-[data-mantine-color-scheme='dark'] .avatar {
-  border-color: var(--mantine-color-primary-9);
 }
 
 .userName {
@@ -50,10 +42,6 @@
 .navButton:hover {
   background: var(--mantine-color-gray-1);
   transform: translateX(4px);
-}
-
-[data-mantine-color-scheme='dark'] .navButton:hover {
-  background: var(--mantine-color-dark-5);
 }
 
 .activeNavButton {

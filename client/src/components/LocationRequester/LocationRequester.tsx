@@ -82,7 +82,6 @@ export const LocationRequester: React.FC<LocationRequesterProps> = ({
             icon={<IconAlertCircle size={16} />} 
             color="orange" 
             variant="light"
-            size="xs"
           >
             {error}
           </Alert>

@@ -28,6 +28,8 @@ export const useSubmitRating = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recommendations'] });
+      queryClient.invalidateQueries({ queryKey: ['smartRecommendations'] }); 
+      queryClient.invalidateQueries({ queryKey: ['userPreferences'] });
       showNotification({
         title: "Rating submitted",
         message: "Thanks for your feedback!",

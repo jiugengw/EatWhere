@@ -6,18 +6,9 @@
   transition: all 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .footer {
-  background-color: var(--mantine-color-dark-7);
-  border-top-color: var(--mantine-color-dark-4);
-}
-
 .leftText {
   color: var(--mantine-color-gray-6);
   font-size: 0.875rem;
-}
-
-[data-mantine-color-scheme="dark"] .leftText {
-  color: var(--mantine-color-gray-4);
 }
 
 .link {
@@ -27,14 +18,6 @@
   transition: color 0.2s ease;
 }
 
-[data-mantine-color-scheme="dark"] .link {
-  color: var(--mantine-color-gray-4);
-}
-
 .link:hover {
   color: var(--mantine-color-primary-6);
-}
-
-[data-mantine-color-scheme="dark"] .link:hover {
-  color: var(--mantine-color-primary-4);
 }

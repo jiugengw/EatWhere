@@ -13,10 +13,6 @@
   border-radius: var(--mantine-radius-sm);
 }
 
-[data-mantine-color-scheme='dark'] .legend {
-  background: var(--mantine-color-dark-6);
-}
-
 .preferencesContainer {
   background: var(--mantine-color-body);
   border: 1px solid var(--mantine-color-default-border);
@@ -46,10 +42,6 @@
   border-radius: 3px;
 }
 
-[data-mantine-color-scheme='dark'] .sliderTrack {
-  background-color: var(--mantine-color-dark-4);
-}
-
 .sliderBar {
   background-color: var(--mantine-color-primary-6);
   height: 6px;
@@ -71,11 +63,6 @@
 
 .sliderThumb:active {
   box-shadow: var(--mantine-shadow-lg);
-}
-
-[data-mantine-color-scheme='dark'] .sliderThumb {
-  background-color: var(--mantine-color-white);
-  border-color: var(--mantine-color-primary-4);
 }
 
 .divider {
@@ -113,16 +100,6 @@
   background: var(--mantine-color-gray-0);
   border-color: var(--mantine-color-gray-5);
   transform: translateY(-1px);
-}
-
-[data-mantine-color-scheme='dark'] .resetButton {
-  color: var(--mantine-color-gray-4);
-  border-color: var(--mantine-color-dark-4);
-}
-
-[data-mantine-color-scheme='dark'] .resetButton:hover:not(:disabled) {
-  background: var(--mantine-color-dark-5);
-  border-color: var(--mantine-color-dark-3);
 }
 
 /* Responsive Design */
