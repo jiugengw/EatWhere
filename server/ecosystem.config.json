@@ -1,0 +1,20 @@
+{
+  "apps": [{
+    "name": "EatWhere/server",
+    "script": "npm",
+    "args": "start",
+    "cwd": "/home/ec2-user/EatWhere/server",
+    "instances": 1,
+    "exec_mode": "fork",
+    "watch": false,
+    "max_memory_restart": "500M",
+    "env": {
+      "NODE_ENV": "production",
+      "PORT": "8080"
+    },
+    "error_file": "/home/ec2-user/logs/eatwhere-error.log",
+    "out_file": "/home/ec2-user/logs/eatwhere-out.log",
+    "log_file": "/home/ec2-user/logs/eatwhere-combined.log",
+    "time": true
+  }]
+}
