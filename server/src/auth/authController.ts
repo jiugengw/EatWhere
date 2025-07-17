@@ -30,9 +30,10 @@ const createSendToken = (
       Date.now() + Number(config.JWT_COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: true,
+    secure: config.NODE_ENV === 'production', 
+    sameSite: config.NODE_ENV === 'production' ? 'none' : 'lax',
   };
-  if (config.NODE_ENV === 'production') cookieOptions.secure = true;
+  // if (config.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
 
