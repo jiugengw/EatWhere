@@ -66,7 +66,6 @@
   min-height: 100%;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .profileContainer {
     grid-template-columns: 1fr;

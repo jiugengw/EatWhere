@@ -392,7 +392,7 @@ export function DiscoverPage() {
 
               {location && (
                 <Text size="xs" c="dimmed">
-                  Searching near: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                  Searching near: Current Location
                 </Text>
               )}
             </Stack>
@@ -458,7 +458,6 @@ export function DiscoverPage() {
                       <RestaurantCard
                         restaurant={restaurant}
                       />
-                      {/* Enhanced suggestion metadata overlay */}
                       <div className={classes.suggestionBadges}>
                         <Badge variant="light" color="orange" size="xs">
                           {restaurantData?.cuisine}

@@ -40,11 +40,10 @@ export const ProfilePage = () => {
   };
 
   const getInitials = (name: string) => {
-    return name
-      ?.split(" ")
-      .map((n: string) => n[0])
-      .join("")
-      .toUpperCase();
+    const names = name?.split(" ") || [];
+    return names.length > 1
+      ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
+      : (names[0]?.[0] || '').toUpperCase();
   };
 
   return (
@@ -82,9 +81,8 @@ export const ProfilePage = () => {
                     radius="md"
                     fullWidth
                     leftSection={<Icon size={18} />}
-                    className={`${classes.navButton} ${
-                      activeTab === tab ? classes.activeNavButton : ""
-                    }`}
+                    className={`${classes.navButton} ${activeTab === tab ? classes.activeNavButton : ""
+                      }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {label}

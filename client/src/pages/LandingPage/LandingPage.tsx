@@ -177,11 +177,6 @@ export function LandingPage() {
             >
               Start Your Food Journey
             </Button>
-
-            <Text size="sm" className={classes.ctaSubtext}>
-              ✨ Free forever • 🚀 No credit card required • 🎯 Instant
-              recommendations
-            </Text>
           </Stack>
         </Container>
       </div>

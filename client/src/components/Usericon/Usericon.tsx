@@ -54,10 +54,12 @@ export function Usericon() {
         <Box className={classes.avatarbox}>
           {loggedIn ? (
             <Avatar name={fullName} color="initials" className={classes.avatar}>
-              {fullName
-                ?.split(' ')
-                .map((n) => n[0])
-                .join('')}
+              {(() => {
+                const names = fullName?.split(' ') || [];
+                return names.length > 1
+                  ? names[0][0] + names[names.length - 1][0]
+                  : names[0]?.[0] || '';
+              })()}
             </Avatar>
           ) : (
             <IconUserCircle size={32} stroke={1.5} className={classes.icon} />
@@ -71,10 +73,12 @@ export function Usericon() {
             <Box p="sm">
               <Group mb="sm" gap="xs">
                 <Avatar name={fullName} color="initials" size="sm">
-                  {fullName
-                    ?.split(' ')
-                    .map((n) => n[0])
-                    .join('')}
+                  {(() => {
+                    const names = fullName?.split(' ') || [];
+                    return names.length > 1
+                      ? names[0][0] + names[names.length - 1][0]
+                      : names[0]?.[0] || '';
+                  })()}
                 </Avatar>
                 <Stack gap={1}>
                   <Text size="xs" fw={500} lineClamp={1}>
