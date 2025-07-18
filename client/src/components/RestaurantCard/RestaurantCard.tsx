@@ -149,52 +149,60 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
           )}
         </Card.Section>
 
-        <Stack gap="md" mt="md">
-          <Flex justify="space-between" align="flex-start">
-            <Stack gap="xs" style={{ flex: 1 }}>
-              <Text fw={600} size="lg" lineClamp={2}>
-                {restaurant.name}
-              </Text>
-              {!hasPhoto && restaurant.opening_hours?.open_now !== undefined && (
-                <Badge
-                  color={restaurant.opening_hours.open_now ? 'green' : 'red'}
-                  variant="light"
-                  size="sm"
-                >
-                  {restaurant.opening_hours.open_now ? 'Open Now' : 'Closed'}
-                </Badge>
-              )}
-            </Stack>
-
-            {restaurant.rating && (
-              <Group gap="xs">
-                <IconStar size={16} color="#ffd43b" fill="#ffd43b" />
-                <Text fw={500} size="sm">
-                  {restaurant.rating.toFixed(1)}
+        <div style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column',
+          padding: '1rem 0'
+        }}>
+          <div style={{ flex: 1 }}>
+            <Flex justify="space-between" align="flex-start" mb="md">
+              <Stack gap="xs" style={{ flex: 1 }}>
+                <Text fw={600} size="lg" lineClamp={2}>
+                  {restaurant.name}
                 </Text>
-              </Group>
-            )}
-          </Flex>
+                {!hasPhoto && restaurant.opening_hours?.open_now !== undefined && (
+                  <Badge
+                    color={restaurant.opening_hours.open_now ? 'green' : 'red'}
+                    variant="light"
+                    size="sm"
+                  >
+                    {restaurant.opening_hours.open_now ? 'Open Now' : 'Closed'}
+                  </Badge>
+                )}
+              </Stack>
 
-          <Text size="sm" c="dimmed">
-            {restaurant.vicinity || 'Location not available'}
-          </Text>
-
-          <Flex justify="space-between" align="center">
-            <div>
-              {restaurant.price_level && (
-                <Text size="sm" fw={500} c="green">
-                  {getPriceLevel(restaurant.price_level)}
-                </Text>
+              {restaurant.rating && (
+                <Group gap="xs">
+                  <IconStar size={16} color="#ffd43b" fill="#ffd43b" />
+                  <Text fw={500} size="sm">
+                    {restaurant.rating.toFixed(1)}
+                  </Text>
+                </Group>
               )}
-            </div>
-          </Flex>
+            </Flex>
 
-          <Group justify="space-between" mt="auto">
+            <Text size="sm" c="dimmed" mb="md">
+              {restaurant.vicinity || 'Location not available'}
+            </Text>
+
+            <Flex justify="space-between" align="center">
+              <div>
+                {restaurant.price_level && (
+                  <Text size="sm" fw={500} c="green">
+                    {getPriceLevel(restaurant.price_level)}
+                  </Text>
+                )}
+              </div>
+            </Flex>
+          </div>
+
+          <Group justify="space-between" gap="xs" style={{ marginTop: 'auto' }}>
             <Button
               size="sm"
               leftSection={<IconChefHat size={16} />}
               onClick={handleEatingHere}
+              style={{ flex: 1 }}
             >
               Eating Here!
             </Button>
@@ -204,12 +212,14 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
               leftSection={<IconMapPin size={16} />}
               onClick={handleViewOnMap}
               variant="outline"
+              style={{ flex: 1 }}
             >
               View On Map
             </Button>
           </Group>
-        </Stack>
+        </div>
       </Card>
+      
       <Modal
         opened={ratingModalOpen}
         onClose={handleCloseModal}
