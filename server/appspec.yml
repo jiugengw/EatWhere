@@ -14,28 +14,25 @@ permissions:
       - file
 hooks:
   BeforeInstall:
-    - location: scripts/install_dependencies.sh
+    - location: scripts/install_docker.sh
       timeout: 300
       runas: root
-    - location: scripts/stop_server.sh
+    - location: scripts/stop_container.sh
       timeout: 60
       runas: ec2-user
   AfterInstall:
-    - location: scripts/install_app_dependencies.sh
+    - location: scripts/build_image.sh
       timeout: 600
       runas: ec2-user
-    - location: scripts/build_app.sh
-      timeout: 300
-      runas: ec2-user
   ApplicationStart:
-    - location: scripts/start_server.sh
+    - location: scripts/start_container.sh
       timeout: 60
       runas: ec2-user
   ApplicationStop:
-    - location: scripts/stop_server.sh
+    - location: scripts/stop_container.sh
       timeout: 60
       runas: ec2-user
   ValidateService:
-    - location: scripts/validate_service.sh
+    - location: scripts/validate_container.sh
       timeout: 60
       runas: ec2-user
