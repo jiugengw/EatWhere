@@ -42,20 +42,17 @@ export function DiscoverPage() {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
 
-  // Search state
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [debouncedSearch] = useDebouncedValue(searchKeyword, 500);
 
-
   const navigate = useNavigate();
   const routerLocation = useRouterLocation();
   const searchParams = new URLSearchParams(routerLocation.search);
   const axiosPrivate = useAxiosPrivate();
 
-  // Check if this is group recommendations
   const isGroupMode = searchParams.get('type') === 'group';
   const groupId = searchParams.get('groupId') || selectedGroupId;
 
@@ -71,7 +68,6 @@ export function DiscoverPage() {
     }
   }, [searchParams, isGroupMode]);
 
-  // Search function
   const handleSearch = async (keyword: string) => {
     if (!keyword.trim() || !location) {
       setSearchResults([]);
@@ -93,7 +89,6 @@ export function DiscoverPage() {
       const response = await axiosPrivate.get(`/google/places?${queryParams}`);
       const results = response.data.data?.results || response.data.results || [];
 
-      // Transform to match RestaurantCard format
       const transformedResults = results.slice(0, 10).map((place: any) => ({
         place_id: place.place_id,
         name: place.name,
@@ -117,7 +112,6 @@ export function DiscoverPage() {
     }
   };
 
-  // Auto-search when debounced keyword changes
   useEffect(() => {
     if (debouncedSearch) {
       handleSearch(debouncedSearch);
@@ -126,21 +120,18 @@ export function DiscoverPage() {
     }
   }, [debouncedSearch, location]);
 
-  // Clear search
   const clearSearch = () => {
     setSearchKeyword('');
     setSearchResults([]);
     setSearchError(null);
   };
 
-  // Reset recommendations when switching modes
   const resetOnModeChange = () => {
     setHasGenerated(false);
     setRestaurantCount(5);
-    clearSearch(); // Also clear search when switching modes
+    clearSearch();
   };
 
-  // Toggle between personal and group mode
   const toggleMode = () => {
     const newMode = isGroupMode ? 'personal' : 'group';
     if (newMode === 'personal') {
@@ -151,7 +142,6 @@ export function DiscoverPage() {
     resetOnModeChange();
   };
 
-  // Use smart recommendations that auto-select cuisines
   const {
     data,
     isLoading: restaurantsLoading,
@@ -160,12 +150,11 @@ export function DiscoverPage() {
   } = useSmartRecommendations({
     location: { lat: location?.lat || 1.3521, lng: location?.lng || 103.8198 },
     count: restaurantCount,
-    enabled: hasGenerated && !searchKeyword, // Don't fetch recommendations if searching
+    enabled: hasGenerated && !searchKeyword,
     isGroupMode: isGroupMode,
     groupId: isGroupMode ? (groupId || '') : undefined
   });
 
-  // Transform the recommendation data to match RestaurantCard expectations
   const restaurants = data?.restaurants?.map(restaurant => ({
     place_id: restaurant.place_id,
     name: restaurant.name,
@@ -177,7 +166,6 @@ export function DiscoverPage() {
     types: restaurant.types || [restaurant.cuisine?.toLowerCase() || 'restaurant'],
     business_status: 'OPERATIONAL' as const,
     opening_hours: undefined,
-    // Add prediction data for enhanced display
     predictedRating: restaurant.combinedScore,
     suggestedCuisine: restaurant.cuisine
   })) || [];
@@ -186,7 +174,7 @@ export function DiscoverPage() {
     if (!location && !locationError) {
       getCurrentLocation();
     }
-    clearSearch(); // Clear search when generating recommendations
+    clearSearch(); 
     setHasGenerated(true);
   };
 
@@ -196,7 +184,6 @@ export function DiscoverPage() {
 
   const isLoading = locationLoading || restaurantsLoading || searchLoading;
 
-  // Determine what to show
   const showSearchResults = searchKeyword && searchResults.length > 0;
   const showRecommendations = hasGenerated && !searchKeyword && restaurants.length > 0;
   const showSetup = !hasGenerated && !searchKeyword;
@@ -204,7 +191,6 @@ export function DiscoverPage() {
   return (
     <Container size="lg" py="xl" className={classes.container}>
       <Stack gap="xl">
-        {/* Header */}
         <Paper withBorder p="lg" radius="md" className={classes.header}>
           <Group justify="space-between" align="center">
             <Group gap="sm">
@@ -222,7 +208,6 @@ export function DiscoverPage() {
             </Group>
 
             <Group gap="sm">
-              {/* Mode Toggle Button */}
               <Button
                 variant="light"
                 leftSection={isGroupMode ? <IconUser size={18} /> : <IconUsers size={18} />}
@@ -247,7 +232,6 @@ export function DiscoverPage() {
           </Group>
         </Paper>
 
-        {/* 🔍 SEARCH BAR - ADD THIS HERE */}
         <Paper withBorder p="lg" radius="md">
           <Stack gap="md">
             <Group gap="sm" align="center">
@@ -292,7 +276,6 @@ export function DiscoverPage() {
           </Stack>
         </Paper>
 
-        {/* Location & Group Errors */}
         {locationError && (
           <Alert icon={<IconInfoCircle size={16} />} color="orange" title="Location Error">
             {locationError}
@@ -308,7 +291,6 @@ export function DiscoverPage() {
           </Alert>
         )}
 
-        {/* 🔍 SEARCH RESULTS */}
         {showSearchResults && (
           <Stack gap="lg">
             <Paper withBorder p="md" radius="md">
@@ -338,7 +320,6 @@ export function DiscoverPage() {
           </Stack>
         )}
 
-        {/* 🎯 SMART RECOMMENDATIONS SETUP */}
         {showSetup && (
           <Paper withBorder p="xl" radius="md" className={classes.setupCard}>
             <Stack gap="lg" align="center">
@@ -418,7 +399,6 @@ export function DiscoverPage() {
           </Paper>
         )}
 
-        {/* 🎯 SMART RECOMMENDATIONS RESULTS */}
         {showRecommendations && (
           <Stack gap="lg">
             <Paper withBorder p="md" radius="md" className={classes.resultsHeader}>

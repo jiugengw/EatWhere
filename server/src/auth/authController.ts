@@ -33,12 +33,9 @@ const createSendToken = (
     secure: config.NODE_ENV === 'production', 
     sameSite: config.NODE_ENV === 'production' ? 'none' : 'lax',
   };
-  // if (config.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
 
-  // user.password = undefined;
-  console.log(user);
   res.status(statusCode).json({
     status: 'success',
     token: accessToken,
@@ -97,7 +94,6 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
-  console.log("this is the request body: ", req.body)
   const parsed = UpdatePasswordSchema.safeParse(req.body);
   if (!parsed.success) {
     return next(

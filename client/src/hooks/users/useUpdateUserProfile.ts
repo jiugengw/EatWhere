@@ -27,7 +27,6 @@ export const useUpdateUserProfile = () => {
         color: "green",
       });
 
-      // Optional: update auth state if name/email changed
       setAuth((prev) => ({
         ...prev,
         fullName: data.data.user.fullName,

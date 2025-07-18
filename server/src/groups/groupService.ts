@@ -22,7 +22,6 @@ export const joinGroupByCode = async (
   code: string,
   userId: string
 ): Promise<{ message: string; group: GroupDoc }> => {
-  console.log(code);
   const group = await Group.findOne({ code });
 
   if (!group) {

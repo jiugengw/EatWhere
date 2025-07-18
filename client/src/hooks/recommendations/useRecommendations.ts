@@ -1,4 +1,3 @@
-// client/src/hooks/recommendations/useRecommendations.ts
 import { useQuery } from '@tanstack/react-query';
 import { useAxiosPrivate } from '../auth/useAxiosPrivate';
 
@@ -38,8 +37,6 @@ interface RestaurantRecommendation {
   reasoning: string;
 }
 
-
-// Hook for intelligent cuisine selection and recommendations
 export const useSmartRecommendations = ({
   location,
   count,
@@ -68,16 +65,13 @@ export const useSmartRecommendations = ({
       };
       generatedAt: string;
     }> => {
-      // Step 1: Get user's top cuisines by calling a new endpoint
       const topCuisinesResponse = await axiosPrivate.get('/recommendations/top-cuisines', {
         params: isGroupMode && groupId ? { groupId } : {}
       });
       const topCuisines: Array<{cuisine: string, score: number}> = topCuisinesResponse.data.data.topCuisines;
 
-      // Step 2: Calculate distribution based on count
       const distribution = calculateCuisineDistribution(count, topCuisines);
       
-      // Step 3: Fetch restaurants for each cuisine according to distribution
       const allRestaurants: RestaurantRecommendation[] = [];
       
       for (const [cuisine, restaurantCount] of Object.entries(distribution)) {
@@ -97,7 +91,6 @@ export const useSmartRecommendations = ({
           const response = await axiosPrivate.get(`${endpoint}?${queryParams}`);
           const restaurants = response.data.data.restaurants || [];
           
-          // Add cuisine info and sort by score
           const cuisineRestaurants = restaurants
             .slice(0, restaurantCount)
             .map((restaurant: RestaurantRecommendation) => ({
@@ -111,7 +104,6 @@ export const useSmartRecommendations = ({
         }
       }
 
-      // Step 4: Sort all restaurants by combined score and maintain order
       const sortedRestaurants = allRestaurants
         .sort((a, b) => (b.cuisineScore || 0) - (a.cuisineScore || 0))
         .slice(0, count);
@@ -135,34 +127,27 @@ export const useSmartRecommendations = ({
   });
 };
 
-// Algorithm to distribute restaurants across top cuisines
 function calculateCuisineDistribution(count: number, topCuisines: Array<{cuisine: string, score: number}>): Record<string, number> {
   const distribution: Record<string, number> = {};
   
   if (count === 1) {
-    // Top 1 cuisine gets 1 restaurant
     distribution[topCuisines[0]?.cuisine] = 1;
   } else if (count === 2) {
-    // Top 2 cuisines get 1 each
     distribution[topCuisines[0]?.cuisine] = 1;
     distribution[topCuisines[1]?.cuisine] = 1;
   } else if (count === 3) {
-    // Top 3 cuisines get 1 each
     distribution[topCuisines[0]?.cuisine] = 1;
     distribution[topCuisines[1]?.cuisine] = 1;
     distribution[topCuisines[2]?.cuisine] = 1;
   } else if (count === 4) {
-    // Top 3 cuisines, top 1 gets 2 restaurants
     distribution[topCuisines[0]?.cuisine] = 2;
     distribution[topCuisines[1]?.cuisine] = 1;
     distribution[topCuisines[2]?.cuisine] = 1;
   } else if (count === 5) {
-    // Top 3 cuisines, top 2 get 2 restaurants each
     distribution[topCuisines[0]?.cuisine] = 2;
     distribution[topCuisines[1]?.cuisine] = 2;
     distribution[topCuisines[2]?.cuisine] = 1;
   } else {
-    // For 6+: distribute evenly across top 3, giving extra to top cuisines
     const baseCuisines = Math.min(3, topCuisines.length);
     const baseCount = Math.floor(count / baseCuisines);
     const extraCount = count % baseCuisines;

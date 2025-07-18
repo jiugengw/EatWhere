@@ -1,9 +1,14 @@
 import { catchAsync } from './catchAsync.js';
 import { StatusCodes } from 'http-status-codes';
-import type { Model } from 'mongoose';
+import type { Model, PopulateOptions } from 'mongoose';
 import type { RequestHandler } from 'express';
 import { AppError } from './AppError.js';
-import { GetOneOptions, DeleteOneOptions } from '../../types/factory.js';
+
+type GetOneOptions = {
+  populateOptions?: PopulateOptions | (string | PopulateOptions)[];
+  selectFields?: string;
+  enableVirtuals?: boolean;
+};
 
 export const getOne = <T>(
   Model: Model<T>,
@@ -12,17 +17,11 @@ export const getOne = <T>(
   const {
     populateOptions,
     selectFields,
-    findByFn,
     enableVirtuals = true,
   } = options || {};
   return catchAsync(async (req, res, next) => {
-    let query;
-    if (findByFn) {
-      const filter = findByFn(req);
-      query = Model.findOne(filter);
-    } else {
-      query = Model.findById(req.params.id);
-    }
+
+    let query = Model.findById(req.params.id);
 
     if (populateOptions) query = query.populate(populateOptions);
     if (selectFields) query = query.select(selectFields);

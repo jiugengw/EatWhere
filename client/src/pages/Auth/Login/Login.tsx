@@ -8,7 +8,6 @@ import {
   Button,
   Stack,
 } from '@mantine/core';
-import type { JSX } from 'react';
 import classes from './Login.module.css';
 import { Link } from '@tanstack/react-router';
 import { LoginSchema, type LoginInput } from '@/shared/schemas/LoginSchema';
@@ -17,7 +16,7 @@ import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { Loading } from '@/UIelements/loading';
 
-export const LoginPage = (): JSX.Element => {
+export const LoginPage = () => {
   const form = useForm<LoginInput>({
     validate: zodResolver(LoginSchema),
     initialValues: {

@@ -1,4 +1,3 @@
-// client/src/components/RestaurantCard/RestaurantCard.tsx
 import React, { useState } from 'react';
 import { Card, Text, Badge, Group, Button, Stack, Flex, Image, Skeleton, Modal, Select, Rating, Textarea, Title } from '@mantine/core';
 import { IconStar, IconMapPin, IconChefHat } from '@tabler/icons-react';
@@ -78,10 +77,8 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
     setSelectedCuisine(null);
   };
 
-  // Get the first photo reference if available
   const photoReference = restaurant.photos?.[0]?.photo_reference;
 
-  // Use the photo hook
   const { photoUrl, loading: photoLoading, error: photoError, hasPhoto } = useRestaurantPhoto({
     photoReference,
     maxWidth: 400,
@@ -92,7 +89,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
     <>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Card.Section>
-          {/* Restaurant Photo */}
           {hasPhoto ? (
             <>
               {photoLoading ? (
@@ -115,7 +111,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
                     alt={restaurant.name}
                     fallbackSrc="/placeholder-restaurant.jpg"
                   />
-                  {/* Open/Closed Badge Overlay */}
                   {restaurant.opening_hours?.open_now !== undefined && (
                     <Badge
                       color={restaurant.opening_hours.open_now ? 'green' : 'red'}
@@ -147,13 +142,11 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
         </Card.Section>
 
         <Stack gap="md" mt="md">
-          {/* Restaurant Name and Rating */}
           <Flex justify="space-between" align="flex-start">
             <Stack gap="xs" style={{ flex: 1 }}>
               <Text fw={600} size="lg" lineClamp={2}>
                 {restaurant.name}
               </Text>
-              {/* Show open/closed badge only if no photo (since it's on photo when available) */}
               {!hasPhoto && restaurant.opening_hours?.open_now !== undefined && (
                 <Badge
                   color={restaurant.opening_hours.open_now ? 'green' : 'red'}
@@ -175,12 +168,10 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
             )}
           </Flex>
 
-          {/* Address */}
           <Text size="sm" c="dimmed">
             {restaurant.vicinity || 'Location not available'}
           </Text>
 
-          {/* Price and Action */}
           <Flex justify="space-between" align="center">
             <div>
               {restaurant.price_level && (
@@ -191,7 +182,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
             </div>
           </Flex>
 
-          {/* Cuisine Tags */}
           <Group gap="xs">
             {restaurant.types.slice(0, 3).map((type) => (
               <Badge
@@ -241,7 +231,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
             Rate your dining experience to get better recommendations in the future
           </Text>
 
-          {/* Cuisine Selection */}
           <div>
             <Text size="sm" fw={500} mb="xs">What type of cuisine was this? *</Text>
             <Select

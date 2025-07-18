@@ -12,7 +12,7 @@ import {
   Box,
   LoadingOverlay,
 } from "@mantine/core";
-import { useEffect, useState, type JSX } from "react";
+import { useEffect, useState } from "react";
 import { IconDeviceFloppy, IconAdjustments } from "@tabler/icons-react";
 import { useUserPreferences } from "@/hooks/users/usePreferences";
 import { useUpdateUserPreferences } from "@/hooks/users/useUpdatePreferences";
@@ -20,7 +20,7 @@ import classes from "./preference.module.css";
 
 const cuisines: string[] = [
   "Chinese",
-  "Korean", 
+  "Korean",
   "Japanese",
   "Italian",
   "Mexican",
@@ -43,7 +43,7 @@ const preferenceLabels = {
 
 type PreferencesState = Record<string, number>;
 
-export const PreferencesPage = (): JSX.Element => {
+export const PreferencesPage = () => {
   const { data, isLoading } = useUserPreferences();
   const { mutate, isPending } = useUpdateUserPreferences();
   const backendPreferences = data?.data?.user?.preferences || {};

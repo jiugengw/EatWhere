@@ -23,7 +23,6 @@ export const useLogin = () => {
         id: data.data.user.id,
       });
 
-      // optionally store token for persistence
       localStorage.setItem("token", data.token);
       navigate({ to: "/" });
     },

@@ -1,4 +1,3 @@
-// server/src/api/apiController.ts
 import { StatusCodes } from 'http-status-codes';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { AppError } from '../common/utils/AppError.js';
@@ -8,7 +7,6 @@ import type { Request, Response } from 'express';
 export const searchPlaces = catchAsync(async (req: Request, res: Response, next) => {
   const { lat, lng, keyword, radius, type, limit } = req.query;
 
-  // Validate required parameters
   if (!lat || !lng) {
     return next(new AppError('Latitude and longitude are required', StatusCodes.BAD_REQUEST));
   }
@@ -20,7 +18,6 @@ export const searchPlaces = catchAsync(async (req: Request, res: Response, next)
     return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
   }
 
-  // Validate coordinate ranges
   if (latitude < -90 || latitude > 90) {
     return next(new AppError('Latitude must be between -90 and 90', StatusCodes.BAD_REQUEST));
   }
@@ -40,7 +37,6 @@ export const searchPlaces = catchAsync(async (req: Request, res: Response, next)
 
     const placesData = await searchNearbyPlaces(searchParams);
     
-    // Apply limit if specified
     let results = placesData.results;
     if (limit) {
       const limitNum = parseInt(limit as string, 10);
@@ -84,11 +80,9 @@ export const getPlacePhoto = catchAsync(async (req: Request, res: Response, next
 
     const photoStream = await getPlacePhotoStream(photoParams);
     
-    // Set appropriate headers
     res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.setHeader('Cache-Control', 'public, max-age=86400');
     
-    // Pipe the photo stream to response
     photoStream.pipe(res);
   } catch (error) {
     if (error instanceof AppError) {

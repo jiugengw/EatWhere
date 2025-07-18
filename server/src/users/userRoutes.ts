@@ -6,7 +6,6 @@ import {
   getUserGroups,
   getUserPreferences,
   updateMyPreferences,
-  getUserByUsername,
 } from './userController.js';
 import { signup, login, protect, updatePassword, handleRefreshToken } from '../auth/authController.js';
 import { logout } from '../auth/authController.js';
@@ -33,7 +32,5 @@ router
   .route('/me/preferences')
   .get(getMe, getUserPreferences)
   .patch(getMe, updateMyPreferences);
-
-router.route('/username/:username').get(getUserByUsername);
 
 export default router;

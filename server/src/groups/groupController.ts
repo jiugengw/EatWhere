@@ -29,14 +29,6 @@ export const getGroupUsers: RequestHandler = getOne(Group, {
   selectFields: 'users',
 });
 
-export const getGroupByCode: RequestHandler = getOne(Group, {
-  populateOptions: {
-    path: 'users',
-    select: '_id',
-  },
-  findByFn: (req) => ({ code: req.params.code }),
-});
-
 export const checkUserInGroup = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
@@ -56,11 +48,9 @@ export const joinGroup = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
   }
-  console.log(req);
   const parsed = JoinGroupSchema.safeParse(req.params);
 
   if (!parsed.success) {
-    console.log('Validation errors:', parsed.error.flatten().fieldErrors);
     return next(
       new AppError(
         'Validation failed',

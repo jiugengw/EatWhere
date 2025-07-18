@@ -30,12 +30,12 @@ interface GroupCardProps {
 }
 
 const cardColors = [
-    { primary: '#FF8C42', secondary: 'rgba(255, 140, 66, 0.1)', badgeColor: '#FF8C42' }, // Orange
-    { primary: '#4285f4', secondary: 'rgba(66, 133, 244, 0.1)', badgeColor: '#4285f4' }, // Blue
-    { primary: '#34a853', secondary: 'rgba(52, 168, 83, 0.1)', badgeColor: '#34a853' },   // Green
-    { primary: '#ea4335', secondary: 'rgba(234, 67, 53, 0.1)', badgeColor: '#ea4335' },   // Red
-    { primary: '#9c27b0', secondary: 'rgba(156, 39, 176, 0.1)', badgeColor: '#9c27b0' },  // Purple
-    { primary: '#ff9800', secondary: 'rgba(255, 152, 0, 0.1)', badgeColor: '#ff9800' },   // Amber
+    { primary: '#FF8C42', secondary: 'rgba(255, 140, 66, 0.1)', badgeColor: '#FF8C42' }, 
+    { primary: '#4285f4', secondary: 'rgba(66, 133, 244, 0.1)', badgeColor: '#4285f4' }, 
+    { primary: '#34a853', secondary: 'rgba(52, 168, 83, 0.1)', badgeColor: '#34a853' },  
+    { primary: '#ea4335', secondary: 'rgba(234, 67, 53, 0.1)', badgeColor: '#ea4335' },   
+    { primary: '#9c27b0', secondary: 'rgba(156, 39, 176, 0.1)', badgeColor: '#9c27b0' }, 
+    { primary: '#ff9800', secondary: 'rgba(255, 152, 0, 0.1)', badgeColor: '#ff9800' }, 
 ];
 
 export const GroupCard = ({ group, onLeaveGroup, colorIndex }: GroupCardProps) => {

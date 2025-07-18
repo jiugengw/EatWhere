@@ -1,4 +1,3 @@
-// client/src/hooks/useRestaurantPhoto.ts
 import { useState, useEffect } from 'react';
 import { useAxiosPrivate } from '@/hooks/auth/useAxiosPrivate';
 
@@ -40,7 +39,6 @@ export const useRestaurantPhoto = ({
         setLoading(true);
         setError(null);
 
-        // Build query parameters
         const queryParams = new URLSearchParams({
           maxWidth: maxWidth.toString(),
         });
@@ -49,16 +47,13 @@ export const useRestaurantPhoto = ({
           queryParams.append('maxHeight', maxHeight.toString());
         }
 
-        // Create the photo URL using your backend endpoint
         const url = `/google/photo/${photoReference}?${queryParams}`;
         
-        // Test if the URL is accessible
         const response = await axiosPrivate.get(url, {
-          responseType: 'blob', // Get as blob to check if it's valid
+          responseType: 'blob', 
         });
 
         if (response.status === 200) {
-          // Create object URL from blob for display
           const blob = response.data;
           const objectUrl = URL.createObjectURL(blob);
           setPhotoUrl(objectUrl);
@@ -76,7 +71,6 @@ export const useRestaurantPhoto = ({
 
     fetchPhoto();
 
-    // Cleanup function to revoke object URL
     return () => {
       if (photoUrl) {
         URL.revokeObjectURL(photoUrl);
@@ -84,7 +78,6 @@ export const useRestaurantPhoto = ({
     };
   }, [photoReference, maxWidth, maxHeight]);
 
-  // Cleanup object URL when component unmounts
   useEffect(() => {
     return () => {
       if (photoUrl) {

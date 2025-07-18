@@ -5,7 +5,6 @@ import {
   joinGroup,
   checkUserInGroup,
   getGroupUsers,
-  getGroupByCode,
   removeGroupMembers,
   updateGroupRoles,
   leaveGroup,
@@ -17,7 +16,6 @@ const router = express.Router();
 router.use(protect);
 
 router.route('/').post(createGroup);
-router.get('/code/:code', getGroupByCode);
 
 router.get('/:id', getGroup)
 

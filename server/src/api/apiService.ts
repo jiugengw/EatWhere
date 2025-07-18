@@ -70,10 +70,7 @@ export const searchNearbyPlaces = async (
   });
 
   try {
-    // console.log(url,searchParams);
-    // console.log('searchparams',searchParams);
     const response = await axios.get<GooglePlacesResponse>(`${url}?${searchParams}`);
-    // console.log(response.data);
     if (response.data.status !== 'OK' && response.data.status !== 'ZERO_RESULTS') {
       throw new AppError(
         `Google Places API error: ${response.data.status}`,
@@ -124,7 +121,7 @@ export const getPlacePhotoStream = async (
   try {
     const response = await axios.get(`${url}?${photoParams}`, {
       responseType: 'stream',
-      timeout: 10000, // 10 second timeout
+      timeout: 10000, 
     });
 
     return response.data as NodeJS.ReadableStream;

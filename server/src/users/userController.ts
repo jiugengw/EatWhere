@@ -5,7 +5,6 @@ import { User } from './userModel.js';
 import { AppError } from '../common/utils/AppError.js';
 import { catchAsync } from '../common/utils/catchAsync.js';
 import { getOne } from '../common/utils/getOne.js';
-import { Group } from '../groups/groupModel.js';
 import { UpdatePreferencesSchema } from '../shared/schemas/UpdatePreferencesSchema.js';
 import { UpdateUserProfileSchema } from '../shared/schemas/UpdateUserProfileSchema.js';
 
@@ -19,12 +18,6 @@ export const getMe: RequestHandler = (req, res, next) => {
 
 export const getUser = getOne(User);
 
-// export const getUserHistory = getOne(User, {
-//   populateOptions: { path: 'history' },
-//   selectFields: 'history',
-//   enableVirtuals: false,
-// });
-
 export const getUserGroups = getOne(User, {
   populateOptions: { path: 'groups' },
   selectFields: 'groups',
@@ -34,12 +27,6 @@ export const getUserGroups = getOne(User, {
 export const getUserPreferences = getOne(User, {
   selectFields: 'preferences',
   enableVirtuals: false,
-});
-
-export const getUserByUsername = getOne(User, {
-  selectFields: 'username firstName lastName',
-  findByFn: (req) => ({ username: req.params.username }),
-  enableVirtuals: true,
 });
 
 export const updateUser = catchAsync(async (req, res, next) => {

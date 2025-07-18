@@ -8,7 +8,6 @@ import {
   Button,
   Stack,
 } from '@mantine/core';
-import type { JSX } from 'react';
 import classes from './Signup.module.css';
 import { Link } from '@tanstack/react-router';
 import { SignupSchema, type SignupInput } from '@/shared/schemas/SignupSchema';
@@ -17,7 +16,7 @@ import { zodResolver } from 'mantine-form-zod-resolver';
 import { useSignup } from '@/hooks/auth/useSignup';
 import { Loading } from '@/UIelements/loading';
 
-export const SignupPage = (): JSX.Element => {
+export const SignupPage = () => {
   const form = useForm<SignupInput>({
     validate: zodResolver(SignupSchema),
     initialValues: {

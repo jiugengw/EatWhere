@@ -1,4 +1,3 @@
-// client/src/components/LocationRequester/LocationRequester.tsx
 import React from 'react';
 import { Button, Text, Group, Alert, Stack } from '@mantine/core';
 import { IconMapPin, IconAlertCircle, IconRefresh } from '@tabler/icons-react';
@@ -24,7 +23,6 @@ export const LocationRequester: React.FC<LocationRequesterProps> = ({
     clearError 
   } = useLocation();
 
-  // Notify parent component when location changes
   React.useEffect(() => {
     if (onLocationChange) {
       onLocationChange(location);
@@ -46,7 +44,6 @@ export const LocationRequester: React.FC<LocationRequesterProps> = ({
   const getLocationAccuracy = () => {
     if (!location) return null;
     
-    // Check if it's the default Singapore location
     if (location.lat === 1.3521 && location.lng === 103.8198) {
       return 'default';
     }

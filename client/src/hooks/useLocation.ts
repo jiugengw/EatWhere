@@ -1,4 +1,3 @@
-// client/src/hooks/useLocation.ts
 import { useState, useCallback, useEffect } from 'react';
 
 export interface LocationCoords {

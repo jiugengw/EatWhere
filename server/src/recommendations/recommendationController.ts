@@ -13,7 +13,6 @@ import {
 import { searchNearbyPlaces } from '../api/apiService.js';
 import { CUISINES, CuisineType } from './types.js';
 
-// GET TOP CUISINES FOR USER/GROUP (for smart algorithm)
 export const getTopCuisines = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
@@ -25,10 +24,8 @@ export const getTopCuisines = catchAsync(async (req, res, next) => {
     let topCuisines;
     
     if (groupId) {
-      // Get group's top cuisines
       topCuisines = await getGroupTopCuisines(groupId as string);
     } else {
-      // Get personal top cuisines
       topCuisines = await getPersonalTopCuisines(req.user.id);
     }
 
@@ -46,7 +43,6 @@ export const getTopCuisines = catchAsync(async (req, res, next) => {
   }
 });
 
-// GET PERSONAL RESTAURANT RECOMMENDATIONS (targeted cuisine calls)
 export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
@@ -54,7 +50,6 @@ export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
 
   const { lat, lng, cuisine, radius = 2000, limit = 4 } = req.query;
 
-  // Validate required parameters
   if (!lat || !lng || !cuisine) {
     return next(new AppError('Latitude, longitude, and cuisine are required', StatusCodes.BAD_REQUEST));
   }
@@ -66,13 +61,11 @@ export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
   }
 
-  // Validate cuisine
   if (!CUISINES.includes(cuisine as CuisineType)) {
     return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
   }
 
   try {
-    // Make targeted search for specific cuisine
     const searchParams = {
       lat: latitude,
       lng: longitude,
@@ -94,7 +87,6 @@ export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
       });
     }
 
-    // Get personalized recommendations for this cuisine
     const recommendations = await getPersonalRestaurantRecommendations(
       req.user.id,
       placesData.results,
@@ -117,7 +109,6 @@ export const getPersonalRecommendations = catchAsync(async (req, res, next) => {
   }
 });
 
-// GET GROUP RESTAURANT RECOMMENDATIONS (targeted cuisine calls)
 export const getGroupRecommendations = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
@@ -126,7 +117,6 @@ export const getGroupRecommendations = catchAsync(async (req, res, next) => {
   const { groupId } = req.params;
   const { lat, lng, cuisine, radius = 2000, limit = 4 } = req.query;
 
-  // Validate required parameters
   if (!lat || !lng || !cuisine) {
     return next(new AppError('Latitude, longitude, and cuisine are required', StatusCodes.BAD_REQUEST));
   }
@@ -138,13 +128,11 @@ export const getGroupRecommendations = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid latitude or longitude values', StatusCodes.BAD_REQUEST));
   }
 
-  // Validate cuisine
   if (!CUISINES.includes(cuisine as CuisineType)) {
     return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
   }
 
   try {
-    // Make targeted search for specific cuisine
     const searchParams = {
       lat: latitude,
       lng: longitude,
@@ -167,7 +155,6 @@ export const getGroupRecommendations = catchAsync(async (req, res, next) => {
       });
     }
 
-    // Get group recommendations for this cuisine
     const recommendations = await getGroupRestaurantRecommendations(
       groupId,
       placesData.results,
@@ -191,7 +178,6 @@ export const getGroupRecommendations = catchAsync(async (req, res, next) => {
   }
 });
 
-// PREDICT SINGLE RESTAURANT SCORE
 export const predictRestaurantScore = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
@@ -203,7 +189,6 @@ export const predictRestaurantScore = catchAsync(async (req, res, next) => {
     return next(new AppError('place_id, name, and cuisine are required', StatusCodes.BAD_REQUEST));
   }
 
-  // Validate cuisine
   if (!CUISINES.includes(cuisine as CuisineType)) {
     return next(new AppError(`Invalid cuisine. Must be one of: ${CUISINES.join(', ')}`, StatusCodes.BAD_REQUEST));
   }
@@ -211,7 +196,6 @@ export const predictRestaurantScore = catchAsync(async (req, res, next) => {
   try {
     const googleRating = rating ? parseFloat(rating as string) : 3.0;
     
-    // Calculate personalized score
     const score = await calculatePersonalizedScore(
       req.user.id,
       cuisine as CuisineType,
@@ -236,7 +220,6 @@ export const predictRestaurantScore = catchAsync(async (req, res, next) => {
   }
 });
 
-// SUBMIT RATING AND UPDATE WEIGHTS
 export const submitRating = catchAsync(async (req, res, next) => {
   if (!req.user) {
     return next(new AppError('Not authenticated', StatusCodes.UNAUTHORIZED));
@@ -244,7 +227,6 @@ export const submitRating = catchAsync(async (req, res, next) => {
 
   const { restaurantId, cuisine, rating, googleRating } = req.body;
 
-  // Validate inputs
   if (!restaurantId || !cuisine || rating === undefined) {
     return next(new AppError('Restaurant ID, cuisine, and rating are required', StatusCodes.BAD_REQUEST));
   }
@@ -258,10 +240,8 @@ export const submitRating = catchAsync(async (req, res, next) => {
   }
 
   try {
-    // Import the update function
     const { updateWeightsAfterRating } = await import('./recommendationService.js');
     
-    // Update weights based on this rating
     await updateWeightsAfterRating(
       req.user.id,
       restaurantId,
