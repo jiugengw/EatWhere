@@ -87,7 +87,7 @@ export const CreateGroupPage = () => {
                         {...form.getInputProps('name')}
                       />
                       <Text size="xs" c="dimmed" mt="xs">
-                        Choose a memorable name that represents your group
+                        Choose a name for your group
                       </Text>
                     </div>
 

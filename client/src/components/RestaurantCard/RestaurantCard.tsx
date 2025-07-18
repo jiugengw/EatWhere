@@ -63,7 +63,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
       googleRating,
     });
 
-    // Reset modal state
     setRatingModalOpen(false);
     setUserRating(0);
     setReviewText('');
@@ -87,7 +86,16 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
 
   return (
     <>
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
+      <Card shadow="sm"
+        padding="lg"
+        radius="md"
+        withBorder
+        style={{
+          height: '420px',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
         <Card.Section>
           {hasPhoto ? (
             <>
@@ -182,26 +190,13 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
             </div>
           </Flex>
 
-          <Group gap="xs">
-            {restaurant.types.slice(0, 3).map((type) => (
-              <Badge
-                key={type}
-                variant="outline"
-                color="gray"
-                size="xs"
-              >
-                {type.replace(/_/g, ' ')}
-              </Badge>
-            ))}
-          </Group>
-
           <Group justify="space-between" mt="auto">
             <Button
               size="sm"
               leftSection={<IconChefHat size={16} />}
               onClick={handleEatingHere}
             >
-              I'm Eating Here!
+              Eating Here!
             </Button>
 
             <Button

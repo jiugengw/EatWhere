@@ -323,7 +323,6 @@ export function DiscoverPage() {
         {showSetup && (
           <Paper withBorder p="xl" radius="md" className={classes.setupCard}>
             <Stack gap="lg" align="center">
-              {/* Group Selection - only show if in group mode */}
               {isGroupMode && (
                 <div className={classes.groupSelection}>
                   <Text size="lg" fw={500} mb="md" ta="center">
@@ -364,9 +363,6 @@ export function DiscoverPage() {
                     step={1}
                     marks={[
                       { value: 1, label: '1' },
-                      { value: 3, label: '3' },
-                      { value: 5, label: '5' },
-                      { value: 7, label: '7' },
                       { value: 10, label: '10' },
                     ]}
                     className={classes.slider}
@@ -390,11 +386,6 @@ export function DiscoverPage() {
                 {isLoading ? 'Finding restaurants...' : `Find ${isGroupMode ? 'Group' : 'My'} Restaurants`}
               </Button>
 
-              {location && (
-                <Text size="xs" c="dimmed">
-                  Searching near: Current Location
-                </Text>
-              )}
             </Stack>
           </Paper>
         )}

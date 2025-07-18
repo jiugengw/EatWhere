@@ -151,6 +151,7 @@ export const PreferencesPage = () => {
                   min={1}
                   max={5}
                   step={1}
+                  label={null}
                   className={classes.slider}
                   classNames={{
                     track: classes.sliderTrack,
