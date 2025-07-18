@@ -17,7 +17,7 @@ import { useUserProfile } from "@/hooks/users/useUserProfile";
 import { useUpdatePassword } from "@/hooks/auth/useUpdatePassword";
 import { zodResolver } from "mantine-form-zod-resolver";
 
-import styles from "./tabs.module.css";
+import classes from "./Tabs.module.css";
 import { UpdatePasswordSchema } from "@/shared/schemas/UpdatePasswordSchema";
 
 export const Profiletab = () => {
@@ -47,10 +47,10 @@ export const Profiletab = () => {
   });
 
   return (
-    <div className={styles.tabContainer}>
+    <div className={classes.tabContainer}>
       <Group gap="sm" mb="lg">
-        <IconUser size={20} className={styles.tabIcon} />
-        <Title order={3} className={styles.tabTitle}>
+        <IconUser size={20} className={classes.tabIcon} />
+        <Title order={3} className={classes.tabTitle}>
           Profile Information
         </Title>
       </Group>
@@ -61,9 +61,9 @@ export const Profiletab = () => {
             label="Username"
             placeholder={user.username ?? "Enter username"}
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("username")}
           />
@@ -71,9 +71,9 @@ export const Profiletab = () => {
             label="First Name"
             placeholder={user.firstName ?? "Enter first name"}
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("firstName")}
           />
@@ -81,9 +81,9 @@ export const Profiletab = () => {
             label="Last Name"
             placeholder={user.lastName ?? "Enter last name"}
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("lastName")}
           />
@@ -92,9 +92,9 @@ export const Profiletab = () => {
             type="email"
             placeholder={user.email ?? "Enter email"}
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("email")}
           />
@@ -103,7 +103,7 @@ export const Profiletab = () => {
             <Button
               size="md"
               radius="md"
-              className={styles.submitButton}
+              className={classes.submitButton}
               loading={isPending}
               type="submit"
             >
@@ -134,10 +134,10 @@ export const Passwordtab = () => {
   };
 
   return (
-    <div className={styles.tabContainer}>
+    <div className={classes.tabContainer}>
       <Group gap="sm" mb="lg">
-        <IconLock size={20} className={styles.tabIcon} />
-        <Title order={3} className={styles.tabTitle}>
+        <IconLock size={20} className={classes.tabIcon} />
+        <Title order={3} className={classes.tabTitle}>
           Change Password
         </Title>
       </Group>
@@ -147,7 +147,7 @@ export const Passwordtab = () => {
         color="blue" 
         variant="light" 
         mb="lg"
-        className={styles.alert}
+        className={classes.alert}
       >
         Use a strong password with at least 8 characters, including uppercase, lowercase, special characters and numbers.
       </Alert>
@@ -158,9 +158,9 @@ export const Passwordtab = () => {
             label="Current Password"
             placeholder="Enter your current password"
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("passwordCurrent")}
           />
@@ -168,9 +168,9 @@ export const Passwordtab = () => {
             label="New Password"
             placeholder="Enter your new password"
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("passwordNew")}
           />
@@ -178,9 +178,9 @@ export const Passwordtab = () => {
             label="Confirm New Password"
             placeholder="Confirm your new password"
             classNames={{ 
-              label: styles.label, 
-              input: styles.input,
-              wrapper: styles.inputWrapper 
+              label: classes.label, 
+              input: classes.input,
+              wrapper: classes.inputWrapper 
             }}
             {...form.getInputProps("passwordConfirm")}
           />
@@ -189,7 +189,7 @@ export const Passwordtab = () => {
             <Button
               size="md"
               radius="md"
-              className={styles.submitButton}
+              className={classes.submitButton}
               loading={isPending}
               type="submit"
             >
@@ -204,15 +204,15 @@ export const Passwordtab = () => {
 
 export const Preferencestab = () => {
   return (
-    <div className={styles.tabContainer}>
+    <div className={classes.tabContainer}>
       <Group gap="sm" mb="lg">
-        <IconSettings size={20} className={styles.tabIcon} />
-        <Title order={3} className={styles.tabTitle}>
+        <IconSettings size={20} className={classes.tabIcon} />
+        <Title order={3} className={classes.tabTitle}>
           Cuisine Preferences
         </Title>
       </Group>
 
-      <Paper p="lg" className={styles.preferencesCard}>
+      <Paper p="lg" className={classes.preferencesCard}>
         <Stack gap="md" align="center">
           <Text ta="center" c="dimmed">
             Customize your cuisine preferences to get better restaurant recommendations 
@@ -224,7 +224,7 @@ export const Preferencestab = () => {
             radius="md"
             component={Link}
             to="/preferences"
-            className={styles.submitButton}
+            className={classes.submitButton}
             leftSection={<IconSettings size={18} />}
           >
             Manage Preferences

@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { IconDeviceFloppy, IconAdjustments } from "@tabler/icons-react";
 import { useUserPreferences } from "@/hooks/users/usePreferences";
 import { useUpdateUserPreferences } from "@/hooks/users/useUpdatePreferences";
-import classes from "./preference.module.css";
+import classes from "./Preference.module.css";
 
 const cuisines: string[] = [
   "Chinese",

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Text, Badge, Group, Button, Stack, Flex, Image, Skeleton, Modal, Select, Rating, Textarea, Title } from '@mantine/core';
+import { Card, Text, Badge, Group, Button, Stack, Image, Skeleton, Modal, Select, Rating, Textarea, Title } from '@mantine/core';
 import { IconStar, IconMapPin, IconChefHat } from '@tabler/icons-react';
 import { type AIRestaurantResult } from '@/types/restaurant';
 import { useRestaurantPhoto } from '@/hooks/recommendations/useRestaurantPhoto';
 import { useSubmitRating } from '@/hooks/recommendations/useSubmitRating';
 import { showNotification } from '@mantine/notifications';
+import classes from './RestaurantCard.module.css';
 
 interface RestaurantCardProps {
   restaurant: AIRestaurantResult;
@@ -30,6 +31,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
       '_blank'
     );
   };
+  
   const handleEatingHere = () => {
     setRatingModalOpen(true);
   };
@@ -86,135 +88,127 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
 
   return (
     <>
-      <Card shadow="sm"
-        padding="lg"
-        radius="md"
+      <Card 
+        shadow="sm" 
+        padding={0}
+        radius="md" 
         withBorder
-        style={{
-          height: '420px',
-          display: 'flex',
-          flexDirection: 'column'
-        }}
+        className={classes.card}
       >
-        <Card.Section>
+        <Card.Section className={classes.imageSection}>
           {hasPhoto ? (
             <>
               {photoLoading ? (
-                <Skeleton height={200} />
+                <Skeleton height={200} className={classes.imageSkeleton} />
               ) : photoError ? (
-                <div style={{
-                  height: 200,
-                  backgroundColor: 'var(--mantine-color-gray-1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
+                <div className={classes.noImage}>
                   <Text c="dimmed" size="sm">Photo unavailable</Text>
                 </div>
               ) : (
-                <div style={{ position: 'relative' }}>
+                <div className={classes.imageContainer}>
                   <Image
                     src={photoUrl}
                     height={200}
                     alt={restaurant.name}
                     fallbackSrc="/placeholder-restaurant.jpg"
+                    className={classes.restaurantImage}
                   />
                   {restaurant.opening_hours?.open_now !== undefined && (
                     <Badge
                       color={restaurant.opening_hours.open_now ? 'green' : 'red'}
                       variant="filled"
                       size="sm"
-                      style={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                      }}
+                      className={classes.statusBadge}
                     >
-                      {restaurant.opening_hours.open_now ? 'Open Now' : 'Closed'}
+                      {restaurant.opening_hours.open_now ? 'Open' : 'Closed'}
                     </Badge>
                   )}
                 </div>
               )}
             </>
           ) : (
-            <div style={{
-              height: 200,
-              backgroundColor: 'var(--mantine-color-gray-1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
+            <div className={classes.noImage}>
               <Text c="dimmed" size="sm">No photo available</Text>
             </div>
           )}
         </Card.Section>
 
-        <div style={{ 
-          flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column',
-          padding: '1rem 0'
-        }}>
-          <div style={{ flex: 1 }}>
-            <Flex justify="space-between" align="flex-start" mb="md">
-              <Stack gap="xs" style={{ flex: 1 }}>
-                <Text fw={600} size="lg" lineClamp={2}>
-                  {restaurant.name}
-                </Text>
-                {!hasPhoto && restaurant.opening_hours?.open_now !== undefined && (
-                  <Badge
-                    color={restaurant.opening_hours.open_now ? 'green' : 'red'}
-                    variant="light"
-                    size="sm"
-                  >
-                    {restaurant.opening_hours.open_now ? 'Open Now' : 'Closed'}
-                  </Badge>
-                )}
-              </Stack>
+        <div className={classes.cardContent}>
+          <div className={classes.restaurantHeader}>
+            <div style={{ flex: 1 }}>
+              <Text fw={600} size="lg" lineClamp={2} className={classes.restaurantName}>
+                {restaurant.name}
+              </Text>
+              {!hasPhoto && restaurant.opening_hours?.open_now !== undefined && (
+                <Badge
+                  color={restaurant.opening_hours.open_now ? 'green' : 'red'}
+                  variant="light"
+                  size="sm"
+                  className={classes.statusBadgeNoPhoto}
+                >
+                  {restaurant.opening_hours.open_now ? 'Open' : 'Closed'}
+                </Badge>
+              )}
+            </div>
 
-              {restaurant.rating && (
+            {restaurant.rating && (
+              <div className={classes.ratingGroup}>
                 <Group gap="xs">
-                  <IconStar size={16} color="#ffd43b" fill="#ffd43b" />
-                  <Text fw={500} size="sm">
+                  <IconStar size={14} className={classes.starIcon} />
+                  <Text fw={500} size="sm" className={classes.ratingText}>
                     {restaurant.rating.toFixed(1)}
                   </Text>
                 </Group>
-              )}
-            </Flex>
-
-            <Text size="sm" c="dimmed" mb="md">
-              {restaurant.vicinity || 'Location not available'}
-            </Text>
-
-            <Flex justify="space-between" align="center">
-              <div>
-                {restaurant.price_level && (
-                  <Text size="sm" fw={500} c="green">
-                    {getPriceLevel(restaurant.price_level)}
-                  </Text>
-                )}
               </div>
-            </Flex>
+            )}
           </div>
 
-          <Group justify="space-between" gap="xs" style={{ marginTop: 'auto' }}>
+          <Text size="sm" c="dimmed" lineClamp={2} className={classes.address}>
+            {restaurant.vicinity || 'Location not available'}
+          </Text>
+
+          <div className={classes.priceSection}>
+            {restaurant.price_level && (
+              <Text size="sm" fw={500} className={classes.priceText}>
+                {getPriceLevel(restaurant.price_level)}
+              </Text>
+            )}
+          </div>
+
+          <div className={classes.cuisineTags}>
+            <Group gap="xs">
+              {restaurant.types?.slice(0, 3).map((type) => (
+                <Badge
+                  key={type}
+                  variant="outline"
+                  color="gray"
+                  size="xs"
+                  className={classes.cuisineBadge}
+                >
+                  {type.replace(/_/g, ' ')}
+                </Badge>
+              ))}
+            </Group>
+          </div>
+
+          <Group justify="space-between" gap="xs" className={classes.actionButtons}>
             <Button
               size="sm"
-              leftSection={<IconChefHat size={16} />}
+              leftSection={<IconChefHat size={14} />}
               onClick={handleEatingHere}
-              style={{ flex: 1 }}
+              className={classes.eatingButton}
             >
               Eating Here!
             </Button>
 
             <Button
               size="sm"
-              leftSection={<IconMapPin size={16} />}
+              leftSection={<IconMapPin size={14} />}
               onClick={handleViewOnMap}
               variant="outline"
-              style={{ flex: 1 }}
+              className={classes.mapButton}
             >
-              View On Map
+              View Map
             </Button>
           </Group>
         </div>
@@ -224,86 +218,94 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
         opened={ratingModalOpen}
         onClose={handleCloseModal}
         title={
-          <Title order={3}>
+          <Title order={3} className={classes.modalTitle}>
             How was your meal at {restaurant.name}?
           </Title>
         }
         centered
         size="md"
+        className={classes.modal}
       >
-        <Stack gap="lg">
-          <Text size="sm" c="dimmed">
-            Rate your dining experience to get better recommendations in the future
-          </Text>
-
-          <div>
-            <Text size="sm" fw={500} mb="xs">What type of cuisine was this? *</Text>
-            <Select
-              placeholder="Select cuisine type"
-              value={selectedCuisine}
-              onChange={setSelectedCuisine}
-              data={[
-                { value: 'Chinese', label: 'Chinese' },
-                { value: 'Japanese', label: 'Japanese' },
-                { value: 'Korean', label: 'Korean' },
-                { value: 'Italian', label: 'Italian' },
-                { value: 'Mexican', label: 'Mexican' },
-                { value: 'Indian', label: 'Indian' },
-                { value: 'Thai', label: 'Thai' },
-                { value: 'French', label: 'French' },
-                { value: 'Muslim', label: 'Middle Eastern/Halal' },
-                { value: 'Vietnamese', label: 'Vietnamese' },
-                { value: 'Western', label: 'Western' },
-                { value: 'Fast Food', label: 'Fast Food' },
-              ]}
-              required
-              searchable
-              clearable
-            />
-          </div>
-
-          <div>
-            <Text size="sm" fw={500} mb="xs">Rating *</Text>
-            <Rating
-              value={userRating}
-              onChange={setUserRating}
-              size="lg"
-            />
-            <Text size="xs" c="dimmed" mt="xs">
-              {userRating === 0 && 'Select a rating'}
-              {userRating === 1 && 'Poor'}
-              {userRating === 2 && 'Fair'}
-              {userRating === 3 && 'Good'}
-              {userRating === 4 && 'Very Good'}
-              {userRating === 5 && 'Excellent'}
+        <div className={classes.modalContent}>
+          <Stack gap="lg">
+            <Text size="sm" c="dimmed" className={classes.modalDescription}>
+              Rate your dining experience to get better recommendations in the future
             </Text>
-          </div>
 
-          <Textarea
-            label="Review (optional)"
-            placeholder="Tell us about your experience..."
-            value={reviewText}
-            onChange={(e) => setReviewText(e.currentTarget.value)}
-            minRows={3}
-            maxRows={5}
-          />
+            <div className={classes.cuisineSection}>
+              <Text size="sm" fw={500} mb="xs">What type of cuisine was this? *</Text>
+              <Select
+                placeholder="Select cuisine type"
+                value={selectedCuisine}
+                onChange={setSelectedCuisine}
+                data={[
+                  { value: 'Chinese', label: 'Chinese' },
+                  { value: 'Japanese', label: 'Japanese' },
+                  { value: 'Korean', label: 'Korean' },
+                  { value: 'Italian', label: 'Italian' },
+                  { value: 'Mexican', label: 'Mexican' },
+                  { value: 'Indian', label: 'Indian' },
+                  { value: 'Thai', label: 'Thai' },
+                  { value: 'French', label: 'French' },
+                  { value: 'Muslim', label: 'Middle Eastern/Halal' },
+                  { value: 'Vietnamese', label: 'Vietnamese' },
+                  { value: 'Western', label: 'Western' },
+                  { value: 'Fast Food', label: 'Fast Food' },
+                ]}
+                required
+                searchable
+                clearable
+                className={classes.cuisineSelect}
+              />
+            </div>
 
-          <Group justify="flex-end">
-            <Button
-              variant="light"
-              onClick={handleCloseModal}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSubmitRating}
-              disabled={userRating === 0 || !selectedCuisine}
-              loading={isPending}
-            >
-              Submit Rating
-            </Button>
-          </Group>
-        </Stack>
+            <div className={classes.ratingSection}>
+              <Text size="sm" fw={500} mb="xs">Rating *</Text>
+              <Rating
+                value={userRating}
+                onChange={setUserRating}
+                size="lg"
+                className={classes.ratingInput}
+              />
+              <Text size="xs" c="dimmed" mt="xs">
+                {userRating === 0 && 'Select a rating'}
+                {userRating === 1 && 'Poor'}
+                {userRating === 2 && 'Fair'}
+                {userRating === 3 && 'Good'}
+                {userRating === 4 && 'Very Good'}
+                {userRating === 5 && 'Excellent'}
+              </Text>
+            </div>
+
+            <Textarea
+              label="Review (optional)"
+              placeholder="Tell us about your experience..."
+              value={reviewText}
+              onChange={(e) => setReviewText(e.currentTarget.value)}
+              minRows={3}
+              maxRows={5}
+              className={classes.reviewTextarea}
+            />
+
+            <Group justify="flex-end" className={classes.modalActions}>
+              <Button
+                variant="light"
+                onClick={handleCloseModal}
+                className={classes.cancelButton}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitRating}
+                disabled={userRating === 0 || !selectedCuisine}
+                loading={isPending}
+                className={classes.submitButton}
+              >
+                Submit Rating
+              </Button>
+            </Group>
+          </Stack>
+        </div>
       </Modal>
     </>
   );
